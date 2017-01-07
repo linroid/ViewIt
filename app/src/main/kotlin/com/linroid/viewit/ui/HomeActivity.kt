@@ -3,26 +3,21 @@ package com.linroid.viewit.ui
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.Snackbar
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
 import com.linroid.viewit.R
-import permissions.dispatcher.RuntimePermissions
 
 /**
  * @author linroid <linroid@gmail.com>
  * @since 07/01/2017
  */
-@RuntimePermissions
-class MainActivity : AppCompatActivity() {
+class HomeActivity : BaseActivity() {
+    override fun provideContentView(): Int {
+        return R.layout.activity_home;
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        val toolbar = findViewById(R.id.toolbar) as Toolbar
-        setSupportActionBar(toolbar)
-
         val fab = findViewById(R.id.fab) as FloatingActionButton
         fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
@@ -32,7 +27,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.menu_main, menu)
+        menuInflater.inflate(R.menu.menu_home, menu)
         return true
     }
 

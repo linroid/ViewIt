@@ -1,5 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion 25
@@ -21,12 +23,19 @@ android {
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }
+
+    dexOptions {
+        javaMaxHeapSize "2048M"
+    }
+
+    compileOptions.incremental = true
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
+        exclude group: 'com.google.code.findbugs', module: 'jsr305'
     })
 
     // support
@@ -40,29 +49,46 @@ dependencies {
     // tools
     compile 'com.jakewharton.timber:timber:4.4.0'
     compile 'com.jakewharton:butterknife:8.4.0'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
+    kapt 'com.jakewharton:butterknife-compiler:8.4.0'
     compile "com.github.hotchemi:permissionsdispatcher:${permissionsdispatcher_version}"
-    annotationProcessor "com.github.hotchemi:permissionsdispatcher-processor:${permissionsdispatcher_version}"
+    kapt "com.github.hotchemi:permissionsdispatcher-processor:${permissionsdispatcher_version}"
 
     // ioc
     compile 'com.google.dagger:dagger:2.8'
-    annotationProcessor 'com.google.dagger:dagger-compiler:2.8'
+    kapt 'com.google.dagger:dagger-compiler:2.8'
 
     // data
     compile "com.squareup.retrofit2:retrofit:$retrofit_version"
     compile "com.squareup.retrofit2:converter-gson:$retrofit_version"
     compile "com.squareup.retrofit2:adapter-rxjava:$retrofit_version"
     compile 'com.squareup.okhttp3:okhttp:3.5.0'
+    compile 'com.squareup.okhttp3:logging-interceptor:3.5.0'
     compile 'com.google.code.gson:gson:2.8.0'
 
     // rxjava
     compile 'io.reactivex:rxandroid:1.2.1'
     compile 'io.reactivex:rxjava:1.1.6'
+    compile 'com.trello:rxlifecycle:1.0'
+
+    compile 'com.trello:rxlifecycle-android:1.0'
+    compile 'com.trello:rxlifecycle-components:1.0'
+    compile 'com.trello:rxlifecycle-navi:1.0'
+    compile 'com.trello:rxlifecycle-kotlin:1.0'
+
+    compile 'com.jakewharton.rxbinding:rxbinding-kotlin:1.0.0'
+    compile 'com.jakewharton.rxbinding:rxbinding-support-v4-kotlin:1.0.0'
+    compile 'com.jakewharton.rxbinding:rxbinding-appcompat-v7-kotlin:1.0.0'
+    compile 'com.jakewharton.rxbinding:rxbinding-recyclerview-v7-kotlin:1.0.0'
+    compile 'com.jakewharton.rxbinding:rxbinding-design-kotlin:1.0.0'
 
     // kotlin
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile 'io.reactivex:rxkotlin:0.60.0'
 
+    // https://github.com/Kotlin/anko
+//    compile "org.jetbrains.anko:anko-sdk15:$anko_version" // sdk19, sdk21, sdk23 are also available
+//    compile "org.jetbrains.anko:anko-support-v4:$anko_version" // In case you need support-v4 bindings
+//    compile "org.jetbrains.anko:anko-appcompat-v7:$anko_version" // For appcompat-v7 bindings
 
 }
 repositories {
