@@ -12,6 +12,7 @@ import timber.log.Timber
 class App : Application() {
     companion object {
         @JvmStatic lateinit var graph: GlobalGraph
+        @JvmStatic lateinit var instance: App;
     }
 
     override fun onCreate() {
@@ -20,5 +21,6 @@ class App : Application() {
             Timber.plant(Timber.DebugTree())
         }
         graph = DaggerGlobalGraph.create();
+        instance = this;
     }
 }

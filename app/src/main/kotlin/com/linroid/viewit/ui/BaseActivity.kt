@@ -1,7 +1,6 @@
 package com.linroid.viewit.ui
 
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.support.annotation.CallSuper
 import android.support.annotation.LayoutRes
 import android.support.v7.widget.Toolbar
@@ -14,14 +13,15 @@ import com.trello.rxlifecycle.components.support.RxAppCompatActivity
  */
 
 abstract class BaseActivity : RxAppCompatActivity() {
+    lateinit var toolbar: Toolbar
     @CallSuper
-    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-        super.onCreate(savedInstanceState, persistentState)
-        setContentView(provideContentView())
-        val toolbar = findViewById(R.id.toolbar) as Toolbar
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(provideContentLayoutId())
+        toolbar = findViewById(R.id.toolbar) as Toolbar
         setSupportActionBar(toolbar)
     }
 
     @LayoutRes
-    abstract fun provideContentView(): Int
+    abstract fun provideContentLayoutId(): Int
 }

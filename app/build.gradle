@@ -48,10 +48,11 @@ dependencies {
 
     // tools
     compile 'com.jakewharton.timber:timber:4.4.0'
-    compile 'com.jakewharton:butterknife:8.4.0'
-    kapt 'com.jakewharton:butterknife-compiler:8.4.0'
+//    compile 'com.jakewharton:butterknife:8.4.0'
+//    kapt 'com.jakewharton:butterknife-compiler:8.4.0'
     compile "com.github.hotchemi:permissionsdispatcher:${permissionsdispatcher_version}"
     kapt "com.github.hotchemi:permissionsdispatcher-processor:${permissionsdispatcher_version}"
+    compile 'com.jakewharton:kotterknife:0.1.0-SNAPSHOT'
 
     // ioc
     compile 'com.google.dagger:dagger:2.8'
@@ -84,6 +85,11 @@ dependencies {
     // kotlin
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile 'io.reactivex:rxkotlin:0.60.0'
+
+    // view components
+    compile ('me.drakeet.multitype:multitype:2.3.0', {
+        exclude group: 'com.android.support'
+    })
 
     // https://github.com/Kotlin/anko
 //    compile "org.jetbrains.anko:anko-sdk15:$anko_version" // sdk19, sdk21, sdk23 are also available
