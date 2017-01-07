@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">ViewIt!</string>
     <string name="action_settings">Settings</string>
+    <string name="button_allow">允许</string>
+    <string name="button_deny">拒绝</string>
+    <string name="permission_storage_neverask">permission_storage_neverask</string>
+    <string name="permission_storage_rationale">permission_storage_rationale</string>
 </resources>

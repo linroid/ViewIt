@@ -12,8 +12,11 @@ buildscript {
         maven {
             url "https://oss.sonatype.org/content/repositories/snapshots"
         }
+        maven {
+            url "http://dl.bintray.com/piasy/maven"
+        }
     }
-    
+
     dependencies {
         classpath 'com.android.tools.build:gradle:2.3.0-beta1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
@@ -28,6 +31,9 @@ allprojects {
         jcenter()
         maven {
             url "https://oss.sonatype.org/content/repositories/snapshots"
+        }
+        maven {
+            url "http://dl.bintray.com/piasy/maven"
         }
     }
 }

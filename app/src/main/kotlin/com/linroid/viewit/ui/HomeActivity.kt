@@ -1,4 +1,4 @@
-package com.linroid.viewit.ui.home
+package com.linroid.viewit.ui
 
 import android.os.Bundle
 import android.support.v7.widget.DefaultItemAnimator
@@ -11,6 +11,7 @@ import com.linroid.viewit.R
 import com.linroid.viewit.data.AppScanner
 import com.linroid.viewit.data.model.AppHolder
 import com.linroid.viewit.ui.BaseActivity
+import com.linroid.viewit.ui.provider.AppViewProvider
 import com.trello.rxlifecycle.kotlin.bindToLifecycle
 import me.drakeet.multitype.MultiTypeAdapter
 import rx.android.schedulers.AndroidSchedulers
@@ -52,7 +53,7 @@ class HomeActivity : BaseActivity() {
     }
 
     private fun initView() {
-        adapter.register(AppHolder::class.java, AppViewProvider())
+        adapter.register(AppHolder::class.java, AppViewProvider(this))
         val gridLayoutManager = GridLayoutManager(this, 4);
         appListView.layoutManager = gridLayoutManager
         appListView.adapter = adapter

@@ -4,7 +4,7 @@ import android.content.pm.ApplicationInfo
 import android.graphics.drawable.Drawable
 
 /**
- * @author linroid <linroid></linroid>@gmail.com>
+ * @author linroid <linroid@gmail.com>
  * *
  * @since 07/01/2017
  */

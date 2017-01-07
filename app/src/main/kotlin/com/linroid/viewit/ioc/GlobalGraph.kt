@@ -3,7 +3,7 @@ package com.linroid.viewit.ioc
 import com.linroid.viewit.App
 import com.linroid.viewit.ioc.module.AndroidModule
 import com.linroid.viewit.ioc.module.DataModule
-import com.linroid.viewit.ui.home.HomeActivity
+import com.linroid.viewit.ui.HomeActivity
 import dagger.Component
 import javax.inject.Singleton
 

@@ -1,6 +1,8 @@
 package com.linroid.viewit
 
 import android.app.Application
+import com.github.piasy.biv.BigImageViewer
+import com.github.piasy.biv.loader.glide.GlideImageLoader
 import com.linroid.viewit.ioc.DaggerGlobalGraph
 import com.linroid.viewit.ioc.GlobalGraph
 import timber.log.Timber
@@ -22,5 +24,6 @@ class App : Application() {
         }
         graph = DaggerGlobalGraph.create();
         instance = this;
+        BigImageViewer.initialize(GlideImageLoader.with(this));
     }
 }
