@@ -31,7 +31,7 @@ dependencies {
 
     // support
     compile "com.android.support:appcompat-v7:$support_version"
-    compile 'com.android.support.constraint:constraint-layout:1.0.0-beta4'
+//    compile 'com.android.support.constraint:constraint-layout:1.0.0-beta4'
     compile "com.android.support:design:$support_version"
     compile "com.android.support:design:$support_version"
 
@@ -41,6 +41,8 @@ dependencies {
     compile 'com.jakewharton.timber:timber:4.4.0'
     compile 'com.jakewharton:butterknife:8.4.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
+    compile "com.github.hotchemi:permissionsdispatcher:${permissionsdispatcher_version}"
+    annotationProcessor "com.github.hotchemi:permissionsdispatcher-processor:${permissionsdispatcher_version}"
 
     // ioc
     compile 'com.google.dagger:dagger:2.8'
@@ -60,6 +62,8 @@ dependencies {
     // kotlin
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile 'io.reactivex:rxkotlin:0.60.0'
+
+
 }
 repositories {
     mavenCentral()

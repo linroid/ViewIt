@@ -8,11 +8,13 @@ import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
 import com.linroid.viewit.R
+import permissions.dispatcher.RuntimePermissions
 
 /**
  * @author linroid <linroid@gmail.com>
  * @since 07/01/2017
  */
+@RuntimePermissions
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
