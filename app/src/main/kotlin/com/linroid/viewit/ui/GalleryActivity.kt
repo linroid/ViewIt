@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.os.Bundle
-import android.os.Environment
 import android.support.v4.app.NavUtils
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.DefaultItemAnimator
@@ -13,17 +12,20 @@ import android.support.v7.widget.RecyclerView
 import android.view.MenuItem
 import android.widget.Toast
 import butterknife.bindView
+import com.linroid.viewit.App
 import com.linroid.viewit.R
-import com.linroid.viewit.data.ImageScanner
+import com.linroid.viewit.data.ImageRepo
+import com.linroid.viewit.data.model.Image
 import com.linroid.viewit.ui.provider.ImageViewProvider
+import com.linroid.viewit.utils.RootUtils
 import com.trello.rxlifecycle.kotlin.bindToLifecycle
 import me.drakeet.multitype.MultiTypeAdapter
 import permissions.dispatcher.*
 import rx.android.schedulers.AndroidSchedulers
 import timber.log.Timber
-import java.io.File
 import java.util.*
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 const val ARG_APP_INFO: String = "app_info";
 
@@ -32,6 +34,7 @@ class GalleryActivity : BaseActivity() {
 
     lateinit var appInfo: ApplicationInfo
     lateinit var appName: CharSequence
+    @Inject lateinit var imageRepo: ImageRepo
 
     val galleryView: RecyclerView by bindView(R.id.recycler)
     val images: MutableList<Any> = ArrayList();
@@ -52,12 +55,16 @@ class GalleryActivity : BaseActivity() {
         appInfo = intent.getParcelableExtra(ARG_APP_INFO)
         appName = packageManager.getApplicationLabel(appInfo);
         supportActionBar?.title = appName
+        App.get().graph().inject(this)
         initView()
         GalleryActivityPermissionsDispatcher.scanImagesWithCheck(this);
+        if (RootUtils.isRootAvailable()) {
+            RootUtils.requireRoot()
+        }
     }
 
     private fun initView() {
-        adapter.register(File::class.java, ImageViewProvider(this))
+        adapter.register(Image::class.java, ImageViewProvider(this))
         val gridLayoutManager = GridLayoutManager(this, 4);
         galleryView.layoutManager = gridLayoutManager
         galleryView.adapter = adapter
@@ -77,20 +84,20 @@ class GalleryActivity : BaseActivity() {
 
     @NeedsPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
     fun scanImages() {
-        val sdcard = Environment.getExternalStorageDirectory()
-        ImageScanner.scan(File(sdcard, "Pictures/Screenshots"))
-                .buffer(2000, TimeUnit.MICROSECONDS)
+        imageRepo.scan(appInfo)
+                .buffer(100, TimeUnit.MILLISECONDS)
                 .bindToLifecycle(this)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ files ->
                     Timber.d("found image files :$files")
                     images.addAll(files)
                     supportActionBar?.title = "$appName (${images.size} 张)"
-                    adapter.notifyItemInserted(images.size - 1);
+                    adapter.notifyItemRangeInserted(images.size - files.size, images.size - 1);
                 }, { error ->
                     Timber.e(error, "onError")
                 }, {
                     Timber.d("onCompleted")
+                    Toast.makeText(this, R.string.msg_scan_completed, Toast.LENGTH_SHORT).show()
                 })
     }
 

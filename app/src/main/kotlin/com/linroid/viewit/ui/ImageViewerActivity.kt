@@ -5,8 +5,11 @@ import android.net.Uri
 import android.os.Bundle
 import butterknife.bindView
 import com.github.piasy.biv.view.BigImageView
+import com.linroid.viewit.App
 import com.linroid.viewit.R
+import com.linroid.viewit.data.ImageRepo
 import java.io.File
+import javax.inject.Inject
 
 /**
  * @author linroid <linroid@gmail.com>
@@ -17,6 +20,7 @@ const val ARG_IMAGE_FILE: String = "image_file";
 class ImageViewerActivity() : BaseActivity() {
     lateinit var imageFile: File
     val imageView: BigImageView by bindView(R.id.bigImage)
+    @Inject lateinit var imageRepo: ImageRepo
 
     companion object {
         fun navTo(source: BaseActivity, file: File) {
@@ -30,6 +34,7 @@ class ImageViewerActivity() : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        App.get().graph().inject(this)
         imageFile = File(intent.getStringExtra(ARG_IMAGE_FILE))
         imageView.showImage(Uri.fromFile(imageFile))
     }

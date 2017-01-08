@@ -1,6 +1,7 @@
 package com.linroid.viewit.ioc.module
 
 import android.content.Context
+import android.content.pm.PackageManager
 import android.content.res.Resources
 import com.linroid.viewit.App
 import dagger.Module
@@ -22,4 +23,7 @@ class AndroidModule(val app: App) {
     @Singleton
     @Provides
     fun provideResources(context: Context): Resources = context.resources;
+
+    @Provides
+    fun providePackageManager(context: Context): PackageManager = context.packageManager
 }

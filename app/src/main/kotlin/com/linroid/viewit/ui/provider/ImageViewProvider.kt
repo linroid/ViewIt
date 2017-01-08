@@ -9,27 +9,27 @@ import android.widget.Toast
 import butterknife.bindView
 import com.bumptech.glide.Glide
 import com.linroid.viewit.R
+import com.linroid.viewit.data.model.Image
 import com.linroid.viewit.ui.BaseActivity
 import com.linroid.viewit.ui.ImageViewerActivity
 import me.drakeet.multitype.ItemViewProvider
-import java.io.File
 
 /**
  * @author linroid <linroid@gmail.com>
  * @since 07/01/2017
  */
-class ImageViewProvider(val activity: BaseActivity) : ItemViewProvider<File, ImageViewProvider.ViewHolder>() {
+class ImageViewProvider(val activity: BaseActivity) : ItemViewProvider<Image, ImageViewProvider.ViewHolder>() {
     override fun onCreateViewHolder(inflater: LayoutInflater, parent: ViewGroup): ViewHolder {
         return ViewHolder(inflater.inflate(R.layout.item_image, parent, false))
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, file: File) {
-        Glide.with(holder.image.context).load(file).centerCrop().into(holder.image)
+    override fun onBindViewHolder(holder: ViewHolder, image: Image) {
+        Glide.with(holder.image.context).load(image.path).centerCrop().into(holder.image)
         holder.itemView.setOnClickListener {
-            ImageViewerActivity.navTo(activity, file)
+            ImageViewerActivity.navTo(activity, image.path)
         }
         holder.itemView.setOnLongClickListener {
-            Toast.makeText(holder.itemView.context, file.absolutePath, Toast.LENGTH_SHORT).show()
+            Toast.makeText(holder.itemView.context, image.path.absolutePath, Toast.LENGTH_SHORT).show()
             true
         }
     }

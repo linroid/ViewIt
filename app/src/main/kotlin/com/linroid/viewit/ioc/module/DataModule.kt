@@ -16,7 +16,6 @@ import java.io.File
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
-
 /**
  * @author linroid <linroid@gmail.com>
  * @since 07/01/2017

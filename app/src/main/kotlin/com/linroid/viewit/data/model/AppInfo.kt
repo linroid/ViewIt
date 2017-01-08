@@ -8,4 +8,4 @@ import android.graphics.drawable.Drawable
  * *
  * @since 07/01/2017
  */
-data class AppHolder(val label: CharSequence, val icon: Drawable, val info: ApplicationInfo)
+data class AppInfo(val label: CharSequence, val icon: Drawable, val info: ApplicationInfo)

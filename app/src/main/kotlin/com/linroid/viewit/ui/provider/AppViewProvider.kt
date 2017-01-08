@@ -10,7 +10,7 @@ import android.widget.TextView
 import android.widget.Toast
 import butterknife.bindView
 import com.linroid.viewit.R
-import com.linroid.viewit.data.model.AppHolder
+import com.linroid.viewit.data.model.AppInfo
 import com.linroid.viewit.ui.BaseActivity
 import com.linroid.viewit.ui.GalleryActivity
 import me.drakeet.multitype.ItemViewProvider
@@ -19,14 +19,14 @@ import me.drakeet.multitype.ItemViewProvider
  * @author linroid <linroid@gmail.com>
  * @since 07/01/2017
  */
-internal class AppViewProvider(val activity: BaseActivity) : ItemViewProvider<AppHolder, AppViewProvider.ViewHolder>() {
+internal class AppViewProvider(val activity: BaseActivity) : ItemViewProvider<AppInfo, AppViewProvider.ViewHolder>() {
 
     override fun onCreateViewHolder(
             inflater: LayoutInflater, parent: ViewGroup): ViewHolder {
         return ViewHolder(inflater.inflate(R.layout.item_app, parent, false))
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, app: AppHolder) {
+    override fun onBindViewHolder(holder: ViewHolder, app: AppInfo) {
         holder.name.text = app.label
         holder.icon.setImageDrawable(app.icon)
         holder.root.setOnClickListener { view ->

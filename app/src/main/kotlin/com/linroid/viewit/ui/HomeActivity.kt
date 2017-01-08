@@ -8,9 +8,8 @@ import android.view.Menu
 import android.view.MenuItem
 import butterknife.bindView
 import com.linroid.viewit.R
-import com.linroid.viewit.data.AppScanner
-import com.linroid.viewit.data.model.AppHolder
-import com.linroid.viewit.ui.BaseActivity
+import com.linroid.viewit.data.model.AppInfo
+import com.linroid.viewit.data.scanner.AppScanner
 import com.linroid.viewit.ui.provider.AppViewProvider
 import com.trello.rxlifecycle.kotlin.bindToLifecycle
 import me.drakeet.multitype.MultiTypeAdapter
@@ -53,7 +52,7 @@ class HomeActivity : BaseActivity() {
     }
 
     private fun initView() {
-        adapter.register(AppHolder::class.java, AppViewProvider(this))
+        adapter.register(AppInfo::class.java, AppViewProvider(this))
         val gridLayoutManager = GridLayoutManager(this, 4);
         appListView.layoutManager = gridLayoutManager
         appListView.adapter = adapter

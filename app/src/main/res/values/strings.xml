@@ -5,4 +5,5 @@
     <string name="button_deny">拒绝</string>
     <string name="permission_storage_neverask">permission_storage_neverask</string>
     <string name="permission_storage_rationale">permission_storage_rationale</string>
+    <string name="msg_scan_completed">扫描完成:)</string>
 </resources>
