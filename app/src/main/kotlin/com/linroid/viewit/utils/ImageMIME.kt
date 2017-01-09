@@ -4,16 +4,16 @@ import com.bumptech.glide.load.resource.bitmap.ImageHeaderParser
 import timber.log.Timber
 import java.io.File
 import java.io.FileInputStream
+import java.io.InputStream
 
 /**
  * @author linroid <linroid@gmail.com>
  * @since 08/01/2017
  */
 object ImageMIME {
-    fun isImage(file: File): Boolean {
-        var inputStream: FileInputStream? = null
+    fun isImage(file: File): Boolean = isImage(FileInputStream(file))
+    fun isImage(inputStream: InputStream): Boolean {
         try {
-            inputStream = FileInputStream(file)
             val parser = ImageHeaderParser(inputStream)
             return parser.type != ImageHeaderParser.ImageType.UNKNOWN
 
@@ -24,22 +24,21 @@ object ImageMIME {
             Timber.e(error, "failed to read file")
             return false
         } finally {
-            inputStream?.close()
+            inputStream.close()
         }
     }
 
-
-    fun getImageType(file: File): ImageHeaderParser.ImageType {
-        var inputStream: FileInputStream? = null
+    fun getImageType(file: File): ImageHeaderParser.ImageType = getImageType(FileInputStream(file))
+    fun getImageType(inputStream: InputStream): ImageHeaderParser.ImageType {
         try {
-            inputStream = FileInputStream(file)
             val parser = ImageHeaderParser(inputStream)
             return parser.type
         } catch (error: Exception) {
             Timber.e(error, "failed to read file")
             return ImageHeaderParser.ImageType.UNKNOWN
         } finally {
-            inputStream?.close()
+            inputStream.close()
         }
     }
+
 }

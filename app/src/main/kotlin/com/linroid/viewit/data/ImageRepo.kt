@@ -6,8 +6,8 @@ import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.os.Environment
 import com.linroid.viewit.data.model.Image
-import com.linroid.viewit.data.scanner.ImageScanner
-import rx.Observable
+import com.linroid.viewit.data.scanner.RootImageScanner
+import com.linroid.viewit.data.scanner.SdcardImageScanner
 import rx.subjects.PublishSubject
 import java.io.File
 import java.util.*
@@ -28,11 +28,11 @@ class ImageRepo(private val context: Context, private val packageManager: Packag
         val subject = getSubject(appInfo.packageName)
 
         val externalData: File = context.externalCacheDir.parentFile.parentFile
-        var observable = ImageScanner.scan(File(externalData, appInfo.packageName))
+        var observable = SdcardImageScanner.scan(File(externalData, appInfo.packageName))
 
         val packInfo: PackageInfo = packageManager.getPackageInfo(appInfo.packageName, 0)
         val dataDir = packInfo.applicationInfo.dataDir
-        observable = observable.concatWith(ImageScanner.scan(File(dataDir)))
+        observable = observable.concatWith(RootImageScanner.scan(File(dataDir)))
 
         if (APP_EXTERNAL_PATHS.containsKey(appInfo.packageName)) {
             val sdcard = Environment.getExternalStorageDirectory()
@@ -42,31 +42,10 @@ class ImageRepo(private val context: Context, private val packageManager: Packag
                     dirs.add(File(sdcard, it))
                 }
             }
-            observable = observable.concatWith(ImageScanner.scan(dirs))
+            observable = observable.concatWith(SdcardImageScanner.scan(dirs))
         }
         observable.subscribe(subject)
         return subject
-    }
-
-    fun scanTest(appInfo: ApplicationInfo): Observable<Image> {
-        val subject = getSubject(appInfo.packageName)
-
-        val externalData: File = context.externalCacheDir.parentFile.parentFile
-        var observable = ImageScanner.scan(File(externalData, appInfo.packageName))
-
-        val packInfo: PackageInfo = packageManager.getPackageInfo(appInfo.packageName, 0)
-        val dataDir = packInfo.applicationInfo.dataDir
-        observable = observable.mergeWith(ImageScanner.scan(File(dataDir)))
-
-        if (APP_EXTERNAL_PATHS.containsKey(appInfo.packageName)) {
-            val sdcard = Environment.getExternalStorageDirectory()
-            val dirs = ArrayList<File>()
-            APP_EXTERNAL_PATHS[appInfo.packageName]?.forEach {
-                dirs.add(File(sdcard, it))
-            }
-            observable = observable.mergeWith(ImageScanner.scan(dirs))
-        }
-        return observable
     }
 
     fun asObservable(appInfo: ApplicationInfo): PublishSubject<Image> {

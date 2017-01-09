@@ -8,6 +8,7 @@ import com.linroid.viewit.ioc.GlobalGraph
 import com.linroid.viewit.ioc.module.AndroidModule
 import com.linroid.viewit.ioc.module.DataModule
 import com.linroid.viewit.ioc.module.RepoModule
+import com.stericson.RootTools.RootTools
 import timber.log.Timber
 
 /**
@@ -25,6 +26,8 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        RootTools.installBinary(this, R.raw.busybox, "busybox")
+        RootTools.debugMode = true
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         }
