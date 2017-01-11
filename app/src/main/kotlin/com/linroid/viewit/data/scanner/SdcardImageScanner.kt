@@ -12,20 +12,21 @@ import java.io.File
  * @since 07/01/2017
  */
 object SdcardImageScanner : ImageScanner() {
-    override fun searchImage(file: File, subscriber: Subscriber<in Image>) {
+
+    override fun searchImage(packageName: String, file: File, subscriber: Subscriber<in Image>) {
         if (!file.exists()) {
             return;
         }
         if (file.isFile) {
             val type = ImageMIME.getImageType(file)
             if (type != ImageHeaderParser.ImageType.UNKNOWN) {
-                val image = Image(file, file.length(), type)
+                val image = Image(file, file.absolutePath, file.length(), packageName, type)
                 subscriber.onNext(image);
             }
         } else if (file.isDirectory) {
             Timber.d("directory : ${file.absolutePath}")
             file.listFiles()?.forEach {
-                searchImage(it, subscriber)
+                searchImage(packageName, it, subscriber)
             }
         }
     }

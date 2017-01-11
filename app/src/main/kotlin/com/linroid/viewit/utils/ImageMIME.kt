@@ -17,11 +17,11 @@ object ImageMIME {
             val parser = ImageHeaderParser(inputStream)
             return parser.type != ImageHeaderParser.ImageType.UNKNOWN
 
-//            val isFile = isValidPNG(inputStream) || isValidJPEG(inputStream, file.length())
+//            val isFile = isValidPNG(inputStream) || isValidJPEG(inputStream, source.length())
 //            inputStream.close()
 //            return isFile
         } catch (error: Exception) {
-            Timber.e(error, "failed to read file")
+            Timber.e(error, "failed to read source")
             return false
         } finally {
             inputStream.close()
@@ -34,7 +34,7 @@ object ImageMIME {
             val parser = ImageHeaderParser(inputStream)
             return parser.type
         } catch (error: Exception) {
-            Timber.e(error, "failed to read file")
+            Timber.e(error, "failed to read source")
             return ImageHeaderParser.ImageType.UNKNOWN
         } finally {
             inputStream.close()

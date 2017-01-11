@@ -1,4 +1,4 @@
-package com.linroid.viewit.ui.provider
+package com.linroid.viewit.ui.home
 
 import android.content.Intent
 import android.support.v7.widget.RecyclerView
@@ -12,7 +12,7 @@ import butterknife.bindView
 import com.linroid.viewit.R
 import com.linroid.viewit.data.model.AppInfo
 import com.linroid.viewit.ui.BaseActivity
-import com.linroid.viewit.ui.GalleryActivity
+import com.linroid.viewit.ui.gallery.GalleryActivity
 import me.drakeet.multitype.ItemViewProvider
 
 /**

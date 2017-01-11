@@ -1,4 +1,4 @@
-package com.linroid.viewit.ui
+package com.linroid.viewit.ui.home
 
 import android.os.Bundle
 import android.support.v7.widget.DefaultItemAnimator
@@ -10,7 +10,8 @@ import butterknife.bindView
 import com.linroid.viewit.R
 import com.linroid.viewit.data.model.AppInfo
 import com.linroid.viewit.data.scanner.AppScanner
-import com.linroid.viewit.ui.provider.AppViewProvider
+import com.linroid.viewit.ui.BaseActivity
+import com.linroid.viewit.ui.home.AppViewProvider
 import com.trello.rxlifecycle.kotlin.bindToLifecycle
 import me.drakeet.multitype.MultiTypeAdapter
 import rx.android.schedulers.AndroidSchedulers
@@ -41,7 +42,6 @@ class HomeActivity : BaseActivity() {
                 .bindToLifecycle(this)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ app ->
-                    Timber.d(app.toString())
                     apps.add(app)
                     adapter.notifyItemInserted(apps.size - 1);
                 }, { error ->

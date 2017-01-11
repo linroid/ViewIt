@@ -1,4 +1,4 @@
-package com.linroid.viewit.ui
+package com.linroid.viewit.ui.gallery
 
 import android.Manifest
 import android.content.Intent
@@ -15,8 +15,11 @@ import butterknife.bindView
 import com.linroid.viewit.App
 import com.linroid.viewit.R
 import com.linroid.viewit.data.ImageRepo
+import com.linroid.viewit.data.file.RootFileManager
 import com.linroid.viewit.data.model.Image
-import com.linroid.viewit.ui.provider.ImageViewProvider
+import com.linroid.viewit.ui.BaseActivity
+import com.linroid.viewit.ui.gallery.GalleryActivityPermissionsDispatcher
+import com.linroid.viewit.ui.gallery.ImageViewProvider
 import com.linroid.viewit.utils.RootUtils
 import com.trello.rxlifecycle.kotlin.bindToLifecycle
 import me.drakeet.multitype.MultiTypeAdapter
@@ -35,6 +38,7 @@ class GalleryActivity : BaseActivity() {
     lateinit var appInfo: ApplicationInfo
     lateinit var appName: CharSequence
     @Inject lateinit var imageRepo: ImageRepo
+    @Inject lateinit var rootFileManager: RootFileManager
 
     val galleryView: RecyclerView by bindView(R.id.recycler)
     val images: MutableList<Any> = ArrayList();
@@ -64,7 +68,7 @@ class GalleryActivity : BaseActivity() {
     }
 
     private fun initView() {
-        adapter.register(Image::class.java, ImageViewProvider(this))
+        adapter.register(Image::class.java, ImageViewProvider(this, appInfo))
         val gridLayoutManager = GridLayoutManager(this, 4);
         galleryView.layoutManager = gridLayoutManager
         galleryView.adapter = adapter

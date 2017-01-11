@@ -4,9 +4,10 @@ import com.linroid.viewit.App
 import com.linroid.viewit.ioc.module.AndroidModule
 import com.linroid.viewit.ioc.module.DataModule
 import com.linroid.viewit.ioc.module.RepoModule
-import com.linroid.viewit.ui.GalleryActivity
-import com.linroid.viewit.ui.HomeActivity
-import com.linroid.viewit.ui.ImageViewerActivity
+import com.linroid.viewit.ui.gallery.GalleryActivity
+import com.linroid.viewit.ui.gallery.ImageViewProvider
+import com.linroid.viewit.ui.home.HomeActivity
+import com.linroid.viewit.ui.imageviewer.ImageViewerActivity
 import dagger.Component
 import javax.inject.Singleton
 
@@ -22,4 +23,5 @@ interface GlobalGraph {
     fun inject(activity: HomeActivity)
     fun inject(activity: ImageViewerActivity)
     fun inject(activity: GalleryActivity)
+    fun inject(viewProvider: ImageViewProvider)
 }

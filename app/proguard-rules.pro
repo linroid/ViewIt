@@ -1,5 +1,5 @@
 # Add project specific ProGuard rules here.
-# By default, the flags in this file are appended to flags specified
+# By default, the flags in this source are appended to flags specified
 # in /Users/linroid/Library/Android/sdk/tools/proguard/proguard-android.txt
 # You can edit the include dir and order by changing the proguardFiles
 # directive in build.gradle.
@@ -21,7 +21,7 @@
 #-keepattributes SourceFile,LineNumberTable
 
 # If you keep the line number information, uncomment this to
-# hide the original source file name.
+# hide the original source source name.
 #-renamesourcefileattribute SourceFile
 
 

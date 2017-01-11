@@ -12,12 +12,12 @@ import java.io.File
  * @since 09/01/2017
  */
 abstract class ImageScanner {
-    fun scan(dirs: List<File>): Observable<Image> {
+    fun scan(packageName: String, dirs: List<File>): Observable<Image> {
         return Observable.create<Image> { subscriber ->
             try {
                 dirs.forEach {
                     Timber.d("search image at directory: ${it.absolutePath}")
-                    searchImage(it, subscriber)
+                    searchImage(packageName, it, subscriber)
                 }
             } catch (error: Exception) {
                 Timber.e(error, "error occur during search image...")
@@ -27,9 +27,9 @@ abstract class ImageScanner {
         }.subscribeOn(Schedulers.io())
     }
 
-    fun scan(vararg dirs: File): Observable<Image> {
-        return scan(dirs.toList())
+    fun scan(packageName: String, vararg dirs: File): Observable<Image> {
+        return scan(packageName, dirs.toList())
     }
 
-    abstract fun searchImage(file: File, subscriber: Subscriber<in Image>)
+    abstract fun searchImage(packageName: String, file: File, subscriber: Subscriber<in Image>)
 }

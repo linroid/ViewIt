@@ -3,6 +3,7 @@ package com.linroid.viewit.ioc.module
 import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.linroid.viewit.data.file.RootFileManager
 import dagger.Module
 import dagger.Provides
 import okhttp3.Cache
@@ -59,5 +60,11 @@ class DataModule {
         val logging = HttpLoggingInterceptor(HttpLoggingInterceptor.Logger { Timber.tag("OkHttp").d(it) })
         logging.level = HttpLoggingInterceptor.Level.BASIC
         return logging;
+    }
+
+    @Singleton
+    @Provides
+    fun provideRootFileManager(context: Context): RootFileManager {
+        return RootFileManager(context)
     }
 }
