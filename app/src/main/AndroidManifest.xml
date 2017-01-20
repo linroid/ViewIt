@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.linroid.viewit">
+          package="com.linroid.viewit">
 
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
     <application
         android:name=".App"
@@ -15,29 +15,27 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".ui.home.HomeActivity"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:label="@string/app_name">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
         <activity
             android:name=".ui.gallery.GalleryActivity"
-            android:parentActivityName=".ui.home.HomeActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:parentActivityName=".ui.home.HomeActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.home.HomeActivity" />
+                android:value=".ui.home.HomeActivity"/>
         </activity>
         <activity
-            android:name=".ui.imageviewer.ImageViewerActivity"
+            android:name=".ui.viewer.ImageViewerActivity"
             android:parentActivityName=".ui.gallery.GalleryActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.Viewer">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.gallery.GalleryActivity" />
+                android:value=".ui.gallery.GalleryActivity"/>
         </activity>
     </application>
 

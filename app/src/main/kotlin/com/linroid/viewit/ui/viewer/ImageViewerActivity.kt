@@ -1,15 +1,13 @@
-package com.linroid.viewit.ui.imageviewer
+package com.linroid.viewit.ui.viewer
 
 import android.content.Intent
 import android.content.pm.ApplicationInfo
-import android.net.Uri
 import android.os.Bundle
+import android.support.v4.view.ViewPager
 import butterknife.bindView
-import com.github.piasy.biv.view.BigImageView
 import com.linroid.viewit.App
 import com.linroid.viewit.R
 import com.linroid.viewit.data.ImageRepo
-import com.linroid.viewit.data.model.AppInfo
 import com.linroid.viewit.ui.BaseActivity
 import rx.android.schedulers.AndroidSchedulers
 import java.io.File
@@ -24,9 +22,10 @@ const val ARG_APP_INFO: String = "app_info";
 
 class ImageViewerActivity() : BaseActivity() {
     lateinit var imageFile: File
-    val imageView: BigImageView by bindView(R.id.bigImage)
+    val viewPager: ViewPager by bindView(R.id.view_pager)
     @Inject lateinit var imageRepo: ImageRepo
     lateinit var info: ApplicationInfo
+    lateinit var adapter: ImageViewerPagerAdapter
     var position: Int = 0
 
     companion object {
@@ -38,21 +37,20 @@ class ImageViewerActivity() : BaseActivity() {
         }
     }
 
-    override fun provideContentLayoutId(): Int = R.layout.activity_viewer
+    override fun provideContentLayoutId(): Int = R.layout.activity_image_viewer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         App.get().graph().inject(this)
-        var arguments: Bundle = intent.extras
+        val arguments: Bundle = intent.extras
         info = arguments.getParcelable(ARG_APP_INFO)
         position = arguments.getInt(ARG_POSITION)
-
-        imageView.showImage(Uri.fromFile(imageFile))
-        imageRepo.asObservable(info)
-                .toList()
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe {
-
-                }
+        getObservable().observeOn(AndroidSchedulers.mainThread()).toList().subscribe({
+            adapter = ImageViewerPagerAdapter(supportFragmentManager, it.size)
+            viewPager.adapter = adapter
+            viewPager.currentItem = position
+        })
     }
+
+    fun getObservable() = imageRepo.asObservable(info)
 }
