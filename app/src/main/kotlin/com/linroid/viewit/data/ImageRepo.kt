@@ -8,7 +8,6 @@ import android.os.Environment
 import com.linroid.viewit.data.model.Image
 import com.linroid.viewit.data.scanner.RootImageScanner
 import com.linroid.viewit.data.scanner.SdcardImageScanner
-import com.stericson.RootTools.RootTools
 import rx.Observable
 import rx.schedulers.Schedulers
 import rx.subjects.PublishSubject
@@ -30,23 +29,6 @@ val APP_EXTERNAL_PATHS = mapOf(
 class ImageRepo(private val context: Context, private val packageManager: PackageManager) {
     private val subjects = HashMap<String, ReplaySubject<Image>>()
     private val cacheDir: File = File(context.cacheDir, "mounts")
-
-    fun mountImage(image: Image): Observable<File> =
-            Observable.create<File> { subscriber ->
-                var mountedFile = File(cacheDir, image.packageName + "/" + image.path);
-                if (!mountedFile.parentFile.exists()) {
-                    mountedFile.parentFile.mkdirs()
-                }
-                if (!mountedFile.exists()) {
-                    RootTools.copyFile(image.source.absolutePath, mountedFile.absolutePath, false, false)
-                }
-                if (!mountedFile.exists()) {
-                    subscriber.onError(FileNotFoundException(""))
-                } else {
-                    subscriber.onNext(mountedFile)
-                    subscriber.onCompleted()
-                }
-            }.subscribeOn(Schedulers.io())
 
     fun scan(appInfo: ApplicationInfo): ReplaySubject<Image> {
         val subject = getSubject(appInfo.packageName)
@@ -82,6 +64,7 @@ class ImageRepo(private val context: Context, private val packageManager: Packag
             subject = subjects[packageName]
         } else {
             subject = ReplaySubject.create()
+            subjects.put(packageName, subject)
         }
         return subject!!
     }

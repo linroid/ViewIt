@@ -3,9 +3,9 @@
 #include <dirent.h>
 #include <stdio.h>
 #include <memory.h>
-#include <sys/stat.h>
 #include <stdint.h>
-
+#include <sys/stat.h>
+#include <stdlib.h>
 
 typedef enum ImageType {
     GIF,
@@ -26,6 +26,7 @@ const int PNG_HEADER = 0x89504E47;
 const uint16_t EXIF_MAGIC_NUMBER = 0xFFD8;
 
 void search_image(const char *name) {
+    printf("search_image:%s\n", name);
     DIR *dir;
     struct dirent *entry;
     struct stat statbuf;
@@ -33,10 +34,6 @@ void search_image(const char *name) {
     if (!(dir = opendir(name))) {
         return;
     }
-//    if (!(entry = readdir(dir))) {
-//        return;
-//    }
-
     while ((entry = readdir(dir))) {
         char path[1024];
         int len = snprintf(path, sizeof(path) - 1, "%s/%s", name, entry->d_name);
@@ -44,9 +41,8 @@ void search_image(const char *name) {
         if (entry->d_type == DT_DIR) {
             if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
                 continue;
-//            printf("%*s[%s]\n", , "", entry->d_name);
             search_image(path);
-        } else {
+        } else if (entry->d_type == DT_REG) {
             ImageType type = get_image_type(path);
             if (type != UNKNOWN) {
                 lstat(path, &statbuf);
@@ -100,5 +96,6 @@ ImageType get_image_type(const char *path) {
 
 int main(int argc, char *argv[]) {
     search_image(argv[1]);
-    return 0;
+    printf("finished!\n");
+    exit(0);
 }

@@ -1,11 +1,12 @@
 package com.linroid.viewit.data.scanner
 
 import com.bumptech.glide.load.resource.bitmap.ImageHeaderParser
+import com.linroid.rxshell.RxShell
 import com.linroid.viewit.data.model.Image
+import com.linroid.viewit.utils.BINARY_SEARCH_IMAGE
 import com.linroid.viewit.utils.ImageMIME
-import com.linroid.viewit.utils.RootFileInputStream
-import com.stericson.RootShell.execution.Command
-import com.stericson.RootTools.RootTools
+import com.spazedog.lib.rootfw4.RootFW
+//import com.linroid.viewit.utils.RootFileInputStream
 import rx.Subscriber
 import timber.log.Timber
 import java.io.File
@@ -15,19 +16,28 @@ import java.io.File
  * @since 09/01/2017
  */
 object RootImageScanner : ImageScanner() {
-    override fun searchImage(packageName:String, file: File, subscriber: Subscriber<in Image>) {
-//        searchImage(file.absolutePath, subscriber)
-
-        subscriber.onNext(createTestImage("cache/image_cache/v2.ols100.1/97/0IwMVaT3jETAT_Bssret4vh30ZI.cnt"))
-        subscriber.onNext(createTestImage("cache/image_cache/v2.ols100.1/97/7YawjKOH549bjVePrFlMv7Uwl_U.cnt"))
-        subscriber.onNext(createTestImage("cache/image_cache/v2.ols100.1/97/Dl_noc5XDVebB8NMd0qKtSayM0U.cnt"))
-        subscriber.onNext(createTestImage("cache/image_cache/v2.ols100.1/99/LmBAmqr-mae8lYIQuHsdPC0BYwY.cnt"))
-        subscriber.onNext(createTestImage("cache/image_cache/v2.ols100.1/99/m_U-ulhiiN9L-hOmjM6ZDAxlU8A.cnt"))
+    override fun searchImage(packageName: String, file: File, subscriber: Subscriber<in Image>) {
+        if (!RootFW.isConnected()) {
+            RootFW.connect();
+        }
+        searchImage(file.absolutePath, subscriber)
+        subscriber.onCompleted()
     }
 
-    private fun createTestImage(path : String) : Image {
-        var file = File("/data/data/com.zhihu.android", path)
-        return Image(file, path, 1024, "com.zhihu.android", ImageHeaderParser.ImageType.PNG)
+    fun searchImage(file: String, subscriber: Subscriber<in Image>) {
+        Timber.d("searchImage : $file");
+        val rootFile = RootFW.getFile(file)
+        if (rootFile.isDirectory) {
+            rootFile.list?.forEach { sub ->
+                searchImage(file + "/" + sub, subscriber)
+            }
+        } else {
+            val type = ImageMIME.getImageType(RootFW.getFileInputStream(file))
+            if (type != ImageHeaderParser.ImageType.UNKNOWN) {
+                subscriber.onNext(Image(rootFile.absolutePath, rootFile.size(), type))
+            }
+        }
+
     }
 
 //    fun searchImage(dir: String, subscriber: Subscriber<in Image>) {

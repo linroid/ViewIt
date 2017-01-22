@@ -13,8 +13,10 @@ import com.linroid.viewit.App
 import com.linroid.viewit.R
 import com.linroid.viewit.data.ImageRepo
 import com.linroid.viewit.data.model.Image
+import com.linroid.viewit.data.root.RxRoot
 import com.linroid.viewit.ui.BaseActivity
 import com.linroid.viewit.ui.viewer.ImageViewerActivity
+import com.linroid.viewit.utils.RootUtils
 import com.trello.rxlifecycle.kotlin.bindToLifecycle
 import me.drakeet.multitype.ItemViewProvider
 import rx.android.schedulers.AndroidSchedulers
@@ -25,7 +27,7 @@ import javax.inject.Inject
  * @author linroid <linroid@gmail.com>
  * @since 07/01/2017
  */
-class ImageViewProvider(val activity: BaseActivity, val info:ApplicationInfo) : ItemViewProvider<Image, ImageViewProvider.ViewHolder>() {
+class ImageViewProvider(val activity: BaseActivity, val info: ApplicationInfo) : ItemViewProvider<Image, ImageViewProvider.ViewHolder>() {
 
     @Inject lateinit var imageRepo: ImageRepo
 
@@ -38,21 +40,23 @@ class ImageViewProvider(val activity: BaseActivity, val info:ApplicationInfo) : 
     }
 
     override fun onBindViewHolder(holder: ViewHolder, image: Image) {
-//        imageRepo.mountImage(image)
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .bindToLifecycle(holder.itemView)
-//                .subscribe ({ file->
-//                    Timber.i(file.absolutePath)
-//                    Glide.with(holder.image.context).load(file).centerCrop().into(holder.image)
-//                }, { error ->
-//                    Timber.e(error)
-//                })
-        Glide.with(holder.itemView.context).load(image.path).centerCrop().into(holder.image)
+        if (!RootUtils.isRootFile(activity, image.path)) {
+            Glide.with(holder.image.context).load(image.path).centerCrop().into(holder.image)
+        } else {
+            RxRoot.getFileInputStream(image.path)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .bindToLifecycle(holder.itemView)
+                    .subscribe({ file ->
+                        Glide.with(holder.image.context).load(file).centerCrop().into(holder.image)
+                    }, { error ->
+                        Timber.e(error)
+                    })
+        }
         holder.itemView.setOnClickListener {
             ImageViewerActivity.navTo(activity, info, holder.adapterPosition)
         }
         holder.itemView.setOnLongClickListener {
-            Toast.makeText(holder.itemView.context, image.source.absolutePath, Toast.LENGTH_SHORT).show()
+            Toast.makeText(holder.itemView.context, image.path, Toast.LENGTH_SHORT).show()
             true
         }
     }

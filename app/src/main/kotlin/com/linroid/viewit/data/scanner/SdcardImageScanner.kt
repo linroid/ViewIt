@@ -20,7 +20,7 @@ object SdcardImageScanner : ImageScanner() {
         if (file.isFile) {
             val type = ImageMIME.getImageType(file)
             if (type != ImageHeaderParser.ImageType.UNKNOWN) {
-                val image = Image(file, file.absolutePath, file.length(), packageName, type)
+                val image = Image(file.absolutePath, file.length(), type)
                 subscriber.onNext(image);
             }
         } else if (file.isDirectory) {

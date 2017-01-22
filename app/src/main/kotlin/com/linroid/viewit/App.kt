@@ -3,12 +3,13 @@ package com.linroid.viewit
 import android.app.Application
 import com.github.piasy.biv.BigImageViewer
 import com.github.piasy.biv.loader.glide.GlideImageLoader
+import com.linroid.rxshell.RxShell
 import com.linroid.viewit.ioc.DaggerGlobalGraph
 import com.linroid.viewit.ioc.GlobalGraph
 import com.linroid.viewit.ioc.module.AndroidModule
 import com.linroid.viewit.ioc.module.DataModule
 import com.linroid.viewit.ioc.module.RepoModule
-import com.stericson.RootTools.RootTools
+import com.linroid.viewit.utils.BINARY_SEARCH_IMAGE
 import timber.log.Timber
 
 /**
@@ -26,8 +27,6 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        RootTools.installBinary(this, R.raw.busybox, "busybox")
-        RootTools.debugMode = true
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         }
@@ -38,5 +37,6 @@ class App : Application() {
                 .build();
         instance = this;
         BigImageViewer.initialize(GlideImageLoader.with(this));
+        RxShell.instance().installBinary(this, "", BINARY_SEARCH_IMAGE, 1.0);
     }
 }

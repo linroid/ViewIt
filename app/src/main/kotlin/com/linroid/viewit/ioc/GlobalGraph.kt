@@ -7,7 +7,7 @@ import com.linroid.viewit.ioc.module.RepoModule
 import com.linroid.viewit.ui.gallery.GalleryActivity
 import com.linroid.viewit.ui.gallery.ImageViewProvider
 import com.linroid.viewit.ui.home.HomeActivity
-import com.linroid.viewit.ui.imageviewer.ImageViewerActivity
+import com.linroid.viewit.ui.viewer.ImageViewerActivity
 import dagger.Component
 import javax.inject.Singleton
 

@@ -93,6 +93,9 @@ class GalleryActivity : BaseActivity() {
                 .bindToLifecycle(this)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ files ->
+                    if (files.size == 0) {
+                        return@subscribe
+                    }
                     Timber.d("found image files :$files")
                     images.addAll(files)
                     supportActionBar?.title = "$appName (${images.size} 张)"

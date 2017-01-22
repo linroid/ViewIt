@@ -5,7 +5,7 @@ apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.0"
+    buildToolsVersion "25.0.2"
     defaultConfig {
         applicationId "com.linroid.viewit"
         minSdkVersion 16
@@ -13,6 +13,15 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+//        ndk {
+//            abiFilters 'x86', 'x86_64', 'armeabi', 'armeabi-v7a', 'arm64-v8a'
+//        }
+//        externalNativeBuild {
+//            cmake {
+//                arguments '-DANDROID_PLATFORM=android-21',
+//                        '-DANDROID_TOOLCHAIN=clang'
+//            }
+//        }
     }
     buildTypes {
         release {
@@ -29,35 +38,35 @@ android {
     }
 
     compileOptions.incremental = true
+//    externalNativeBuild {
+//        cmake {
+//            path "src/main/cpp/CMakeLists.txt"
+//        }
+//    }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
         exclude group: 'com.google.code.findbugs', module: 'jsr305'
     })
-
     // support
     compile "com.android.support:appcompat-v7:$support_version"
-//    compile 'com.android.support.constraint:constraint-layout:1.0.0-beta4'
+    //    compile 'com.android.support.constraint:constraint-layout:1.0.0-beta4'
     compile "com.android.support:design:$support_version"
     compile "com.android.support:design:$support_version"
-
     testCompile 'junit:junit:4.12'
-
     // tools
     compile 'com.jakewharton.timber:timber:4.4.0'
-//    compile 'com.jakewharton:butterknife:8.4.0'
-//    kapt 'com.jakewharton:butterknife-compiler:8.4.0'
+    //    compile 'com.jakewharton:butterknife:8.4.0'
+    //    kapt 'com.jakewharton:butterknife-compiler:8.4.0'
     compile "com.github.hotchemi:permissionsdispatcher:${permissionsdispatcher_version}"
     kapt "com.github.hotchemi:permissionsdispatcher-processor:${permissionsdispatcher_version}"
     compile 'com.jakewharton:kotterknife:0.1.0-SNAPSHOT'
-
     // ioc
     compile 'com.google.dagger:dagger:2.8'
     kapt 'com.google.dagger:dagger-compiler:2.8'
-
     // data
     compile "com.squareup.retrofit2:retrofit:$retrofit_version"
     compile "com.squareup.retrofit2:converter-gson:$retrofit_version"
@@ -65,45 +74,34 @@ dependencies {
     compile 'com.squareup.okhttp3:okhttp:3.5.0'
     compile 'com.squareup.okhttp3:logging-interceptor:3.5.0'
     compile 'com.google.code.gson:gson:2.8.0'
-
     // rxjava
     compile 'io.reactivex:rxandroid:1.2.1'
     compile 'io.reactivex:rxjava:1.1.6'
     compile 'com.trello:rxlifecycle:1.0'
-
     compile 'com.trello:rxlifecycle-android:1.0'
     compile 'com.trello:rxlifecycle-components:1.0'
     compile 'com.trello:rxlifecycle-navi:1.0'
     compile 'com.trello:rxlifecycle-kotlin:1.0'
-
     compile 'com.jakewharton.rxbinding:rxbinding-kotlin:1.0.0'
     compile 'com.jakewharton.rxbinding:rxbinding-support-v4-kotlin:1.0.0'
     compile 'com.jakewharton.rxbinding:rxbinding-appcompat-v7-kotlin:1.0.0'
     compile 'com.jakewharton.rxbinding:rxbinding-recyclerview-v7-kotlin:1.0.0'
     compile 'com.jakewharton.rxbinding:rxbinding-design-kotlin:1.0.0'
-
     // kotlin
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile 'io.reactivex:rxkotlin:0.60.0'
-
     // view components
-    compile ('me.drakeet.multitype:multitype:2.3.0', {
+    compile('me.drakeet.multitype:multitype:2.3.0', {
         exclude group: 'com.android.support'
     })
-
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.github.piasy:BigImageViewer:1.2.5'
     // load with glide
     compile 'com.github.piasy:GlideImageLoader:1.2.5'
-
-// progress pie indicator
+    // progress pie indicator
     compile 'com.github.piasy:ProgressPieIndicator:1.2.5'
     // https://github.com/Kotlin/anko
-//    compile "org.jetbrains.anko:anko-sdk15:$anko_version" // sdk19, sdk21, sdk23 are also available
-//    compile "org.jetbrains.anko:anko-support-v4:$anko_version" // In case you need support-v4 bindings
-//    compile "org.jetbrains.anko:anko-appcompat-v7:$anko_version" // For appcompat-v7 bindings
-
-}
-repositories {
-    mavenCentral()
+    //    compile "org.jetbrains.anko:anko-sdk15:$anko_version" // sdk19, sdk21, sdk23 are also available
+    //    compile "org.jetbrains.anko:anko-support-v4:$anko_version" // In case you need support-v4 bindings
+    //    compile "org.jetbrains.anko:anko-appcompat-v7:$anko_version" // For appcompat-v7 bindings
 }
