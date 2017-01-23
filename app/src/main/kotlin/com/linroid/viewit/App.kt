@@ -9,8 +9,12 @@ import com.linroid.viewit.ioc.GlobalGraph
 import com.linroid.viewit.ioc.module.AndroidModule
 import com.linroid.viewit.ioc.module.DataModule
 import com.linroid.viewit.ioc.module.RepoModule
+import com.linroid.viewit.utils.BINARY_DIRECTORY
 import com.linroid.viewit.utils.BINARY_SEARCH_IMAGE
+import com.linroid.viewit.utils.OSUtils
 import timber.log.Timber
+import java.io.File
+import java.util.concurrent.TimeUnit
 
 /**
  * @author linroid <linroid@gmail.com>
@@ -23,7 +27,7 @@ class App : Application() {
         fun get(): App = instance
     }
 
-    fun graph() : GlobalGraph = graph
+    fun graph(): GlobalGraph = graph
 
     override fun onCreate() {
         super.onCreate()
@@ -37,6 +41,24 @@ class App : Application() {
                 .build();
         instance = this;
         BigImageViewer.initialize(GlideImageLoader.with(this));
-        RxShell.instance().installBinary(this, "", BINARY_SEARCH_IMAGE, 1.0);
+        installBinary();
+    }
+
+    private fun installBinary() {
+        val supportAbis = OSUtils.getSupportedAbis();
+        val dir = assets.list(BINARY_DIRECTORY)
+        val preferABI = OSUtils.findPreferAbi(supportAbis, dir)
+        if (preferABI?.isNotEmpty() as Boolean) {
+            val stream = assets.open(BINARY_DIRECTORY + File.separator + preferABI + File.separator + BINARY_SEARCH_IMAGE);
+            RxShell.instance()
+                    .installBinary(this, stream, BINARY_SEARCH_IMAGE, 1.0F)
+                    .delaySubscription(3, TimeUnit.SECONDS)
+                    .subscribe({ result ->
+                        Timber.i("install binary $BINARY_SEARCH_IMAGE result: $result")
+                    }, { error ->
+                        Timber.e(error)
+                    })
+
+        }
     }
 }

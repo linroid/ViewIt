@@ -5,22 +5,15 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.os.Environment
+import com.linroid.rxshell.RxShell
 import com.linroid.viewit.data.model.Image
 import com.linroid.viewit.data.scanner.RootImageScanner
 import com.linroid.viewit.data.scanner.SdcardImageScanner
+import com.linroid.viewit.utils.APP_EXTERNAL_PATHS
 import rx.Observable
-import rx.schedulers.Schedulers
-import rx.subjects.PublishSubject
 import rx.subjects.ReplaySubject
-import rx.subjects.Subject
 import java.io.File
-import java.io.FileNotFoundException
 import java.util.*
-
-val APP_EXTERNAL_PATHS = mapOf(
-        "com.tencent.mm" to arrayListOf("Tencent/MicroMsg"),
-        "com.tencent.mobileqq" to arrayListOf("Tencent/QQ_Favorite", "Tencent/MobileQQ", "Tencent/QQ_Images", "Tencent/QQfile_recv")
-)
 
 /**
  * @author linroid <linroid@gmail.com>
@@ -67,6 +60,27 @@ class ImageRepo(private val context: Context, private val packageManager: Packag
             subjects.put(packageName, subject)
         }
         return subject!!
+    }
+
+    fun mountFile(path: String, appInfo: ApplicationInfo): Observable<File> {
+        val packageCacheDir: File = File(cacheDir, appInfo.packageName)
+        val packInfo: PackageInfo = packageManager.getPackageInfo(appInfo.packageName, 0)
+        val dataDir: String = packInfo.applicationInfo.dataDir
+        val relativePath: String = path.substringAfter(dataDir)
+
+        val cacheFile = File(packageCacheDir, relativePath)
+        if (cacheFile.exists()) {
+            return Observable.just(cacheFile)
+        }
+        val targetDir = cacheFile.parentFile
+        if (!targetDir.exists()) {
+            targetDir.mkdirs()
+        }
+        val uid: Int = context.applicationInfo.uid;
+        return RxShell.instance()
+                .copyFile(path, cacheFile.absolutePath)
+                .flatMap { RxShell.instance().chown(cacheFile.absolutePath, uid, uid) }
+                .map { cacheFile }
     }
 
 }

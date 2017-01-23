@@ -5,5 +5,5 @@
     <string name="button_deny">Deny</string>
     <string name="permission_storage_neverask" translatable="false">permission_storage_neverask</string>
     <string name="permission_storage_rationale" translatable="false">permission_storage_rationale</string>
-    <string name="msg_scan_completed">Scan completed:)</string>
+    <string name="msg_scan_completed">Scan completed, %1$s images found:)</string>
 </resources>

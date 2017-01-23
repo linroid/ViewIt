@@ -9,6 +9,8 @@ import butterknife.bindView
 import com.github.piasy.biv.view.BigImageView
 import com.linroid.viewit.R
 import com.linroid.viewit.ui.BaseFragment
+import com.linroid.viewit.utils.RootUtils
+import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import java.io.File
 
@@ -44,9 +46,16 @@ class ImageViewerFragment : BaseFragment() {
         val activity = activity
         if (activity is ImageViewerActivity) {
             activity.getObservable().elementAt(position)
+                    .map { File(it.path) }
+                    .flatMap {
+                        if (RootUtils.isRootFile(activity, it.path)) {
+                            return@flatMap activity.imageRepo.mountFile(it.path, activity.info);
+                        }
+                        return@flatMap Observable.just(it)
+                    }
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe {
-                        imageViewer.showImage(Uri.fromFile(File(it.path)))
+                        imageViewer.showImage(Uri.fromFile(it))
                     }
         }
     }

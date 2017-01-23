@@ -68,7 +68,7 @@ public class Utils {
      * relevant portion in the source code is marked as "// android changed", so presumably it's not
      * the case in the original version of the Apache Harmony project.
      * 
-     * Note that simply passing the environment variables we want to Process.exec won't be good
+     * Note that simply passing the environment variables we want to Process.execWithResult won't be good
      * enough, since that would override the environment we inherited completely.
      * 
      * We needed to be able to set a CLASSPATH environment variable for our new process in order to

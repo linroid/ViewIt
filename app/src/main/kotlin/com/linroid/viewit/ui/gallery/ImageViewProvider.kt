@@ -13,7 +13,6 @@ import com.linroid.viewit.App
 import com.linroid.viewit.R
 import com.linroid.viewit.data.ImageRepo
 import com.linroid.viewit.data.model.Image
-import com.linroid.viewit.data.root.RxRoot
 import com.linroid.viewit.ui.BaseActivity
 import com.linroid.viewit.ui.viewer.ImageViewerActivity
 import com.linroid.viewit.utils.RootUtils
@@ -43,10 +42,11 @@ class ImageViewProvider(val activity: BaseActivity, val info: ApplicationInfo) :
         if (!RootUtils.isRootFile(activity, image.path)) {
             Glide.with(holder.image.context).load(image.path).centerCrop().into(holder.image)
         } else {
-            RxRoot.getFileInputStream(image.path)
+            imageRepo.mountFile(image.path, info)
                     .observeOn(AndroidSchedulers.mainThread())
                     .bindToLifecycle(holder.itemView)
                     .subscribe({ file ->
+                        Timber.i("mount file success (${file.absolutePath})")
                         Glide.with(holder.image.context).load(file).centerCrop().into(holder.image)
                     }, { error ->
                         Timber.e(error)

@@ -1,9 +1,11 @@
 package com.linroid.viewit.data.scanner
 
-import com.bumptech.glide.load.resource.bitmap.ImageHeaderParser
 import com.linroid.viewit.data.model.Image
+import com.linroid.viewit.data.model.ImageType
 import com.linroid.viewit.utils.ImageMIME
+import rx.Observable
 import rx.Subscriber
+import rx.schedulers.Schedulers
 import timber.log.Timber
 import java.io.File
 
@@ -12,14 +14,28 @@ import java.io.File
  * @since 07/01/2017
  */
 object SdcardImageScanner : ImageScanner() {
+    override fun scan(packageName: String, dirs: List<File>): Observable<Image> {
+        return Observable.create<Image> { subscriber ->
+            try {
+                dirs.forEach {
+                    Timber.d("search image at directory: ${it.absolutePath}")
+                    searchImage(packageName, it, subscriber)
+                }
+            } catch (error: Exception) {
+                Timber.e(error, "error occur during search image...")
+                return@create
+            }
+            subscriber.onCompleted()
+        }.subscribeOn(Schedulers.io())
+    }
 
-    override fun searchImage(packageName: String, file: File, subscriber: Subscriber<in Image>) {
+    fun searchImage(packageName: String, file: File, subscriber: Subscriber<in Image>) {
         if (!file.exists()) {
             return;
         }
         if (file.isFile) {
             val type = ImageMIME.getImageType(file)
-            if (type != ImageHeaderParser.ImageType.UNKNOWN) {
+            if (type != ImageType.UNKNOWN) {
                 val image = Image(file.absolutePath, file.length(), type)
                 subscriber.onNext(image);
             }

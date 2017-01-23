@@ -1,6 +1,7 @@
 package com.linroid.viewit.utils
 
 import com.bumptech.glide.load.resource.bitmap.ImageHeaderParser
+import com.linroid.viewit.data.model.ImageType
 import timber.log.Timber
 import java.io.File
 import java.io.FileInputStream
@@ -28,17 +29,18 @@ object ImageMIME {
         }
     }
 
-    fun getImageType(file: File): ImageHeaderParser.ImageType = getImageType(FileInputStream(file))
-    fun getImageType(inputStream: InputStream): ImageHeaderParser.ImageType {
+    fun getImageType(file: File): ImageType = getImageType(FileInputStream(file))
+    fun getImageType(inputStream: InputStream): ImageType {
+        var type = ImageHeaderParser.ImageType.UNKNOWN
         try {
             val parser = ImageHeaderParser(inputStream)
-            return parser.type
+            type = parser.type
         } catch (error: Exception) {
             Timber.e(error, "failed to read source")
-            return ImageHeaderParser.ImageType.UNKNOWN
         } finally {
             inputStream.close()
         }
+        return ImageType.from(type)
     }
 
 }

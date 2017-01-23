@@ -1,6 +1,7 @@
 package com.linroid.viewit.ui.gallery
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.os.Bundle
@@ -22,6 +23,7 @@ import com.linroid.viewit.ui.gallery.GalleryActivityPermissionsDispatcher
 import com.linroid.viewit.ui.gallery.ImageViewProvider
 import com.linroid.viewit.utils.RootUtils
 import com.trello.rxlifecycle.kotlin.bindToLifecycle
+import kotlinx.android.synthetic.main.item_image.*
 import me.drakeet.multitype.MultiTypeAdapter
 import permissions.dispatcher.*
 import rx.android.schedulers.AndroidSchedulers
@@ -86,6 +88,7 @@ class GalleryActivity : BaseActivity() {
         return super.onOptionsItemSelected(item)
     }
 
+    @SuppressLint("StringFormatMatches")
     @NeedsPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
     fun scanImages() {
         imageRepo.scan(appInfo)
@@ -96,7 +99,6 @@ class GalleryActivity : BaseActivity() {
                     if (files.size == 0) {
                         return@subscribe
                     }
-                    Timber.d("found image files :$files")
                     images.addAll(files)
                     supportActionBar?.title = "$appName (${images.size} 张)"
                     adapter.notifyItemRangeInserted(images.size - files.size, images.size - 1);
@@ -104,7 +106,7 @@ class GalleryActivity : BaseActivity() {
                     Timber.e(error, "onError")
                 }, {
                     Timber.d("onCompleted")
-                    Toast.makeText(this, R.string.msg_scan_completed, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, getString(R.string.msg_scan_completed, images.size), Toast.LENGTH_SHORT).show()
                 })
     }
 
