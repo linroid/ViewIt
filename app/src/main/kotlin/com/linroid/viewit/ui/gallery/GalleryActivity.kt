@@ -2,6 +2,7 @@ package com.linroid.viewit.ui.gallery
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.ProgressDialog
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.os.Bundle
@@ -20,7 +21,6 @@ import com.linroid.viewit.ioc.DaggerGalleryGraph
 import com.linroid.viewit.ioc.module.GalleryModule
 import com.linroid.viewit.ui.BaseActivity
 import com.linroid.viewit.utils.ARG_APP_INFO
-import com.linroid.viewit.utils.RootUtils
 import com.trello.rxlifecycle.kotlin.bindToLifecycle
 import me.drakeet.multitype.MultiTypeAdapter
 import permissions.dispatcher.*
@@ -86,9 +86,20 @@ class GalleryActivity : BaseActivity() {
         return super.onOptionsItemSelected(item)
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        imageRepo.destroy(appInfo)
+    }
+
     @SuppressLint("StringFormatMatches")
     @NeedsPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
     fun scanImages() {
+        val progress: ProgressDialog = ProgressDialog(this).apply {
+            setMessage(getString(R.string.msg_scanning_image))
+            isIndeterminate = true
+            setCancelable(false)
+        }
+        progress.show()
         imageRepo.scan(appInfo)
                 .buffer(500, TimeUnit.MILLISECONDS)
                 .bindToLifecycle(this)
@@ -102,9 +113,11 @@ class GalleryActivity : BaseActivity() {
                     adapter.notifyItemRangeInserted(images.size - files.size, images.size - 1);
                 }, { error ->
                     Timber.e(error, "onError")
+                    progress.dismiss()
+                    Toast.makeText(this, getString(R.string.msg_scan_failed, error.message), Toast.LENGTH_SHORT).show()
                 }, {
-                    Timber.d("onCompleted")
                     Toast.makeText(this, getString(R.string.msg_scan_completed, images.size), Toast.LENGTH_SHORT).show()
+                    progress.dismiss()
                 })
     }
 

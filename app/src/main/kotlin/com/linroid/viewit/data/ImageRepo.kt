@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
-import android.graphics.drawable.Drawable
 import android.os.Environment
 import com.linroid.rxshell.RxShell
 import com.linroid.viewit.data.model.Image
@@ -12,7 +11,6 @@ import com.linroid.viewit.data.scanner.RootImageScanner
 import com.linroid.viewit.data.scanner.SdcardImageScanner
 import com.linroid.viewit.utils.APP_EXTERNAL_PATHS
 import rx.Observable
-import rx.schedulers.Schedulers
 import rx.subjects.ReplaySubject
 import java.io.File
 import java.util.*
@@ -45,12 +43,21 @@ class ImageRepo(private val context: Context, private val packageManager: Packag
             }
             observable = observable.concatWith(SdcardImageScanner.scan(appInfo.packageName, dirs))
         }
-        observable.sorted { image, image2 -> -image.size.compareTo(image2.size) }.subscribe(subject)
+        observable.sorted { image, image2 -> -image.size.compareTo(image2.size) }
+                .subscribe(subject)
         return subject
     }
 
     fun asObservable(appInfo: ApplicationInfo): ReplaySubject<Image> {
         return getSubject(appInfo.packageName)
+    }
+
+    fun destroy(appInfo: ApplicationInfo) {
+        val packageName = appInfo.packageName
+        if (subjects.containsKey(packageName)) {
+            val subject = subjects[packageName]
+            subjects.remove(packageName)
+        }
     }
 
     private fun getSubject(packageName: String): ReplaySubject<Image> {
@@ -86,6 +93,5 @@ class ImageRepo(private val context: Context, private val packageManager: Packag
 //                .flatMap { RxShell.instance().chown(cacheFile.absolutePath, uid, uid) }
                 .map { cacheFile }
     }
-
 
 }

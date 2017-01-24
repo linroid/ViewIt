@@ -4,5 +4,6 @@
     <string name="action_settings">设置</string>
     <string name="button_allow">允许</string>
     <string name="button_deny">拒绝</string>
-    <string name="msg_scan_completed">扫描完成, 共搜索到 %1$d 张图片:)</string>
+    <string name="msg_scan_completed">扫描完成, 共找到 %1$d 张图片:)</string>
+    <string name="msg_scanning_image">扫描中...</string>
 </resources>
