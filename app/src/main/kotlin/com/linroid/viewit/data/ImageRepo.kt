@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
+import android.graphics.drawable.Drawable
 import android.os.Environment
 import com.linroid.rxshell.RxShell
 import com.linroid.viewit.data.model.Image
@@ -11,6 +12,7 @@ import com.linroid.viewit.data.scanner.RootImageScanner
 import com.linroid.viewit.data.scanner.SdcardImageScanner
 import com.linroid.viewit.utils.APP_EXTERNAL_PATHS
 import rx.Observable
+import rx.schedulers.Schedulers
 import rx.subjects.ReplaySubject
 import java.io.File
 import java.util.*

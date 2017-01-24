@@ -47,6 +47,7 @@ class ImageViewerActivity() : BaseActivity() {
         position = arguments.getInt(ARG_POSITION)
         getObservable().observeOn(AndroidSchedulers.mainThread()).toList().subscribe({
             adapter = ImageViewerPagerAdapter(supportFragmentManager, it.size)
+            viewPager.offscreenPageLimit = 2
             viewPager.adapter = adapter
             viewPager.currentItem = position
         })
