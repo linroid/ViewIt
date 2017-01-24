@@ -5,20 +5,25 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import butterknife.bindView
+import com.bumptech.glide.Glide
 import com.github.piasy.biv.view.BigImageView
 import com.linroid.viewit.R
+import com.linroid.viewit.data.model.ImageType
 import com.linroid.viewit.ui.BaseFragment
 import com.linroid.viewit.utils.RootUtils
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
+import timber.log.Timber
 import java.io.File
 
 /**
  * Created by Administrator on 2017/1/11.
  */
 class ImageViewerFragment : BaseFragment() {
-    val imageViewer: BigImageView by bindView(R.id.image_viewer)
+    val bigImageViewer: BigImageView by bindView(R.id.big_image_viewer)
+    val gifImageViewer: ImageView by bindView(R.id.gif_image_viewer)
     var position: Int = 0
 
     companion object {
@@ -45,8 +50,12 @@ class ImageViewerFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         val activity = activity
         if (activity is ImageViewerActivity) {
+            var isGif = false;
             activity.getObservable().elementAt(position)
-                    .map { File(it.path) }
+                    .map {
+                        isGif = it.type == ImageType.GIF
+                        return@map File(it.path)
+                    }
                     .flatMap {
                         if (RootUtils.isRootFile(activity, it.path)) {
                             return@flatMap activity.imageRepo.mountFile(it.path, activity.info);
@@ -54,9 +63,19 @@ class ImageViewerFragment : BaseFragment() {
                         return@flatMap Observable.just(it)
                     }
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe {
-                        imageViewer.showImage(Uri.fromFile(it))
-                    }
+                    .subscribe({ file ->
+                        if (isGif) {
+                            Glide.with(activity).load(file).asGif().into(gifImageViewer)
+                            gifImageViewer.visibility = View.VISIBLE
+                            bigImageViewer.visibility = View.GONE
+                        } else {
+                            bigImageViewer.showImage(Uri.fromFile(file))
+                            gifImageViewer.visibility = View.GONE
+                            bigImageViewer.visibility = View.VISIBLE
+                        }
+                    }, { error ->
+                        Timber.e(error, "view image failed")
+                    })
         }
     }
 

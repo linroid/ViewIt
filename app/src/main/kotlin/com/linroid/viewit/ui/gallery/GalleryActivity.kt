@@ -92,7 +92,7 @@ class GalleryActivity : BaseActivity() {
     @NeedsPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
     fun scanImages() {
         imageRepo.scan(appInfo)
-                .buffer(100, TimeUnit.MILLISECONDS)
+                .buffer(500, TimeUnit.MILLISECONDS)
                 .bindToLifecycle(this)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ files ->

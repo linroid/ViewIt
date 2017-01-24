@@ -43,7 +43,7 @@ class ImageRepo(private val context: Context, private val packageManager: Packag
             }
             observable = observable.concatWith(SdcardImageScanner.scan(appInfo.packageName, dirs))
         }
-        observable.subscribe(subject)
+        observable.sorted { image, image2 -> -image.size.compareTo(image2.size) }.subscribe(subject)
         return subject
     }
 
@@ -75,6 +75,9 @@ class ImageRepo(private val context: Context, private val packageManager: Packag
         val targetDir = cacheFile.parentFile
         if (!targetDir.exists()) {
             targetDir.mkdirs()
+        }
+        if (!cacheFile.exists()) {
+            cacheFile.createNewFile()
         }
         return RxShell.instance()
                 .copyFile(path, cacheFile.absolutePath)

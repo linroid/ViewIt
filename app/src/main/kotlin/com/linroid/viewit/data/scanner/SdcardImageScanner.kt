@@ -18,7 +18,6 @@ object SdcardImageScanner : ImageScanner() {
         return Observable.create<Image> { subscriber ->
             try {
                 dirs.forEach {
-                    Timber.d("search image at directory: ${it.absolutePath}")
                     searchImage(packageName, it, subscriber)
                 }
             } catch (error: Exception) {
@@ -40,7 +39,6 @@ object SdcardImageScanner : ImageScanner() {
                 subscriber.onNext(image);
             }
         } else if (file.isDirectory) {
-            Timber.d("directory : ${file.absolutePath}")
             file.listFiles()?.forEach {
                 searchImage(packageName, it, subscriber)
             }
