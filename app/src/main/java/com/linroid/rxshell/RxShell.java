@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.HandlerThread;
 import android.support.annotation.CheckResult;
-import android.util.Log;
 
 import com.linroid.rxshell.exception.ShellExecuteErrorException;
 import com.linroid.rxshell.exception.ShellTerminateException;
@@ -215,7 +214,7 @@ public class RxShell {
 
     @NotNull
     public Observable<Boolean> copyFile(@NotNull final String path, final String targetPath) {
-        return execWithoutResult("cp", path, targetPath);
+        return execWithoutResult("cat", path, ">", targetPath);
     }
 
     @NotNull

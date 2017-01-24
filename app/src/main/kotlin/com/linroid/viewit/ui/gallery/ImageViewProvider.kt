@@ -9,6 +9,9 @@ import android.widget.ImageView
 import android.widget.Toast
 import butterknife.bindView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.drawable.GlideDrawable
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.linroid.viewit.App
 import com.linroid.viewit.R
 import com.linroid.viewit.data.ImageRepo
@@ -20,6 +23,7 @@ import com.trello.rxlifecycle.kotlin.bindToLifecycle
 import me.drakeet.multitype.ItemViewProvider
 import rx.android.schedulers.AndroidSchedulers
 import timber.log.Timber
+import java.io.File
 import javax.inject.Inject
 
 /**
@@ -47,7 +51,21 @@ class ImageViewProvider(val activity: BaseActivity, val info: ApplicationInfo) :
                     .bindToLifecycle(holder.itemView)
                     .subscribe({ file ->
                         Timber.i("mount file success (${file.absolutePath})")
-                        Glide.with(holder.image.context).load(file).centerCrop().into(holder.image)
+                        Glide.with(holder.image.context)
+                                .load(file)
+                                .centerCrop()
+                                .listener(object : RequestListener<File, GlideDrawable> {
+                                    override fun onException(e: Exception, model: File, target: Target<GlideDrawable>, isFirstResource: Boolean): Boolean {
+                                        Timber.e(e, "load image failed: ${model.absolutePath}")
+                                        return false
+                                    }
+
+                                    override fun onResourceReady(resource: GlideDrawable, model: File, target: Target<GlideDrawable>, isFromMemoryCache: Boolean, isFirstResource: Boolean): Boolean {
+                                        return false
+                                    }
+                                })
+                                .error(R.mipmap.ic_launcher_round)
+                                .into(holder.image)
                     }, { error ->
                         Timber.e(error)
                     })

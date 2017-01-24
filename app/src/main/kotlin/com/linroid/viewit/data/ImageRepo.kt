@@ -76,10 +76,9 @@ class ImageRepo(private val context: Context, private val packageManager: Packag
         if (!targetDir.exists()) {
             targetDir.mkdirs()
         }
-        val uid: Int = context.applicationInfo.uid;
         return RxShell.instance()
                 .copyFile(path, cacheFile.absolutePath)
-                .flatMap { RxShell.instance().chown(cacheFile.absolutePath, uid, uid) }
+//                .flatMap { RxShell.instance().chown(cacheFile.absolutePath, uid, uid) }
                 .map { cacheFile }
     }
 

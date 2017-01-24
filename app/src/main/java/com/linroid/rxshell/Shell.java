@@ -104,6 +104,7 @@ public class Shell {
                 callback.onOutput(line);
             }
             while ((line = errorReader.readUtf8Line()) != null) {
+                Log.v(TAG, "command[" + exitCmdId + "] on error: " + line);
                 callback.onError(line);
             }
             callback.onFinished();
