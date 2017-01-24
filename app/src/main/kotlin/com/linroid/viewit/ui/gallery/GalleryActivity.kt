@@ -21,6 +21,7 @@ import com.linroid.viewit.data.model.Image
 import com.linroid.viewit.ui.BaseActivity
 import com.linroid.viewit.ui.gallery.GalleryActivityPermissionsDispatcher
 import com.linroid.viewit.ui.gallery.ImageViewProvider
+import com.linroid.viewit.utils.ARG_APP_INFO
 import com.linroid.viewit.utils.RootUtils
 import com.trello.rxlifecycle.kotlin.bindToLifecycle
 import kotlinx.android.synthetic.main.item_image.*
@@ -32,8 +33,10 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-const val ARG_APP_INFO: String = "app_info";
-
+/**
+ * @author linroid <linroid@gmail.com>
+ * @since 07/01/2017
+ */
 @RuntimePermissions
 class GalleryActivity : BaseActivity() {
 

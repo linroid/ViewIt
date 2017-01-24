@@ -9,6 +9,8 @@ import com.linroid.viewit.App
 import com.linroid.viewit.R
 import com.linroid.viewit.data.ImageRepo
 import com.linroid.viewit.ui.BaseActivity
+import com.linroid.viewit.utils.ARG_APP_INFO
+import com.linroid.viewit.utils.ARG_POSITION
 import rx.android.schedulers.AndroidSchedulers
 import java.io.File
 import javax.inject.Inject
@@ -17,9 +19,6 @@ import javax.inject.Inject
  * @author linroid <linroid@gmail.com>
  * @since 08/01/2017
  */
-const val ARG_POSITION: String = "position";
-const val ARG_APP_INFO: String = "app_info";
-
 class ImageViewerActivity() : BaseActivity() {
     lateinit var imageFile: File
     val viewPager: ViewPager by bindView(R.id.view_pager)

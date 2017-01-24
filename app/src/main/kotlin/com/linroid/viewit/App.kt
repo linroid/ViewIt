@@ -52,7 +52,6 @@ class App : Application() {
             val stream = assets.open(BINARY_DIRECTORY + File.separator + preferABI + File.separator + BINARY_SEARCH_IMAGE);
             RxShell.instance()
                     .installBinary(this, stream, BINARY_SEARCH_IMAGE, 1.0F)
-                    .delaySubscription(3, TimeUnit.SECONDS)
                     .subscribe({ result ->
                         Timber.i("install binary $BINARY_SEARCH_IMAGE result: $result")
                     }, { error ->

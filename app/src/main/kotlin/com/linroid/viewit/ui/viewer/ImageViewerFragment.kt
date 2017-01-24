@@ -12,6 +12,7 @@ import com.github.piasy.biv.view.BigImageView
 import com.linroid.viewit.R
 import com.linroid.viewit.data.model.ImageType
 import com.linroid.viewit.ui.BaseFragment
+import com.linroid.viewit.utils.ARG_POSITION
 import com.linroid.viewit.utils.RootUtils
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
@@ -19,9 +20,10 @@ import timber.log.Timber
 import java.io.File
 
 /**
- * Created by Administrator on 2017/1/11.
+ * @author linroid <linroid@gmail.com>
+ * @since 11/01/2017
  */
-class ImageViewerFragment : BaseFragment() {
+internal class ImageViewerFragment : BaseFragment() {
     val bigImageViewer: BigImageView by bindView(R.id.big_image_viewer)
     val gifImageViewer: ImageView by bindView(R.id.gif_image_viewer)
     var position: Int = 0
