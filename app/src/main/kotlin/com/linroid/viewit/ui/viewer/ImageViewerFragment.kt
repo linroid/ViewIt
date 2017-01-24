@@ -1,5 +1,7 @@
 package com.linroid.viewit.ui.viewer
 
+import android.app.Activity
+import android.content.pm.ApplicationInfo
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,6 +12,8 @@ import butterknife.bindView
 import com.bumptech.glide.Glide
 import com.github.piasy.biv.view.BigImageView
 import com.linroid.viewit.R
+import com.linroid.viewit.data.ImageRepo
+import com.linroid.viewit.data.model.Image
 import com.linroid.viewit.data.model.ImageType
 import com.linroid.viewit.ui.BaseFragment
 import com.linroid.viewit.utils.ARG_POSITION
@@ -18,12 +22,17 @@ import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import timber.log.Timber
 import java.io.File
+import javax.inject.Inject
 
 /**
  * @author linroid <linroid@gmail.com>
  * @since 11/01/2017
  */
-internal class ImageViewerFragment : BaseFragment() {
+class ImageViewerFragment : BaseFragment() {
+    @Inject lateinit var observable: Observable<Image>
+    @Inject lateinit var imageRepo: ImageRepo
+    @Inject lateinit var appInfo: ApplicationInfo
+
     val bigImageViewer: BigImageView by bindView(R.id.big_image_viewer)
     val gifImageViewer: ImageView by bindView(R.id.gif_image_viewer)
     var position: Int = 0
@@ -36,6 +45,14 @@ internal class ImageViewerFragment : BaseFragment() {
             fragment.arguments = args
             return fragment
         }
+    }
+
+    override fun onAttach(activity: Activity?) {
+        super.onAttach(activity)
+        if (activity is ImageViewerActivity) {
+            activity.graph.inject(this)
+        }
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,14 +70,14 @@ internal class ImageViewerFragment : BaseFragment() {
         val activity = activity
         if (activity is ImageViewerActivity) {
             var isGif = false;
-            activity.getObservable().elementAt(position)
+            observable.elementAt(position)
                     .map {
                         isGif = it.type == ImageType.GIF
                         return@map File(it.path)
                     }
                     .flatMap {
                         if (RootUtils.isRootFile(activity, it.path)) {
-                            return@flatMap activity.imageRepo.mountFile(it.path, activity.info);
+                            return@flatMap imageRepo.mountFile(it.path, appInfo);
                         }
                         return@flatMap Observable.just(it)
                     }

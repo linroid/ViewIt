@@ -16,20 +16,16 @@ import butterknife.bindView
 import com.linroid.viewit.App
 import com.linroid.viewit.R
 import com.linroid.viewit.data.ImageRepo
-import com.linroid.viewit.data.file.RootFileManager
-import com.linroid.viewit.data.model.Image
+import com.linroid.viewit.ioc.DaggerGalleryGraph
+import com.linroid.viewit.ioc.module.GalleryModule
 import com.linroid.viewit.ui.BaseActivity
-import com.linroid.viewit.ui.gallery.GalleryActivityPermissionsDispatcher
-import com.linroid.viewit.ui.gallery.ImageViewProvider
 import com.linroid.viewit.utils.ARG_APP_INFO
 import com.linroid.viewit.utils.RootUtils
 import com.trello.rxlifecycle.kotlin.bindToLifecycle
-import kotlinx.android.synthetic.main.item_image.*
 import me.drakeet.multitype.MultiTypeAdapter
 import permissions.dispatcher.*
 import rx.android.schedulers.AndroidSchedulers
 import timber.log.Timber
-import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -39,15 +35,14 @@ import javax.inject.Inject
  */
 @RuntimePermissions
 class GalleryActivity : BaseActivity() {
+    @Inject lateinit var imageRepo: ImageRepo
+    @Inject lateinit var images: MutableList<Any>
+    @Inject lateinit var adapter: MultiTypeAdapter
 
     lateinit var appInfo: ApplicationInfo
     lateinit var appName: CharSequence
-    @Inject lateinit var imageRepo: ImageRepo
-    @Inject lateinit var rootFileManager: RootFileManager
 
     val galleryView: RecyclerView by bindView(R.id.recycler)
-    val images: MutableList<Any> = ArrayList();
-    val adapter: MultiTypeAdapter = MultiTypeAdapter(images)
 
     companion object {
         fun navTo(source: BaseActivity, info: ApplicationInfo) {
@@ -64,16 +59,16 @@ class GalleryActivity : BaseActivity() {
         appInfo = intent.getParcelableExtra(ARG_APP_INFO)
         appName = packageManager.getApplicationLabel(appInfo);
         supportActionBar?.title = appName
-        App.get().graph().inject(this)
+        DaggerGalleryGraph.builder()
+                .globalGraph(App.get().graph())
+                .galleryModule(GalleryModule(this, appInfo))
+                .build()
+                .inject(this)
         initView()
         GalleryActivityPermissionsDispatcher.scanImagesWithCheck(this);
-        if (RootUtils.isRootAvailable()) {
-            RootUtils.requireRoot()
-        }
     }
 
     private fun initView() {
-        adapter.register(Image::class.java, ImageViewProvider(this, appInfo))
         val gridLayoutManager = GridLayoutManager(this, 4);
         galleryView.layoutManager = gridLayoutManager
         galleryView.adapter = adapter

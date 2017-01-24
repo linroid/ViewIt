@@ -22,19 +22,6 @@ object RootUtils {
         }
     }
 
-    fun requireRoot(): Boolean {
-        var process: Process? = null
-        try {
-            process = Runtime.getRuntime().exec("su");
-        } catch (error: Exception) {
-            Timber.e(error, "requireRoot failed")
-            return false;
-        } finally {
-            process?.destroy()
-        }
-        return true;
-    }
-
     fun isRootFile(context: Context, path: String): Boolean {
         return !path.startsWith(Environment.getExternalStorageDirectory().absolutePath)
     }

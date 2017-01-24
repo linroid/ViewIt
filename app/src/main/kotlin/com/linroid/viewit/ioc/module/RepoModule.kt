@@ -18,5 +18,4 @@ class RepoModule {
     fun provideImageRepo(context: Context, packageManager: PackageManager): ImageRepo {
         return ImageRepo(context, packageManager)
     }
-
 }

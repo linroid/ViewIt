@@ -12,11 +12,9 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.GlideDrawable
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
-import com.linroid.viewit.App
 import com.linroid.viewit.R
 import com.linroid.viewit.data.ImageRepo
 import com.linroid.viewit.data.model.Image
-import com.linroid.viewit.ui.BaseActivity
 import com.linroid.viewit.ui.viewer.ImageViewerActivity
 import com.linroid.viewit.utils.RootUtils
 import com.trello.rxlifecycle.kotlin.bindToLifecycle
@@ -30,13 +28,10 @@ import javax.inject.Inject
  * @author linroid <linroid@gmail.com>
  * @since 07/01/2017
  */
-class ImageViewProvider(val activity: BaseActivity, val info: ApplicationInfo) : ItemViewProvider<Image, ImageViewProvider.ViewHolder>() {
+class GalleryItemViewProvider @Inject constructor(val activity: GalleryActivity,
+                                                  val imageRepo: ImageRepo,
+                                                  val info: ApplicationInfo) : ItemViewProvider<Image, GalleryItemViewProvider.ViewHolder>() {
 
-    @Inject lateinit var imageRepo: ImageRepo
-
-    init {
-        App.graph.inject(this)
-    }
 
     override fun onCreateViewHolder(inflater: LayoutInflater, parent: ViewGroup): ViewHolder {
         return ViewHolder(inflater.inflate(R.layout.item_image, parent, false))

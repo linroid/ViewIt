@@ -14,7 +14,6 @@ import com.linroid.viewit.utils.BINARY_SEARCH_IMAGE
 import com.linroid.viewit.utils.OSUtils
 import timber.log.Timber
 import java.io.File
-import java.util.concurrent.TimeUnit
 
 /**
  * @author linroid <linroid@gmail.com>
