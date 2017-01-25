@@ -56,7 +56,8 @@ class GalleryActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        appInfo = intent.getParcelableExtra(ARG_APP_INFO)
+        val arguments = intent.extras
+        appInfo = arguments.getParcelable(ARG_APP_INFO)
         appName = packageManager.getApplicationLabel(appInfo);
         supportActionBar?.title = appName
         DaggerGalleryGraph.builder()

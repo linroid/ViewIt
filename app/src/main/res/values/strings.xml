@@ -8,4 +8,5 @@
     <string name="msg_scan_completed">Scan completed, %1$s images found:)</string>
     <string name="msg_scanning_image">Scanning…</string>
     <string name="msg_scan_failed">:(\nAn error occurred:%1$s</string>
+    <string name="action_detail">详细信息</string>
 </resources>

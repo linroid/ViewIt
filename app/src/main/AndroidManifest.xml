@@ -34,7 +34,7 @@
         <activity
             android:name=".ui.viewer.ImageViewerActivity"
             android:parentActivityName=".ui.gallery.GalleryActivity"
-            android:theme="@style/AppTheme.Viewer">
+            android:theme="@style/AppTheme.Immersive">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.gallery.GalleryActivity"/>

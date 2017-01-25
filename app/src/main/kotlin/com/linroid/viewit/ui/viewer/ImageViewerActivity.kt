@@ -5,6 +5,7 @@ import android.content.pm.ApplicationInfo
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.support.v4.view.ViewPager
+import android.view.Menu
 import butterknife.bindView
 import com.linroid.viewit.App
 import com.linroid.viewit.R
@@ -13,6 +14,7 @@ import com.linroid.viewit.ioc.DaggerViewerGraph
 import com.linroid.viewit.ioc.ViewerGraph
 import com.linroid.viewit.ioc.module.ViewerModule
 import com.linroid.viewit.ui.BaseActivity
+import com.linroid.viewit.ui.ImmersiveActivity
 import com.linroid.viewit.utils.ARG_APP_INFO
 import com.linroid.viewit.utils.ARG_POSITION
 import rx.Observable
@@ -23,7 +25,8 @@ import javax.inject.Inject
  * @author linroid <linroid@gmail.com>
  * @since 08/01/2017
  */
-class ImageViewerActivity() : BaseActivity() {
+class ImageViewerActivity() : ImmersiveActivity() {
+
     @Inject lateinit var observable: Observable<Image>
 
     lateinit private var appInfo: ApplicationInfo
@@ -43,7 +46,6 @@ class ImageViewerActivity() : BaseActivity() {
     }
 
     override fun provideContentLayoutId(): Int = R.layout.activity_image_viewer
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,7 +67,6 @@ class ImageViewerActivity() : BaseActivity() {
             override fun onPageSelected(position: Int) {
                 this@ImageViewerActivity.position = position
             }
-
         })
         observable.observeOn(AndroidSchedulers.mainThread()).toList().subscribe({
             adapter = ImageViewerPagerAdapter(supportFragmentManager, it.size)
@@ -73,11 +74,23 @@ class ImageViewerActivity() : BaseActivity() {
             viewPager.adapter = adapter
             viewPager.currentItem = position
         })
+        supportActionBar?.setDisplayShowTitleEnabled(false)
     }
 
     override fun onSaveInstanceState(outState: Bundle?, outPersistentState: PersistableBundle?) {
         super.onSaveInstanceState(outState, outPersistentState)
         outState?.putInt(ARG_POSITION, position)
         outState?.putParcelable(ARG_APP_INFO, appInfo)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_image_viewer, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun shouldHideComponents() {
+    }
+
+    override fun shouldShowComponents() {
     }
 }

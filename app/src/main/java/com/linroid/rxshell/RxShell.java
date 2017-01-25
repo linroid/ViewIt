@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.HandlerThread;
 import android.support.annotation.CheckResult;
+import android.util.Log;
 
 import com.linroid.rxshell.exception.ShellExecuteErrorException;
 import com.linroid.rxshell.exception.ShellTerminateException;
@@ -22,7 +23,6 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
-import timber.log.Timber;
 
 /**
  * @author linroid <linroid@gmail.com>
@@ -109,7 +109,7 @@ public class RxShell {
         }).doOnNext(new Action1<String>() {
             @Override
             public void call(String s) {
-                Timber.i("read line: %s", s);
+                Log.v(TAG, "read line: " + s);
             }
         });
     }
@@ -164,7 +164,7 @@ public class RxShell {
 
     @CheckResult
     public Observable<Boolean> installBinary(@NotNull final Context context, @NotNull final InputStream stream, @NotNull final String binaryName, final float version) {
-        Timber.i("install binary: %s", binaryName);
+        Log.i(TAG, "install binary: " + binaryName);
         return create(new Observable.OnSubscribe<Boolean>() {
             @Override
             public void call(Subscriber<? super Boolean> subscriber) {
@@ -189,7 +189,7 @@ public class RxShell {
                         subscriber.onNext(binaryFile.setExecutable(true));
                         subscriber.onCompleted();
                     } catch (IOException e) {
-                        Timber.e(e, "error when install binary %s", binaryName);
+                        Log.e(TAG, "error when install binary " + binaryName, e);
                         subscriber.onError(e);
                     } finally {
                         IOUtils.closeQuietly(sink);
