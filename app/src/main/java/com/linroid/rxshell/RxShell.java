@@ -66,7 +66,7 @@ public class RxShell {
                 try {
                     subscriber.onNext(shell.destroy());
                     subscriber.onCompleted();
-                } catch (InterruptedException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                     subscriber.onError(e);
                 }
@@ -84,7 +84,7 @@ public class RxShell {
         return create(new Observable.OnSubscribe<String>() {
             @Override
             public void call(final Subscriber<? super String> subscriber) {
-                shell.exec(binary, arguments, new Shell.Callback() {
+                shell.exec(binary, arguments, new CommandCallback() {
                     @Override
                     public void onOutput(String line) {
                         subscriber.onNext(line);
@@ -96,13 +96,13 @@ public class RxShell {
                     }
 
                     @Override
-                    public void onFinished() {
+                    public void onFinished(Command command) {
                         subscriber.onCompleted();
                     }
 
                     @Override
-                    public void onError(String output) {
-                        subscriber.onError(new ShellExecuteErrorException(output));
+                    public void onError(Exception error) {
+                        subscriber.onError(error);
                     }
                 });
             }
@@ -131,7 +131,7 @@ public class RxShell {
         return create(new Observable.OnSubscribe<Boolean>() {
             @Override
             public void call(final Subscriber<? super Boolean> subscriber) {
-                shell.exec(cmd, sb.toString(), new Shell.Callback() {
+                shell.exec(cmd, sb.toString(), new CommandCallback() {
                     @Override
                     public void onOutput(String line) {
                     }
@@ -142,14 +142,14 @@ public class RxShell {
                     }
 
                     @Override
-                    public void onFinished() {
+                    public void onFinished(Command command) {
                         subscriber.onNext(true);
                         subscriber.onCompleted();
                     }
 
                     @Override
-                    public void onError(String output) {
-                        subscriber.onError(new ShellExecuteErrorException(output));
+                    public void onError(Exception error) {
+                        subscriber.onError(error);
                     }
                 });
             }

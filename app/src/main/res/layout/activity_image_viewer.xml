@@ -21,6 +21,30 @@
             android:background="@android:color/transparent"
             android:theme="@style/Widget.AppBarOverlay"
             app:popupTheme="@style/Widget.Popup"/>
+
+        <LinearLayout
+            android:id="@+id/actions_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:orientation="horizontal"
+            android:minHeight="?actionBarSize">
+
+            <android.support.v7.widget.AppCompatImageButton
+                android:id="@+id/action_share"
+                style="@style/ViewerOptionsStyle"
+                android:src="@drawable/ic_share"/>
+
+            <android.support.v7.widget.AppCompatImageButton
+                android:id="@+id/action_save"
+                style="@style/ViewerOptionsStyle"
+                android:src="@drawable/ic_save"/>
+
+            <android.support.v7.widget.AppCompatImageButton
+                android:id="@+id/action_delete"
+                style="@style/ViewerOptionsStyle"
+                android:src="@drawable/ic_delete"/>
+        </LinearLayout>
     </com.linroid.viewit.widget.InsetsFrameLayout>
 
 </FrameLayout>
