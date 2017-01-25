@@ -6,6 +6,9 @@ import android.os.Bundle
 import android.os.PersistableBundle
 import android.support.v4.view.ViewPager
 import android.view.Menu
+import android.view.View
+import android.widget.ImageButton
+import android.widget.LinearLayout
 import butterknife.bindView
 import com.linroid.viewit.App
 import com.linroid.viewit.R
@@ -25,9 +28,13 @@ import javax.inject.Inject
  * @author linroid <linroid@gmail.com>
  * @since 08/01/2017
  */
-class ImageViewerActivity() : ImmersiveActivity() {
+class ImageViewerActivity() : ImmersiveActivity(), View.OnClickListener {
 
     @Inject lateinit var observable: Observable<Image>
+    private val actionSave: ImageButton by bindView(R.id.action_save)
+    private val actionDelete: ImageButton by bindView(R.id.action_delete)
+    private val actionShare: ImageButton by bindView(R.id.action_share)
+    private val actionsContainer: LinearLayout by bindView(R.id.actions_container)
 
     lateinit private var appInfo: ApplicationInfo
     lateinit private var adapter: ImageViewerPagerAdapter
@@ -57,6 +64,14 @@ class ImageViewerActivity() : ImmersiveActivity() {
                 .viewerModule(ViewerModule(this, appInfo))
                 .build()
         graph.inject(this)
+        initViews();
+        loadData();
+    }
+
+    private fun initViews() {
+        actionShare.setOnClickListener(this)
+        actionSave.setOnClickListener(this)
+        actionDelete.setOnClickListener(this)
         viewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
             override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
             }
@@ -68,13 +83,31 @@ class ImageViewerActivity() : ImmersiveActivity() {
                 this@ImageViewerActivity.position = position
             }
         })
+
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+    }
+
+    override fun onClick(v: View) {
+        when (v.id) {
+            R.id.action_share -> {
+
+            }
+            R.id.action_save -> {
+
+            }
+            R.id.action_delete -> {
+
+            }
+        }
+    }
+
+    private fun loadData() {
         observable.observeOn(AndroidSchedulers.mainThread()).toList().subscribe({
             adapter = ImageViewerPagerAdapter(supportFragmentManager, it.size)
             viewPager.offscreenPageLimit = 2
             viewPager.adapter = adapter
             viewPager.currentItem = position
         })
-        supportActionBar?.setDisplayShowTitleEnabled(false)
     }
 
     override fun onSaveInstanceState(outState: Bundle?, outPersistentState: PersistableBundle?) {
@@ -89,8 +122,10 @@ class ImageViewerActivity() : ImmersiveActivity() {
     }
 
     override fun shouldHideComponents() {
+        actionsContainer.visibility = View.GONE
     }
 
     override fun shouldShowComponents() {
+        actionsContainer.visibility = View.VISIBLE
     }
 }

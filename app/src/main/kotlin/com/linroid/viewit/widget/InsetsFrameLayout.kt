@@ -7,8 +7,7 @@ import android.widget.FrameLayout
 import timber.log.Timber
 
 /**
- * @author linroid <linroid></linroid>@gmail.com>
- * *
+ * @author linroid <linroid@gmail.com>
  * @since 25/01/2017
  */
 class InsetsFrameLayout : FrameLayout {
@@ -29,7 +28,7 @@ class InsetsFrameLayout : FrameLayout {
         fitsSystemWindows = true
         ViewCompat.setOnApplyWindowInsetsListener(this) { v, insets ->
             Timber.i(insets.toString())
-            setPadding(0, insets.systemWindowInsetTop, 0, 0);
+            setPadding(insets.systemWindowInsetLeft, insets.systemWindowInsetTop, insets.systemWindowInsetRight, insets.systemWindowInsetBottom);
             return@setOnApplyWindowInsetsListener insets.consumeSystemWindowInsets()
         }
     }

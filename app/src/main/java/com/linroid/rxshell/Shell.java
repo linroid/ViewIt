@@ -89,7 +89,7 @@ class Shell {
                             }
                             current.exitCode = exitCode;
                             current.callback.onFinished(current);
-                            current = queue.poll();
+                            current = queue.take();
                             continue;
                         }
                         current.callback.onOutput(line);

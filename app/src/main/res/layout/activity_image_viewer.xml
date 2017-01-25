@@ -10,6 +10,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="81dp"
+        android:background="@drawable/bg_viewer_toolbar_mask"/>
+
     <com.linroid.viewit.widget.InsetsFrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -27,8 +32,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center_horizontal"
-            android:orientation="horizontal"
-            android:minHeight="?actionBarSize">
+            android:background="@drawable/bg_viewer_options_mask"
+            android:minHeight="?actionBarSize"
+            android:orientation="horizontal">
 
             <android.support.v7.widget.AppCompatImageButton
                 android:id="@+id/action_share"

@@ -16,6 +16,7 @@ import com.linroid.viewit.data.ImageRepo
 import com.linroid.viewit.data.model.Image
 import com.linroid.viewit.data.model.ImageType
 import com.linroid.viewit.ui.BaseFragment
+import com.linroid.viewit.ui.ImmersiveActivity
 import com.linroid.viewit.utils.ARG_POSITION
 import com.linroid.viewit.utils.RootUtils
 import rx.Observable
@@ -65,37 +66,48 @@ class ImageViewerFragment : BaseFragment() {
         return view!!;
     }
 
+    val imageClickListener = View.OnClickListener {
+        if (activity is ImmersiveActivity) {
+            (activity as ImmersiveActivity).toggle()
+        }
+    }
+
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val activity = activity
+        bigImageViewer.setOnClickListener(imageClickListener)
+        gifImageViewer.setOnClickListener(imageClickListener)
         if (activity is ImageViewerActivity) {
-            var isGif = false;
-            observable.elementAt(position)
-                    .map {
-                        isGif = it.type == ImageType.GIF
-                        return@map File(it.path)
-                    }
-                    .flatMap {
-                        if (RootUtils.isRootFile(activity, it.path)) {
-                            return@flatMap imageRepo.mountFile(it.path, appInfo);
-                        }
-                        return@flatMap Observable.just(it)
-                    }
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe({ file ->
-                        if (isGif) {
-                            Glide.with(activity).load(file).asGif().into(gifImageViewer)
-                            gifImageViewer.visibility = View.VISIBLE
-                            bigImageViewer.visibility = View.GONE
-                        } else {
-                            bigImageViewer.showImage(Uri.fromFile(file))
-                            gifImageViewer.visibility = View.GONE
-                            bigImageViewer.visibility = View.VISIBLE
-                        }
-                    }, { error ->
-                        Timber.e(error, "view image failed")
-                    })
+            loadImage(activity as ImageViewerActivity)
         }
+    }
+
+    private fun loadImage(act: ImageViewerActivity) {
+        var isGif = false;
+        observable.elementAt(position)
+                .map {
+                    isGif = it.type == ImageType.GIF
+                    return@map File(it.path)
+                }
+                .flatMap {
+                    if (RootUtils.isRootFile(act, it.path)) {
+                        return@flatMap imageRepo.mountFile(it.path, appInfo);
+                    }
+                    return@flatMap Observable.just(it)
+                }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ file ->
+                    if (isGif) {
+                        Glide.with(act).load(file).asGif().into(gifImageViewer)
+                        gifImageViewer.visibility = View.VISIBLE
+                        bigImageViewer.visibility = View.GONE
+                    } else {
+                        bigImageViewer.showImage(Uri.fromFile(file))
+                        gifImageViewer.visibility = View.GONE
+                        bigImageViewer.visibility = View.VISIBLE
+                    }
+                }, { error ->
+                    Timber.e(error, "view image failed")
+                })
     }
 
 }

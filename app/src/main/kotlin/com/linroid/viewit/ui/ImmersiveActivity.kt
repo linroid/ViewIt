@@ -107,6 +107,11 @@ abstract class ImmersiveActivity : BaseActivity() {
         delayHide()
     }
 
+    @DebugLog
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        return super.onTouchEvent(event)
+    }
+
     abstract protected fun shouldHideComponents()
     abstract protected fun shouldShowComponents()
 }
