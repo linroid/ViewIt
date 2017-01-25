@@ -7,31 +7,31 @@ import com.bumptech.glide.load.resource.bitmap.ImageHeaderParser
  * *
  * @since 23/01/2017
  */
-enum class ImageType private constructor(private val `val`: Int) {
+enum class ImageType private constructor(private val `val`: Int, val mime: String, val postfix: String) {
     /**
      * GIF type.
      */
-    GIF(0),
+    GIF(0, "image/gif", "gif"),
 
     /**
      * JPG type.
      */
-    JPEG(1),
+    JPEG(1, "image/jpeg", "jpg"),
 
     /**
      * PNG type with alpha.
      */
-    PNG_A(2),
+    PNG_A(2, "image/png", "png"),
 
     /**
      * PNG type without alpha.
      */
-    PNG(3),
+    PNG(3, "image/png", "png"),
 
     /**
      * Unrecognized type.
      */
-    UNKNOWN(-1);
+    UNKNOWN(-1, "", "");
 
 
     companion object {

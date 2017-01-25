@@ -1,6 +1,7 @@
 package com.linroid.viewit.ioc.module
 
 import android.content.pm.ApplicationInfo
+import com.linroid.viewit.data.ImageEventType
 import com.linroid.viewit.data.ImageRepo
 import com.linroid.viewit.data.model.Image
 import com.linroid.viewit.ioc.quailifer.ActivityScope
@@ -25,5 +26,5 @@ class ViewerModule(val activity: ImageViewerActivity, val appInfo: ApplicationIn
 
     @Provides
     @ActivityScope
-    fun provideObservable(imageRepo: ImageRepo): Observable<Image> = imageRepo.asObservable(appInfo)
+    fun provideObservable(imageRepo: ImageRepo): Observable<ImageRepo.ImageEvent> = imageRepo.register(appInfo)
 }

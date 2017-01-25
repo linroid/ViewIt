@@ -6,7 +6,6 @@ import android.os.HandlerThread;
 import android.support.annotation.CheckResult;
 import android.util.Log;
 
-import com.linroid.rxshell.exception.ShellExecuteErrorException;
 import com.linroid.rxshell.exception.ShellTerminateException;
 
 import org.jetbrains.annotations.NotNull;
@@ -221,5 +220,9 @@ public class RxShell {
     public Observable<Boolean> chown(@Nullable final String path, final int uid, final int group) {
         return execWithoutResult("chown", uid + ":" + group, path);
 
+    }
+
+    public Observable<Boolean> deleteFile(@Nullable String path) {
+        return execWithoutResult("rm -rf", path);
     }
 }

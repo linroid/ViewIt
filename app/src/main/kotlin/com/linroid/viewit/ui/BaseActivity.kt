@@ -3,9 +3,11 @@ package com.linroid.viewit.ui
 import android.os.Bundle
 import android.support.annotation.CallSuper
 import android.support.annotation.LayoutRes
+import android.support.annotation.StringRes
 import android.support.v4.app.NavUtils
 import android.support.v7.widget.Toolbar
 import android.view.MenuItem
+import android.widget.Toast
 import com.linroid.viewit.R
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity
 
@@ -40,5 +42,22 @@ abstract class BaseActivity : RxAppCompatActivity() {
         }
 
         return super.onOptionsItemSelected(item)
+    }
+
+
+    protected fun toastShort(msg: String) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+    }
+
+    protected fun toastShort(@StringRes msgResId: Int) {
+        Toast.makeText(this, msgResId, Toast.LENGTH_SHORT).show()
+    }
+
+    protected fun toastLong(msg: String) {
+        Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
+    }
+
+    protected fun toastLong(@StringRes msgResId: Int) {
+        Toast.makeText(this, msgResId, Toast.LENGTH_LONG).show()
     }
 }

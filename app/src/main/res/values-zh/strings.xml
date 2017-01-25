@@ -6,4 +6,8 @@
     <string name="button_deny">拒绝</string>
     <string name="msg_scan_completed">扫描完成, 共找到 %1$d 张图片:)</string>
     <string name="msg_scanning_image">扫描中...</string>
+    <string name="permission_storage_neverask" translatable="false"></string>
+    <string name="msg_scan_failed">:(\\n发生了一个错误: %1$s</string>
+    <string name="action_detail">详细信息</string>
+    <string name="viewer_action_error">:( An error occurred:%1$s</string>
 </resources>

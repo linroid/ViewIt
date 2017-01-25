@@ -16,7 +16,10 @@ import android.widget.Toast
 import butterknife.bindView
 import com.linroid.viewit.App
 import com.linroid.viewit.R
+import com.linroid.viewit.data.INSERT_EVENT
 import com.linroid.viewit.data.ImageRepo
+import com.linroid.viewit.data.REMOVE_EVENT
+import com.linroid.viewit.data.UPDATE_EVENT
 import com.linroid.viewit.ioc.DaggerGalleryGraph
 import com.linroid.viewit.ioc.module.GalleryModule
 import com.linroid.viewit.ui.BaseActivity
@@ -26,7 +29,6 @@ import me.drakeet.multitype.MultiTypeAdapter
 import permissions.dispatcher.*
 import rx.android.schedulers.AndroidSchedulers
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 /**
@@ -75,6 +77,30 @@ class GalleryActivity : BaseActivity() {
         galleryView.adapter = adapter
         galleryView.itemAnimator = DefaultItemAnimator()
         galleryView.setHasFixedSize(true)
+        registerImages();
+    }
+
+    private fun registerImages() {
+        imageRepo.register(appInfo)
+                .bindToLifecycle(this)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ event ->
+                    supportActionBar?.title = getString(R.string.title_activity_gallery_scanned, appName, event.images.size)
+                    when (event.type) {
+                        UPDATE_EVENT -> {
+                            images.addAll(event.images)
+                            adapter.notifyDataSetChanged();
+                        }
+                        REMOVE_EVENT -> {
+                            images.removeAt(event.position)
+                            adapter.notifyItemRemoved(event.position);
+                        }
+                        INSERT_EVENT -> {
+                            images.add(event.position, event.images.get(event.position))
+                            adapter.notifyItemInserted(event.position);
+                        }
+                    }
+                })
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -102,16 +128,10 @@ class GalleryActivity : BaseActivity() {
         }
         progress.show()
         imageRepo.scan(appInfo)
-                .buffer(500, TimeUnit.MILLISECONDS)
                 .bindToLifecycle(this)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ files ->
-                    if (files.size == 0) {
-                        return@subscribe
-                    }
-                    images.addAll(files)
-                    supportActionBar?.title = "$appName (${images.size} 张)"
-                    adapter.notifyItemRangeInserted(images.size - files.size, images.size - 1);
+                .subscribe({
+
                 }, { error ->
                     Timber.e(error, "onError")
                     progress.dismiss()

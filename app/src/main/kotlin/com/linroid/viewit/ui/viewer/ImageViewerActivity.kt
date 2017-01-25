@@ -1,17 +1,29 @@
 package com.linroid.viewit.ui.viewer
 
+import android.content.ContentValues
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.os.Bundle
+import android.os.Environment
 import android.os.PersistableBundle
+import android.provider.MediaStore
+import android.support.design.widget.Snackbar
+import android.support.v4.content.FileProvider
 import android.support.v4.view.ViewPager
+import android.support.v7.app.AlertDialog
 import android.view.Menu
 import android.view.View
 import android.widget.ImageButton
 import android.widget.LinearLayout
+import android.widget.Toast
 import butterknife.bindView
 import com.linroid.viewit.App
 import com.linroid.viewit.R
+import com.linroid.viewit.data.INSERT_EVENT
+import com.linroid.viewit.data.ImageRepo
+import com.linroid.viewit.data.REMOVE_EVENT
+import com.linroid.viewit.data.UPDATE_EVENT
 import com.linroid.viewit.data.model.Image
 import com.linroid.viewit.ioc.DaggerViewerGraph
 import com.linroid.viewit.ioc.ViewerGraph
@@ -20,9 +32,11 @@ import com.linroid.viewit.ui.BaseActivity
 import com.linroid.viewit.ui.ImmersiveActivity
 import com.linroid.viewit.utils.ARG_APP_INFO
 import com.linroid.viewit.utils.ARG_POSITION
-import rx.Observable
+import com.linroid.viewit.utils.FILE_PROVIDER
+import com.trello.rxlifecycle.kotlin.bindToLifecycle
 import rx.android.schedulers.AndroidSchedulers
 import javax.inject.Inject
+
 
 /**
  * @author linroid <linroid@gmail.com>
@@ -30,7 +44,7 @@ import javax.inject.Inject
  */
 class ImageViewerActivity() : ImmersiveActivity(), View.OnClickListener {
 
-    @Inject lateinit var observable: Observable<Image>
+    @Inject lateinit var imageRepo: ImageRepo
     private val actionSave: ImageButton by bindView(R.id.action_save)
     private val actionDelete: ImageButton by bindView(R.id.action_delete)
     private val actionShare: ImageButton by bindView(R.id.action_share)
@@ -88,26 +102,95 @@ class ImageViewerActivity() : ImmersiveActivity(), View.OnClickListener {
     }
 
     override fun onClick(v: View) {
+        val image = imageRepo.getImageAt(viewPager.currentItem, appInfo)
         when (v.id) {
             R.id.action_share -> {
-
+                shareImage(image)
             }
             R.id.action_save -> {
-
+                saveImage(image)
             }
             R.id.action_delete -> {
-
+                deleteImage(image)
             }
         }
     }
 
-    private fun loadData() {
-        observable.observeOn(AndroidSchedulers.mainThread()).toList().subscribe({
-            adapter = ImageViewerPagerAdapter(supportFragmentManager, it.size)
-            viewPager.offscreenPageLimit = 2
-            viewPager.adapter = adapter
-            viewPager.currentItem = position
+    private fun deleteImage(image: Image) {
+        AlertDialog.Builder(this)
+                .setTitle(R.string.title_warning_delete_image)
+                .setMessage(getString(R.string.msg_warning_delete_image, packageManager.getApplicationLabel(appInfo)))
+                .setNegativeButton(android.R.string.cancel, { dialog: DialogInterface, i: Int ->
+                    dialog.dismiss()
+                })
+                .setPositiveButton(R.string.delete_anyway, { dialog: DialogInterface, i: Int ->
+                    dialog.dismiss()
+                    imageRepo.deleteImage(viewPager.currentItem, appInfo)
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe({
+                                toastShort(getString(R.string.msg_delete_image_success))
+                            }, { error ->
+                                toastShort(getString(R.string.msg_delete_image_failed))
+                            })
+                })
+                .show()
+
+    }
+
+    private fun saveImage(image: Image) {
+        imageRepo.saveImage(image, appInfo).subscribe({ savedFile ->
+            val values: ContentValues = ContentValues();
+            values.put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis());
+            values.put(MediaStore.Images.Media.MIME_TYPE, image.mimeType());
+            values.put(MediaStore.MediaColumns.DATA, savedFile.absolutePath);
+            val uri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+            val relativePath = "/sdcard" + savedFile.absolutePath.substringAfter(Environment.getExternalStorageDirectory().absolutePath);
+            Snackbar.make(viewPager, getString(R.string.toast_save_image_success, relativePath), Snackbar.LENGTH_SHORT)
+                    .setAction(R.string.snack_action_open_saved_image, {
+                        val intent: Intent = Intent();
+                        intent.action = Intent.ACTION_VIEW;
+                        intent.setDataAndType(uri, image.mimeType());
+                        startActivity(intent);
+                    }).setActionTextColor(resources.getColor(R.color.colorPrimary)).show();
+
+        }, { error ->
+            Toast.makeText(this, error.message, Toast.LENGTH_SHORT).show()
         })
+    }
+
+    private fun shareImage(image: Image) {
+        val photoURI = FileProvider.getUriForFile(this, FILE_PROVIDER, image.file())
+        val shareIntent = Intent()
+        shareIntent.action = Intent.ACTION_SEND
+        shareIntent.putExtra(Intent.EXTRA_STREAM, photoURI)
+        shareIntent.type = image.mimeType()
+        startActivity(Intent.createChooser(shareIntent, resources.getText(R.string.title_share_image)))
+    }
+
+    private fun loadData() {
+        val images = imageRepo.getImages(appInfo)
+        adapter = ImageViewerPagerAdapter(supportFragmentManager, images.size)
+        viewPager.offscreenPageLimit = 2
+        viewPager.adapter = adapter
+        viewPager.currentItem = position
+        imageRepo.register(appInfo)
+                .observeOn(AndroidSchedulers.mainThread())
+                .bindToLifecycle(this)
+                .subscribe { event ->
+                    when (event.type) {
+                        UPDATE_EVENT -> {
+                            adapter.notifyDataSetChanged();
+                            viewPager.currentItem = 0
+                            position = 0
+                        }
+                        REMOVE_EVENT -> {
+                            adapter.notifyDataSetChanged()
+                        }
+                        INSERT_EVENT -> {
+                            adapter.notifyDataSetChanged();
+                        }
+                    }
+                }
     }
 
     override fun onSaveInstanceState(outState: Bundle?, outPersistentState: PersistableBundle?) {

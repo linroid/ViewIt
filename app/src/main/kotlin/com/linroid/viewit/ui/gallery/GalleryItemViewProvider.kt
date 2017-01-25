@@ -41,13 +41,13 @@ class GalleryItemViewProvider @Inject constructor(val activity: GalleryActivity,
         if (!RootUtils.isRootFile(activity, image.path)) {
             Glide.with(holder.image.context).load(image.path).centerCrop().into(holder.image)
         } else {
-            imageRepo.mountFile(image.path, info)
+            imageRepo.mountImage(image, info)
                     .observeOn(AndroidSchedulers.mainThread())
                     .bindToLifecycle(holder.itemView)
-                    .subscribe({ file ->
-                        Timber.i("mount file success (${file.absolutePath})")
+                    .subscribe({ image ->
+                        Timber.i("mount file success ($image)")
                         Glide.with(holder.image.context)
-                                .load(file)
+                                .load(File(image.mountPath))
                                 .centerCrop()
                                 .listener(object : RequestListener<File, GlideDrawable> {
                                     override fun onException(e: Exception, model: File, target: Target<GlideDrawable>, isFirstResource: Boolean): Boolean {

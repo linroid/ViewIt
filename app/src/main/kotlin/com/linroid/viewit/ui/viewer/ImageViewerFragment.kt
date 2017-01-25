@@ -19,10 +19,10 @@ import com.linroid.viewit.ui.BaseFragment
 import com.linroid.viewit.ui.ImmersiveActivity
 import com.linroid.viewit.utils.ARG_POSITION
 import com.linroid.viewit.utils.RootUtils
+import hugo.weaving.DebugLog
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import timber.log.Timber
-import java.io.File
 import javax.inject.Inject
 
 /**
@@ -30,7 +30,6 @@ import javax.inject.Inject
  * @since 11/01/2017
  */
 class ImageViewerFragment : BaseFragment() {
-    @Inject lateinit var observable: Observable<Image>
     @Inject lateinit var imageRepo: ImageRepo
     @Inject lateinit var appInfo: ApplicationInfo
 
@@ -48,17 +47,26 @@ class ImageViewerFragment : BaseFragment() {
         }
     }
 
+    @DebugLog
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val args = savedInstanceState ?: arguments
+        position = args.getInt(ARG_POSITION)
+        Timber.d("onCreate")
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt(ARG_POSITION, position)
+    }
+
+    @DebugLog
     override fun onAttach(activity: Activity?) {
         super.onAttach(activity)
         if (activity is ImageViewerActivity) {
             activity.graph.inject(this)
         }
-
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        position = arguments?.getInt(ARG_POSITION) as Int
+        Timber.d("onAttach")
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -72,6 +80,7 @@ class ImageViewerFragment : BaseFragment() {
         }
     }
 
+    @DebugLog
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         bigImageViewer.setOnClickListener(imageClickListener)
@@ -81,19 +90,20 @@ class ImageViewerFragment : BaseFragment() {
         }
     }
 
+    @DebugLog
     private fun loadImage(act: ImageViewerActivity) {
+        Timber.i("position:$position")
         var isGif = false;
-        observable.elementAt(position)
-                .map {
-                    isGif = it.type == ImageType.GIF
-                    return@map File(it.path)
-                }
-                .flatMap {
-                    if (RootUtils.isRootFile(act, it.path)) {
-                        return@flatMap imageRepo.mountFile(it.path, appInfo);
+        val image = imageRepo.getImageAt(position, appInfo)
+        Observable.just(image)
+                .flatMap { image ->
+                    isGif = image.type == ImageType.GIF
+                    if (RootUtils.isRootFile(act, image.path)) {
+                        return@flatMap imageRepo.mountImage(image, appInfo);
                     }
-                    return@flatMap Observable.just(it)
+                    return@flatMap Observable.just(image)
                 }
+                .map(Image::file)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ file ->
                     if (isGif) {
@@ -108,6 +118,14 @@ class ImageViewerFragment : BaseFragment() {
                 }, { error ->
                     Timber.e(error, "view image failed")
                 })
+    }
+
+    @DebugLog
+    fun updatePosition(newPos: Int) {
+        position = newPos;
+        arguments.putInt(ARG_POSITION, newPos)
+
+        Timber.d("updatePosition")
     }
 
 }
