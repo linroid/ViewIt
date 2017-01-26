@@ -8,6 +8,7 @@ import com.linroid.viewit.ioc.DaggerGlobalGraph
 import com.linroid.viewit.ioc.GlobalGraph
 import com.linroid.viewit.ioc.module.AndroidModule
 import com.linroid.viewit.ioc.module.DataModule
+import com.linroid.viewit.ioc.module.PrefModule
 import com.linroid.viewit.ioc.module.RepoModule
 import com.linroid.viewit.utils.BINARY_DIRECTORY
 import com.linroid.viewit.utils.BINARY_SEARCH_IMAGE
@@ -37,6 +38,7 @@ class App : Application() {
                 .androidModule(AndroidModule(this))
                 .repoModule(RepoModule())
                 .dataModule(DataModule())
+                .prefModule(PrefModule())
                 .build();
         instance = this;
         BigImageViewer.initialize(GlideImageLoader.with(this));

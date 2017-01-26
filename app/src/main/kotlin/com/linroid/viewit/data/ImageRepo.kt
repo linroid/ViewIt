@@ -19,6 +19,7 @@ import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
 import rx.subjects.PublishSubject
+import timber.log.Timber
 import java.io.File
 import java.util.*
 
@@ -33,12 +34,41 @@ const val INSERT_EVENT = 0x3L
 @IntDef(UPDATE_EVENT, REMOVE_EVENT, INSERT_EVENT)
 annotation class ImageEventType
 
+const val SORT_BY_DEFAULT = 0x1L
+const val SORT_BY_SIZE = 0x2L
+const val SORT_BY_TIME = 0x3L
+
+@IntDef(SORT_BY_DEFAULT, SORT_BY_SIZE, SORT_BY_TIME)
+annotation class ImageSortType
+
 class ImageRepo(private val context: Context, private val packageManager: PackageManager) {
     private val subjects = HashMap<String, PublishSubject<ImageEvent>>()
     private val cacheDir: File = File(context.cacheDir, "mounts")
     private val imagesMap = HashMap<String, MutableList<Image>>()
 
-    fun scan(appInfo: ApplicationInfo): Observable<List<Image>> {
+    fun sort(appInfo: ApplicationInfo, @ImageSortType sortType: Long): Observable<List<Image>> {
+        val subject = getSubject(appInfo.packageName)
+        val images = getImages(appInfo.packageName)
+        if (images.size == 0) return scan(appInfo, sortType)
+        return sort(Observable.from(images), sortType)
+                .toList()
+                .doOnNext {
+                    images.clear()
+                    images.addAll(it)
+                    subject.onNext(ImageEvent(UPDATE_EVENT, 0, it.size, images))
+                }
+    }
+
+    private fun sort(observable: Observable<Image>, @ImageSortType sortType: Long): Observable<Image> {
+        when (sortType) {
+            SORT_BY_SIZE -> return observable.sorted { image, image2 -> -image.size.compareTo(image2.size) }
+            SORT_BY_TIME -> return observable.sorted { image, image2 -> -image.lastModified.compareTo(image2.lastModified) }
+        }
+        return observable
+    }
+
+    fun scan(appInfo: ApplicationInfo, @ImageSortType sortType: Long): Observable<List<Image>> {
+        Timber.d("scan images for ${appInfo.packageName}, sortType:${sortType}")
         val subject = getSubject(appInfo.packageName)
         val images = getImages(appInfo.packageName)
 
@@ -59,7 +89,7 @@ class ImageRepo(private val context: Context, private val packageManager: Packag
             }
             observable = observable.concatWith(SdcardImageScanner.scan(appInfo.packageName, dirs))
         }
-        return observable.sorted { image, image2 -> -image.size.compareTo(image2.size) }
+        return sort(observable, sortType)
                 .toList()
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext {

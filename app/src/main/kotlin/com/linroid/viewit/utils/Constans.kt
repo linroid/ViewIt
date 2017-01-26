@@ -11,6 +11,8 @@ const val BINARY_SEARCH_IMAGE = "search_image"
 const val BINARY_DIRECTORY = "exec"
 const val FILE_PROVIDER = "${BuildConfig.APPLICATION_ID}.fileProvider"
 
+const val PREF_SORT_TYPE = "sort_type"
+
 val APP_EXTERNAL_PATHS = mapOf(
         "com.tencent.mm" to arrayListOf("Tencent/MicroMsg"),
         "com.tencent.mobileqq" to arrayListOf("Tencent/QQ_Favorite", "Tencent/MobileQQ", "Tencent/QQ_Images", "Tencent/QQfile_recv")

@@ -45,7 +45,6 @@ class GalleryItemViewProvider @Inject constructor(val activity: GalleryActivity,
                     .observeOn(AndroidSchedulers.mainThread())
                     .bindToLifecycle(holder.itemView)
                     .subscribe({ image ->
-                        Timber.i("mount file success ($image)")
                         Glide.with(holder.image.context)
                                 .load(File(image.mountPath))
                                 .centerCrop()

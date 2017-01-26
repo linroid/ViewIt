@@ -5,25 +5,25 @@ import android.annotation.SuppressLint
 import android.app.ProgressDialog
 import android.content.Intent
 import android.content.pm.ApplicationInfo
+import android.net.Uri
 import android.os.Bundle
-import android.support.v4.app.NavUtils
+import android.provider.Settings
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import butterknife.bindView
 import com.linroid.viewit.App
 import com.linroid.viewit.R
-import com.linroid.viewit.data.INSERT_EVENT
-import com.linroid.viewit.data.ImageRepo
-import com.linroid.viewit.data.REMOVE_EVENT
-import com.linroid.viewit.data.UPDATE_EVENT
+import com.linroid.viewit.data.*
 import com.linroid.viewit.ioc.DaggerGalleryGraph
 import com.linroid.viewit.ioc.module.GalleryModule
 import com.linroid.viewit.ui.BaseActivity
 import com.linroid.viewit.utils.ARG_APP_INFO
+import com.linroid.viewit.utils.pref.LongPreference
 import com.trello.rxlifecycle.kotlin.bindToLifecycle
 import me.drakeet.multitype.MultiTypeAdapter
 import permissions.dispatcher.*
@@ -40,6 +40,7 @@ class GalleryActivity : BaseActivity() {
     @Inject lateinit var imageRepo: ImageRepo
     @Inject lateinit var images: MutableList<Any>
     @Inject lateinit var adapter: MultiTypeAdapter
+    @Inject lateinit var sortType: LongPreference
 
     lateinit var appInfo: ApplicationInfo
     lateinit var appName: CharSequence
@@ -80,6 +81,59 @@ class GalleryActivity : BaseActivity() {
         registerImages();
     }
 
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_gallery, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+        when (sortType.get()) {
+            SORT_BY_DEFAULT -> {
+                menu.findItem(R.id.action_sort_by_default).isChecked = true
+            }
+            SORT_BY_SIZE -> {
+                menu.findItem(R.id.action_sort_by_size).isChecked = true
+            }
+            SORT_BY_TIME -> {
+                menu.findItem(R.id.action_sort_by_time).isChecked = true
+            }
+        }
+
+        return super.onPrepareOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+//            android.R.id.home -> {
+//                NavUtils.navigateUpFromSameTask(this)
+//                return true
+//            }
+            R.id.action_view_app_info -> {
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                intent.data = Uri.parse("package:" + appInfo.packageName)
+                startActivity(intent)
+            }
+            R.id.action_sort_by_default -> {
+                resortImage(SORT_BY_DEFAULT)
+            }
+            R.id.action_sort_by_size -> {
+                resortImage(SORT_BY_SIZE)
+            }
+            R.id.action_sort_by_time -> {
+                resortImage(SORT_BY_TIME)
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun resortImage(@ImageSortType type: Long) {
+        sortType.set(SORT_BY_SIZE)
+        supportInvalidateOptionsMenu()
+        imageRepo.sort(appInfo, type).subscribe {
+            Timber.i("sort image completed")
+        }
+    }
+
     private fun registerImages() {
         imageRepo.register(appInfo)
                 .bindToLifecycle(this)
@@ -88,6 +142,7 @@ class GalleryActivity : BaseActivity() {
                     supportActionBar?.title = getString(R.string.title_activity_gallery_scanned, appName, event.images.size)
                     when (event.type) {
                         UPDATE_EVENT -> {
+                            images.clear()
                             images.addAll(event.images)
                             adapter.notifyDataSetChanged();
                         }
@@ -101,16 +156,6 @@ class GalleryActivity : BaseActivity() {
                         }
                     }
                 })
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            android.R.id.home -> {
-                NavUtils.navigateUpFromSameTask(this)
-                return true
-            }
-        }
-        return super.onOptionsItemSelected(item)
     }
 
     override fun onDestroy() {
@@ -127,7 +172,7 @@ class GalleryActivity : BaseActivity() {
             setCancelable(false)
         }
         progress.show()
-        imageRepo.scan(appInfo)
+        imageRepo.scan(appInfo, sortType.get())
                 .bindToLifecycle(this)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
@@ -153,7 +198,7 @@ class GalleryActivity : BaseActivity() {
 
     @OnPermissionDenied(Manifest.permission.WRITE_EXTERNAL_STORAGE)
     fun showDeniedForStorage() {
-        finish();
+        finish()
     }
 
     @OnNeverAskAgain(Manifest.permission.WRITE_EXTERNAL_STORAGE)

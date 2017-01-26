@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:tools="http://schemas.android.com/tools">
+    <item
+        android:id="@+id/action_sort"
+        android:icon="@drawable/ic_sort"
+        android:title="@string/action_sort"
+        app:showAsAction="always"
+        tools:ignore="AlwaysShowAction">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/action_sort_by_default"
+                    android:title="默认排序">
+                </item>
+                <item
+                    android:id="@+id/action_sort_by_size"
+                    android:title="按文件大小"/>
+                <item
+                    android:id="@+id/action_sort_by_time"
+                    android:title="按时间"/>
+            </group>
+        </menu>
+
+    </item>
+    <item
+        android:id="@+id/action_view_app_info"
+        android:title="@string/action_view_app_info"
+        app:showAsAction="never"/>
+</menu>

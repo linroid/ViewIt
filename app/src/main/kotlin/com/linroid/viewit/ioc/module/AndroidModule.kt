@@ -1,8 +1,10 @@
 package com.linroid.viewit.ioc.module
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.content.res.Resources
+import android.preference.PreferenceManager
 import com.linroid.viewit.App
 import dagger.Module
 import dagger.Provides
@@ -26,4 +28,10 @@ class AndroidModule(val app: App) {
 
     @Provides
     fun providePackageManager(context: Context): PackageManager = context.packageManager
+
+    @Provides
+    @Singleton
+    fun provideSharedPreference(context: Context): SharedPreferences {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+    }
 }

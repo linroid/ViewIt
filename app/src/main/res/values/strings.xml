@@ -20,4 +20,6 @@
     <string name="delete_anyway">仍然删除</string>
     <string name="title_warning_delete_image">Warning</string>
     <string name="title_activity_gallery_scanned">"%1$s (%2$d 张)"</string>
+    <string name="action_view_app_info">查看应用信息</string>
+    <string name="action_sort">排序</string>
 </resources>
