@@ -21,14 +21,15 @@ object RootImageScanner : ImageScanner() {
             observables.add(RxShell.instance().execBinary(App.get(), BINARY_SEARCH_IMAGE, file.absolutePath))
         }
         return Observable.merge(observables)
-                .filter { line -> line != null && line.split(" ").size == 3 }
+                .filter { line -> line != null && line.split(" ").size == 4 }
                 .map { line ->
                     val parser = line.split(" ")
                     val size = parser[0].toLong()
-                    val typeVal = parser[1].toInt()
+                    val lastModified = parser[1].toLong()
+                    val typeVal = parser[2].toInt()
                     val type: ImageType = ImageType.from(typeVal)
-                    val path = parser[2]
-                    Image(path, size, type)
+                    val path = parser[3]
+                    Image(path, size, lastModified, type)
                 }
                 .filter { image -> image.type != ImageType.UNKNOWN }
     }

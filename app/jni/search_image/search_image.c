@@ -26,7 +26,7 @@ const int PNG_HEADER = 0x89504E47;
 const uint16_t EXIF_MAGIC_NUMBER = 0xFFD8;
 
 void search_image(const char *name) {
-    printf("search_image:%s\n", name);
+//    printf("search_image:%s\n", name);
     DIR *dir;
     struct dirent *entry;
     struct stat statbuf;
@@ -46,7 +46,7 @@ void search_image(const char *name) {
             ImageType type = get_image_type(path);
             if (type != UNKNOWN) {
                 lstat(path, &statbuf);
-                printf("%lli %d %s\n", statbuf.st_size, type, path);
+                printf("%lli %lli %d %s\n", statbuf.st_size, statbuf.st_mtime, type, path);
             }
         }
     }
@@ -96,6 +96,6 @@ ImageType get_image_type(const char *path) {
 
 int main(int argc, char *argv[]) {
     search_image(argv[1]);
-    printf("finished!\n");
+//    printf("finished!\n");
     exit(0);
 }

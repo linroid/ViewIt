@@ -35,7 +35,7 @@ object SdcardImageScanner : ImageScanner() {
         if (file.isFile) {
             val type = ImageMIME.getImageType(file)
             if (type != ImageType.UNKNOWN) {
-                val image = Image(file.absolutePath, file.length(), type)
+                val image = Image(file.absolutePath, file.length(), file.lastModified(), type)
                 subscriber.onNext(image);
             }
         } else if (file.isDirectory) {
