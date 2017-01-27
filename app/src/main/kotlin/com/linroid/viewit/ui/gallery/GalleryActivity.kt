@@ -158,9 +158,6 @@ class GalleryActivity : BaseActivity() {
         }
         filterSizePref.set(size)
         supportInvalidateOptionsMenu()
-        imageRepo.refresh(appInfo).bindToLifecycle(this).subscribe {
-            Timber.i("change filter size to $size success")
-        }
     }
 
     private fun handleSortAction(item: MenuItem) {
@@ -181,12 +178,14 @@ class GalleryActivity : BaseActivity() {
         }
         sortTypePref.set(type)
         supportInvalidateOptionsMenu()
-        imageRepo.refresh(appInfo).bindToLifecycle(this).subscribe {
-            Timber.i("sort image completed")
-        }
     }
 
     private fun registerImages() {
+        filterSizePref.listen()
+                .mergeWith(sortTypePref.listen())
+                .flatMap { imageRepo.refresh(appInfo) }
+                .bindToLifecycle(this)
+                .subscribe { Timber.i("refresh images success") }
         imageRepo.register(appInfo)
                 .bindToLifecycle(this)
                 .observeOn(AndroidSchedulers.mainThread())
@@ -203,7 +202,7 @@ class GalleryActivity : BaseActivity() {
                             adapter.notifyItemRemoved(event.position);
                         }
                         INSERT_EVENT -> {
-                            images.add(event.position, event.images.get(event.position))
+                            images.add(event.position, event.images[event.position])
                             adapter.notifyItemInserted(event.position);
                         }
                     }
