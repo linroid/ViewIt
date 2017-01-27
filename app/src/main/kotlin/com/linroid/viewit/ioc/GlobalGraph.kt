@@ -9,6 +9,7 @@ import com.linroid.viewit.ioc.module.DataModule
 import com.linroid.viewit.ioc.module.PrefModule
 import com.linroid.viewit.ioc.module.RepoModule
 import com.linroid.viewit.ui.home.HomeActivity
+import com.linroid.viewit.utils.RxOnce
 import com.linroid.viewit.utils.pref.LongPreference
 import dagger.Component
 import javax.inject.Singleton
@@ -23,6 +24,7 @@ interface GlobalGraph {
     fun inject(app: App)
     fun inject(activity: HomeActivity)
     fun inject(imageRepo: ImageRepo)
+    fun inject(rxOnce: RxOnce)
 
     fun getContext(): Context
     fun getSortTypePref(): LongPreference
