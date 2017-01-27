@@ -27,4 +27,9 @@ An error occurred: %1$s</string>
     <string name="action_sort_by_default">Default order</string>
     <string name="action_sort_by_size">By size</string>
     <string name="action_sort_by_time">By Time</string>
+    <string name="action_filter_size">过滤文件</string>
+    <string name="action_filter_30K">小于30K</string>
+    <string name="action_filter_100K">小于100K</string>
+    <string name="action_filter_300K">小于300K</string>
+    <string name="action_filter_none">不过滤</string>
 </resources>

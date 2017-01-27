@@ -12,6 +12,7 @@ const val BINARY_DIRECTORY = "exec"
 const val FILE_PROVIDER = "${BuildConfig.APPLICATION_ID}.fileProvider"
 
 const val PREF_SORT_TYPE = "sort_type"
+const val PREF_FILTER_SIZE = "filter_size"
 
 val APP_EXTERNAL_PATHS = mapOf(
         "com.tencent.mm" to arrayListOf("Tencent/MicroMsg"),

@@ -22,6 +22,8 @@ import com.linroid.viewit.ioc.DaggerGalleryGraph
 import com.linroid.viewit.ioc.module.GalleryModule
 import com.linroid.viewit.ui.BaseActivity
 import com.linroid.viewit.utils.ARG_APP_INFO
+import com.linroid.viewit.utils.PREF_FILTER_SIZE
+import com.linroid.viewit.utils.PREF_SORT_TYPE
 import com.linroid.viewit.utils.pref.LongPreference
 import com.trello.rxlifecycle.kotlin.bindToLifecycle
 import me.drakeet.multitype.MultiTypeAdapter
@@ -29,6 +31,7 @@ import permissions.dispatcher.*
 import rx.android.schedulers.AndroidSchedulers
 import timber.log.Timber
 import javax.inject.Inject
+import javax.inject.Named
 
 /**
  * @author linroid <linroid@gmail.com>
@@ -39,7 +42,10 @@ class GalleryActivity : BaseActivity() {
     @Inject lateinit var imageRepo: ImageRepo
     @Inject lateinit var images: MutableList<Any>
     @Inject lateinit var adapter: MultiTypeAdapter
-    @Inject lateinit var sortType: LongPreference
+    @field:[Inject Named(PREF_SORT_TYPE)]
+    lateinit var sortTypePref: LongPreference
+    @field:[Inject Named(PREF_FILTER_SIZE)]
+    lateinit var filterSizePref: LongPreference
 
     lateinit var appInfo: ApplicationInfo
     lateinit var appName: CharSequence
@@ -86,7 +92,7 @@ class GalleryActivity : BaseActivity() {
     }
 
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
-        when (sortType.get()) {
+        when (sortTypePref.get()) {
             SORT_BY_DEFAULT -> {
                 menu.findItem(R.id.action_sort_by_default).isChecked = true
             }
@@ -97,41 +103,85 @@ class GalleryActivity : BaseActivity() {
                 menu.findItem(R.id.action_sort_by_time).isChecked = true
             }
         }
+        when (filterSizePref.get()) {
+            0L -> {
+                menu.findItem(R.id.action_filter_none).isChecked = true
+            }
+            30L -> {
+                menu.findItem(R.id.action_filter_30K).isChecked = true
+            }
+            100L -> {
+                menu.findItem(R.id.action_filter_100K).isChecked = true
+            }
+            300L -> {
+                menu.findItem(R.id.action_filter_300K).isChecked = true
+            }
+        }
 
         return super.onPrepareOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.groupId) {
+            R.id.action_sort -> {
+                handleSortAction(item)
+                return true
+            }
+            R.id.action_filter -> {
+                handleFilterAction(item)
+                return true
+            }
+        }
         when (item.itemId) {
-//            android.R.id.home -> {
-//                NavUtils.navigateUpFromSameTask(this)
-//                return true
-//            }
             R.id.action_view_app_info -> {
                 val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                 intent.data = Uri.parse("package:" + appInfo.packageName)
                 startActivity(intent)
+                return true
             }
-            R.id.action_sort_by_default -> {
-                resortImage(SORT_BY_DEFAULT)
-            }
-            R.id.action_sort_by_size -> {
-                resortImage(SORT_BY_SIZE)
-            }
-            R.id.action_sort_by_time -> {
-                resortImage(SORT_BY_TIME)
-            }
+
         }
+
         return super.onOptionsItemSelected(item)
     }
 
-    private fun resortImage(@ImageSortType type: Long) {
-        if (type == sortType.get()) {
+    private fun handleFilterAction(item: MenuItem) {
+        var size: Long = 0
+        when (item.itemId) {
+            R.id.action_filter_none -> size = 0
+            R.id.action_filter_30K -> size = 30
+            R.id.action_filter_100K -> size = 100
+            R.id.action_filter_300K -> size = 300
+        }
+        if (size == filterSizePref.get()) {
             return
         }
-        sortType.set(type)
+        filterSizePref.set(size)
         supportInvalidateOptionsMenu()
-        imageRepo.sort(appInfo, type).subscribe {
+        imageRepo.refresh(appInfo).bindToLifecycle(this).subscribe {
+            Timber.i("change filter size to $size success")
+        }
+    }
+
+    private fun handleSortAction(item: MenuItem) {
+        var type = SORT_BY_DEFAULT
+        when (item.itemId) {
+            R.id.action_sort_by_default -> {
+                type = SORT_BY_DEFAULT
+            }
+            R.id.action_sort_by_size -> {
+                type = SORT_BY_SIZE
+            }
+            R.id.action_sort_by_time -> {
+                type = SORT_BY_TIME
+            }
+        }
+        if (type == sortTypePref.get()) {
+            return
+        }
+        sortTypePref.set(type)
+        supportInvalidateOptionsMenu()
+        imageRepo.refresh(appInfo).bindToLifecycle(this).subscribe {
             Timber.i("sort image completed")
         }
     }
@@ -174,7 +224,7 @@ class GalleryActivity : BaseActivity() {
             setCancelable(false)
         }
         progress.show()
-        imageRepo.scan(appInfo, sortType.get())
+        imageRepo.scan(appInfo, sortTypePref.get())
                 .bindToLifecycle(this)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({

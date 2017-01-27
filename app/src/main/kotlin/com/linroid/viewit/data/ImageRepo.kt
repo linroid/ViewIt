@@ -13,9 +13,8 @@ import com.linroid.viewit.R
 import com.linroid.viewit.data.model.Image
 import com.linroid.viewit.data.scanner.ExternalImageScanner
 import com.linroid.viewit.data.scanner.InternalImageScanner
-import com.linroid.viewit.utils.APP_EXTERNAL_PATHS
-import com.linroid.viewit.utils.FileUtils
-import com.linroid.viewit.utils.RootUtils
+import com.linroid.viewit.utils.*
+import com.linroid.viewit.utils.pref.LongPreference
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import rx.lang.kotlin.filterNotNull
@@ -26,6 +25,7 @@ import timber.log.Timber
 import java.io.File
 import java.util.*
 import javax.inject.Inject
+import javax.inject.Named
 
 /**
  * @author linroid <linroid@gmail.com>
@@ -57,6 +57,12 @@ class ImageRepo {
     @Inject
     lateinit var externalScanner: ExternalImageScanner
 
+    @field:[Inject Named(PREF_SORT_TYPE)]
+    lateinit var sortTypePref: LongPreference
+
+    @field:[Inject Named(PREF_FILTER_SIZE)]
+    lateinit var filterSizePref: LongPreference
+
     init {
         App.graph.inject(this)
     }
@@ -65,30 +71,31 @@ class ImageRepo {
     private val cacheDir: File = File(context.cacheDir, "mounts")
     private val imagesMap = HashMap<String, MutableList<Image>>()
 
-    fun sort(appInfo: ApplicationInfo, @ImageSortType sortType: Long): Observable<List<Image>> {
+    fun refresh(appInfo: ApplicationInfo): Observable<List<Image>> {
+        Timber.d("refresh")
         val subject = getSubject(appInfo.packageName)
         val images = getImages(appInfo.packageName)
-        if (images.size == 0) return scan(appInfo, sortType)
-        return sort(Observable.from(images), sortType)
+        if (images.size == 0) return scan(appInfo, sortTypePref.get())
+        return Observable.from(images)
+                .filter { image ->
+                    image.size >= filterSizePref.get() * 1024 //KB
+                }
+                .sorted { image, image2 ->
+                    when (sortTypePref.get()) {
+                        SORT_BY_DEFAULT -> return@sorted -image.path.compareTo(image2.path)
+                        SORT_BY_SIZE -> return@sorted -image.size.compareTo(image2.size)
+                        SORT_BY_TIME -> return@sorted -image.lastModified.compareTo(image2.lastModified)
+                    }
+                    return@sorted 0
+                }
                 .toList()
                 .doOnNext {
-                    images.clear()
-                    images.addAll(it)
-                    subject.onNext(ImageEvent(UPDATE_EVENT, 0, it.size, images))
+                    subject.onNext(ImageEvent(UPDATE_EVENT, 0, it.size, it))
                 }
     }
 
-    private fun sort(observable: Observable<Image>, @ImageSortType sortType: Long): Observable<Image> {
-        when (sortType) {
-            SORT_BY_DEFAULT -> return observable.sorted { image, image2 -> -image.path.compareTo(image2.path) }
-            SORT_BY_SIZE -> return observable.sorted { image, image2 -> -image.size.compareTo(image2.size) }
-            SORT_BY_TIME -> return observable.sorted { image, image2 -> -image.lastModified.compareTo(image2.lastModified) }
-        }
-        return observable
-    }
-
     fun scan(appInfo: ApplicationInfo, @ImageSortType sortType: Long): Observable<List<Image>> {
-        Timber.d("scan images for ${appInfo.packageName}, sortType:$sortType")
+        Timber.d("scan images for ${appInfo.packageName}, sortTypePref:$sortType")
         val subject = getSubject(appInfo.packageName)
         val images = getImages(appInfo.packageName)
 
@@ -114,14 +121,14 @@ class ImageRepo {
             }
             observable = observable.concatWith(externalScanner.scan(appInfo.packageName, dirs))
         }
-        return sort(observable, sortType)
-                .toList()
+
+        return observable.toList()
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext {
+                    Timber.d("doOnNext")
                     images.clear()
                     images.addAll(it)
-                    subject.onNext(ImageEvent(UPDATE_EVENT, 0, it.size, images))
-                }
+                }.flatMap { refresh(appInfo) }
     }
 
     fun register(appInfo: ApplicationInfo): PublishSubject<ImageEvent> {

@@ -3,18 +3,13 @@ package com.linroid.viewit
 import android.app.Application
 import com.github.piasy.biv.BigImageViewer
 import com.github.piasy.biv.loader.glide.GlideImageLoader
-import com.linroid.rxshell.RxShell
 import com.linroid.viewit.ioc.DaggerGlobalGraph
 import com.linroid.viewit.ioc.GlobalGraph
 import com.linroid.viewit.ioc.module.AndroidModule
 import com.linroid.viewit.ioc.module.DataModule
 import com.linroid.viewit.ioc.module.PrefModule
 import com.linroid.viewit.ioc.module.RepoModule
-import com.linroid.viewit.utils.BINARY_DIRECTORY
-import com.linroid.viewit.utils.BINARY_SEARCH_IMAGE
-import com.linroid.viewit.utils.OSUtils
 import timber.log.Timber
-import java.io.File
 
 /**
  * @author linroid <linroid@gmail.com>
@@ -23,7 +18,7 @@ import java.io.File
 class App : Application() {
     companion object {
         @JvmStatic lateinit var graph: GlobalGraph
-        @JvmStatic lateinit var instance: App;
+        @JvmStatic private lateinit var instance: App;
         fun get(): App = instance
     }
 
