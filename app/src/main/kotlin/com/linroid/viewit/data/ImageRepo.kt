@@ -80,6 +80,7 @@ class ImageRepo {
 
     private fun sort(observable: Observable<Image>, @ImageSortType sortType: Long): Observable<Image> {
         when (sortType) {
+            SORT_BY_DEFAULT -> return observable.sorted { image, image2 -> -image.path.compareTo(image2.path) }
             SORT_BY_SIZE -> return observable.sorted { image, image2 -> -image.size.compareTo(image2.size) }
             SORT_BY_TIME -> return observable.sorted { image, image2 -> -image.lastModified.compareTo(image2.lastModified) }
         }

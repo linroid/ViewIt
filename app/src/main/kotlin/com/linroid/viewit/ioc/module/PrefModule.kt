@@ -1,6 +1,7 @@
 package com.linroid.viewit.ioc.module
 
 import android.content.SharedPreferences
+import com.linroid.viewit.data.SORT_BY_DEFAULT
 import com.linroid.viewit.utils.PREF_SORT_TYPE
 import com.linroid.viewit.utils.pref.LongPreference
 import dagger.Module
@@ -17,6 +18,6 @@ class PrefModule {
     @Provides
     @Singleton
     fun provideSortTypePref(pref: SharedPreferences): LongPreference {
-        return LongPreference(pref, PREF_SORT_TYPE, 0)
+        return LongPreference(pref, PREF_SORT_TYPE, SORT_BY_DEFAULT)
     }
 }

@@ -126,6 +126,9 @@ class GalleryActivity : BaseActivity() {
     }
 
     private fun resortImage(@ImageSortType type: Long) {
+        if (type == sortType.get()) {
+            return
+        }
         sortType.set(type)
         supportInvalidateOptionsMenu()
         imageRepo.sort(appInfo, type).subscribe {
