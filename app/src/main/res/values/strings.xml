@@ -3,23 +3,28 @@
     <string name="action_settings">Settings</string>
     <string name="button_allow">Allow</string>
     <string name="button_deny">Deny</string>
-    <string name="permission_storage_neverask" translatable="false">permission_storage_neverask</string>
-    <string name="permission_storage_rationale" translatable="false">permission_storage_rationale</string>
-    <string name="msg_scan_completed">Scan completed, %1$s imagesMap found:)</string>
+    <string name="permission_storage_neverask">Never ask for sorage permission</string>
+    <string name="msg_scan_completed_with_images">Scan completed, %1$s images found:)</string>
+    <string name="msg_scan_completed_without_image">Scan completed, but no image found:(</string>
     <string name="msg_scanning_image">Scanning…</string>
-    <string name="msg_scan_failed">:(\nAn error occurred:%1$s</string>
+    <string name="msg_scan_failed">:(
+An error occurred:%1$s</string>
     <string name="action_detail">View Detail</string>
-    <string name="viewer_action_error">:(\nAn error occurred: %1$s</string>
-    <string name="msg_save_image_failed_without_sdcard">没有存储卡</string>
-    <string name="snack_action_open_saved_image">Open</string>
-    <string name="toast_save_image_success">图片成功保存到:%1$s</string>
-    <string name="msg_delete_image_success">删除图片成功</string>
-    <string name="msg_delete_image_failed">删除图片失败</string>
-    <string name="title_share_image">分享到</string>
-    <string name="msg_warning_delete_image">删除这张图片可能导致[%1$s]运行异常，请谨慎操作!</string>
-    <string name="delete_anyway">仍然删除</string>
-    <string name="title_warning_delete_image">Warning</string>
-    <string name="title_activity_gallery_scanned">"%1$s (%2$d 张)"</string>
-    <string name="action_view_app_info">查看应用信息</string>
-    <string name="action_sort">排序</string>
+    <string name="viewer_action_error">:(
+An error occurred: %1$s</string>
+    <string name="snack_action_open_saved_image">View</string>
+    <string name="action_sort">Sort</string>
+    <string name="action_view_app_info">Application Detail</string>
+    <string name="delete_anyway">Delete Anyway</string>
+    <string name="msg_delete_image_failed">delete image failed</string>
+    <string name="msg_delete_image_success">delete image success</string>
+    <string name="msg_save_image_failed_without_sdcard">no sdcard</string>
+    <string name="msg_warning_delete_image">Notice!!! It will maybe not working</string>
+    <string name="title_activity_gallery_scanned">%1$s (%2$d Images)</string>
+    <string name="title_share_image">Share with</string>
+    <string name="title_warning_delete_image">️Warning⚠️</string>
+    <string name="toast_save_image_success">Image saved at:%1$s</string>
+    <string name="action_sort_by_default">Default order</string>
+    <string name="action_sort_by_size">By size</string>
+    <string name="action_sort_by_time">By Time</string>
 </resources>

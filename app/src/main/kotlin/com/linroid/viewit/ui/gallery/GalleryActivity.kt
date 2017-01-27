@@ -8,7 +8,6 @@ import android.content.pm.ApplicationInfo
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
-import android.support.v7.app.AlertDialog
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -182,18 +181,20 @@ class GalleryActivity : BaseActivity() {
                     progress.dismiss()
                     Toast.makeText(this, getString(R.string.msg_scan_failed, error.message), Toast.LENGTH_SHORT).show()
                 }, {
-                    Toast.makeText(this, getString(R.string.msg_scan_completed, images.size), Toast.LENGTH_SHORT).show()
+                    val msg = if (images.size > 0) getString(R.string.msg_scan_completed_with_images, images.size) else getString(R.string.msg_scan_completed_without_image)
+                    Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
                     progress.dismiss()
                 })
     }
 
     @OnShowRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)
     fun showRationaleForStorage(request: PermissionRequest) {
-        AlertDialog.Builder(this)
-                .setMessage(R.string.permission_storage_rationale)
-                .setPositiveButton(R.string.button_allow, { dialog, button -> request.proceed() })
-                .setNegativeButton(R.string.button_deny, { dialog, button -> request.cancel() })
-                .show()
+        request.proceed()
+//        AlertDialog.Builder(this)
+//                .setMessage(R.string.permission_storage_rationale)
+//                .setPositiveButton(R.string.button_allow, { dialog, button -> request.proceed() })
+//                .setNegativeButton(R.string.button_deny, { dialog, button -> request.cancel() })
+//                .show()
     }
 
     @OnPermissionDenied(Manifest.permission.WRITE_EXTERNAL_STORAGE)

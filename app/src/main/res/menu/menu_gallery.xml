@@ -12,14 +12,14 @@
             <group android:checkableBehavior="single">
                 <item
                     android:id="@+id/action_sort_by_default"
-                    android:title="默认排序">
+                    android:title="@string/action_sort_by_default">
                 </item>
                 <item
                     android:id="@+id/action_sort_by_size"
-                    android:title="按文件大小"/>
+                    android:title="@string/action_sort_by_size"/>
                 <item
                     android:id="@+id/action_sort_by_time"
-                    android:title="按时间"/>
+                    android:title="@string/action_sort_by_time"/>
             </group>
         </menu>
 
