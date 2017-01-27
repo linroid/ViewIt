@@ -9,16 +9,17 @@ import com.linroid.viewit.utils.BINARY_SEARCH_IMAGE
 import rx.Observable
 import java.io.File
 import java.util.*
+import javax.inject.Inject
 
 /**
  * @author linroid <linroid@gmail.com>
  * @since 09/01/2017
  */
-object RootImageScanner : ImageScanner() {
+class InternalImageScanner @Inject constructor(val rxShell: RxShell) : ImageScanner() {
     override fun scan(packageName: String, dirs: List<File>): Observable<Image> {
         val observables = ArrayList<Observable<String>>(dirs.size)
         dirs.forEach { file ->
-            observables.add(RxShell.instance().execBinary(App.get(), BINARY_SEARCH_IMAGE, file.absolutePath))
+            observables.add(rxShell.execBinary(App.get(), BINARY_SEARCH_IMAGE, file.absolutePath))
         }
         return Observable.merge(observables)
                 .filter { line -> line != null && line.split(" ").size == 4 }

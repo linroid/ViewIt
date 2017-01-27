@@ -8,20 +8,24 @@ import android.content.pm.PackageManager
 import android.os.Environment
 import android.support.annotation.IntDef
 import com.linroid.rxshell.RxShell
+import com.linroid.viewit.App
 import com.linroid.viewit.R
 import com.linroid.viewit.data.model.Image
-import com.linroid.viewit.data.scanner.RootImageScanner
-import com.linroid.viewit.data.scanner.SdcardImageScanner
+import com.linroid.viewit.data.scanner.ExternalImageScanner
+import com.linroid.viewit.data.scanner.InternalImageScanner
 import com.linroid.viewit.utils.APP_EXTERNAL_PATHS
 import com.linroid.viewit.utils.FileUtils
 import com.linroid.viewit.utils.RootUtils
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
+import rx.lang.kotlin.filterNotNull
+import rx.lang.kotlin.onErrorReturnNull
 import rx.schedulers.Schedulers
 import rx.subjects.PublishSubject
 import timber.log.Timber
 import java.io.File
 import java.util.*
+import javax.inject.Inject
 
 /**
  * @author linroid <linroid@gmail.com>
@@ -41,7 +45,22 @@ const val SORT_BY_TIME = 0x3L
 @IntDef(SORT_BY_DEFAULT, SORT_BY_SIZE, SORT_BY_TIME)
 annotation class ImageSortType
 
-class ImageRepo(private val context: Context, private val packageManager: PackageManager) {
+class ImageRepo {
+    @Inject
+    lateinit var context: Context
+    @Inject
+    lateinit var packageManager: PackageManager
+    @Inject
+    lateinit var rxShell: RxShell
+    @Inject
+    lateinit var internalScanner: InternalImageScanner
+    @Inject
+    lateinit var externalScanner: ExternalImageScanner
+
+    init {
+        App.graph.inject(this)
+    }
+
     private val subjects = HashMap<String, PublishSubject<ImageEvent>>()
     private val cacheDir: File = File(context.cacheDir, "mounts")
     private val imagesMap = HashMap<String, MutableList<Image>>()
@@ -68,16 +87,21 @@ class ImageRepo(private val context: Context, private val packageManager: Packag
     }
 
     fun scan(appInfo: ApplicationInfo, @ImageSortType sortType: Long): Observable<List<Image>> {
-        Timber.d("scan images for ${appInfo.packageName}, sortType:${sortType}")
+        Timber.d("scan images for ${appInfo.packageName}, sortType:$sortType")
         val subject = getSubject(appInfo.packageName)
         val images = getImages(appInfo.packageName)
 
         val externalData: File = context.externalCacheDir.parentFile.parentFile
-        var observable = SdcardImageScanner.scan(appInfo.packageName, File(externalData, appInfo.packageName))
+        var observable = externalScanner.scan(appInfo.packageName, File(externalData, appInfo.packageName))
 
-        val packInfo: PackageInfo = packageManager.getPackageInfo(appInfo.packageName, 0)
-        val dataDir = packInfo.applicationInfo.dataDir
-        observable = observable.concatWith(RootImageScanner.scan(appInfo.packageName, File(dataDir)))
+        if (RootUtils.isRootAvailable()) {
+            val packInfo: PackageInfo = packageManager.getPackageInfo(appInfo.packageName, 0)
+            val dataDir = packInfo.applicationInfo.dataDir
+            val internal = internalScanner.scan(appInfo.packageName, File(dataDir))
+                    .doOnError { error -> Timber.e(error, "scan internal image failed") }
+                    .onErrorReturnNull().filterNotNull()
+            observable = observable.concatWith(internal)
+        }
 
         if (APP_EXTERNAL_PATHS.containsKey(appInfo.packageName)) {
             val sdcard = Environment.getExternalStorageDirectory()
@@ -87,7 +111,7 @@ class ImageRepo(private val context: Context, private val packageManager: Packag
                     dirs.add(File(sdcard, it))
                 }
             }
-            observable = observable.concatWith(SdcardImageScanner.scan(appInfo.packageName, dirs))
+            observable = observable.concatWith(externalScanner.scan(appInfo.packageName, dirs))
         }
         return sort(observable, sortType)
                 .toList()
@@ -159,8 +183,7 @@ class ImageRepo(private val context: Context, private val packageManager: Packag
         if (!cacheFile.exists()) {
             cacheFile.createNewFile()
         }
-        return RxShell.instance()
-                .copyFile(image.path, cacheFile.absolutePath)
+        return rxShell.copyFile(image.path, cacheFile.absolutePath)
 //                .flatMap { RxShell.instance().chown(cacheFile.absolutePath, uid, uid) }
                 .map { image }
     }
@@ -199,7 +222,7 @@ class ImageRepo(private val context: Context, private val packageManager: Packag
         return Observable.just(image.path)
                 .flatMap { path ->
                     if (RootUtils.isRootFile(context, path)) {
-                        return@flatMap RxShell.instance().deleteFile(path)
+                        return@flatMap rxShell.deleteFile(path)
                     } else {
                         File(image.path).delete()
                         return@flatMap Observable.just(true)

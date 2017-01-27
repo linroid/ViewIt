@@ -1,8 +1,13 @@
 package com.linroid.viewit.ioc.module
 
 import android.content.Context
+import android.content.res.AssetManager
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.linroid.rxshell.RxShell
+import com.linroid.viewit.utils.BINARY_DIRECTORY
+import com.linroid.viewit.utils.BINARY_SEARCH_IMAGE
+import com.linroid.viewit.utils.OSUtils
 import dagger.Module
 import dagger.Provides
 import okhttp3.Cache
@@ -59,5 +64,26 @@ class DataModule {
         val logging = HttpLoggingInterceptor(HttpLoggingInterceptor.Logger { Timber.tag("OkHttp").d(it) })
         logging.level = HttpLoggingInterceptor.Level.BASIC
         return logging;
+    }
+
+    @Singleton
+    @Provides
+    fun provideRxShell(context: Context): RxShell {
+        val shell = RxShell(true)
+        val supportAbis = OSUtils.getSupportedAbis();
+        val assets: AssetManager = context.assets
+        val dir = assets.list(BINARY_DIRECTORY)
+        val preferABI = OSUtils.findPreferAbi(supportAbis, dir)
+        if (preferABI?.isNotEmpty() as Boolean) {
+            val stream = assets.open(BINARY_DIRECTORY + File.separator + preferABI + File.separator + BINARY_SEARCH_IMAGE);
+            shell.installBinary(context, stream, BINARY_SEARCH_IMAGE, 1.0F)
+                    .subscribe({ result ->
+                        Timber.i("install binary $BINARY_SEARCH_IMAGE result: $result")
+                    }, { error ->
+                        Timber.e(error)
+                    })
+
+        }
+        return shell
     }
 }

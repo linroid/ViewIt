@@ -28,20 +28,11 @@ import rx.functions.Action1;
  * @since 17/01/2017
  */
 public class RxShell {
-    public static final String TAG = "RxShell";
-    public static final String SP_BINARY_VERSIONS_FILE = "binary_versions";
+    private static final String TAG = "RxShell";
+    private static final String SP_BINARY_VERSIONS_FILE = "binary_versions";
     private final HandlerThread workerThread = new HandlerThread("RxShell-Worker");
 
     private final Shell shell;
-
-    private static RxShell sInstance;
-
-    public static RxShell instance() {
-        if (sInstance == null) {
-            sInstance = new RxShell(true);
-        }
-        return sInstance;
-    }
 
     public RxShell(String customShell) {
         this.shell = new Shell(customShell);
@@ -163,7 +154,7 @@ public class RxShell {
 
     @CheckResult
     public Observable<Boolean> installBinary(@NotNull final Context context, @NotNull final InputStream stream, @NotNull final String binaryName, final float version) {
-        Log.i(TAG, "install binary: " + binaryName);
+        Log.d(TAG, "install binary: " + binaryName);
         return create(new Observable.OnSubscribe<Boolean>() {
             @Override
             public void call(Subscriber<? super Boolean> subscriber) {

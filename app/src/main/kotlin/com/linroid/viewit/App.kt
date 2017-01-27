@@ -42,23 +42,5 @@ class App : Application() {
                 .build();
         instance = this;
         BigImageViewer.initialize(GlideImageLoader.with(this));
-        installBinary();
-    }
-
-    private fun installBinary() {
-        val supportAbis = OSUtils.getSupportedAbis();
-        val dir = assets.list(BINARY_DIRECTORY)
-        val preferABI = OSUtils.findPreferAbi(supportAbis, dir)
-        if (preferABI?.isNotEmpty() as Boolean) {
-            val stream = assets.open(BINARY_DIRECTORY + File.separator + preferABI + File.separator + BINARY_SEARCH_IMAGE);
-            RxShell.instance()
-                    .installBinary(this, stream, BINARY_SEARCH_IMAGE, 1.0F)
-                    .subscribe({ result ->
-                        Timber.i("install binary $BINARY_SEARCH_IMAGE result: $result")
-                    }, { error ->
-                        Timber.e(error)
-                    })
-
-        }
     }
 }

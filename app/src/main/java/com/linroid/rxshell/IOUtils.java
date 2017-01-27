@@ -9,8 +9,8 @@ import java.io.IOException;
  * @author linroid <linroid@gmail.com>
  * @since 23/01/2017
  */
-public class IOUtils {
-    public static void closeQuietly(@Nullable Closeable closeable) {
+class IOUtils {
+    static void closeQuietly(@Nullable Closeable closeable) {
         if (closeable == null) {
             return;
         }

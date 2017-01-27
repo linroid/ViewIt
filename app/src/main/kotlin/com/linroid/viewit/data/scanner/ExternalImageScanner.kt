@@ -8,12 +8,13 @@ import rx.Subscriber
 import rx.schedulers.Schedulers
 import timber.log.Timber
 import java.io.File
+import javax.inject.Inject
 
 /**
  * @author linroid <linroid@gmail.com>
  * @since 07/01/2017
  */
-object SdcardImageScanner : ImageScanner() {
+class ExternalImageScanner @Inject constructor() : ImageScanner() {
     override fun scan(packageName: String, dirs: List<File>): Observable<Image> {
         return Observable.create<Image> { subscriber ->
             try {
