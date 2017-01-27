@@ -126,7 +126,7 @@ class GalleryActivity : BaseActivity() {
     }
 
     private fun resortImage(@ImageSortType type: Long) {
-        sortType.set(SORT_BY_SIZE)
+        sortType.set(type)
         supportInvalidateOptionsMenu()
         imageRepo.sort(appInfo, type).subscribe {
             Timber.i("sort image completed")
