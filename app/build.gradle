@@ -24,12 +24,36 @@ android {
 //            }
 //        }
     }
-    buildTypes {
+    signingConfigs {
+        debug {
+            storeFile file('./linroid_debug.jks')
+            storePassword '12344321'
+            keyAlias 'linroid_debug'
+            keyPassword '12344321'
+        }
+
         release {
+        }
+    }
+    buildTypes {
+        debug {
+            applicationIdSuffix ".dev"
+            versionNameSuffix '-dev'
+            shrinkResources false
             minifyEnabled false
+            zipAlignEnabled false
+            signingConfig signingConfigs.debug
+        }
+        release {
+            minifyEnabled true
+            zipAlignEnabled true
+            shrinkResources true
+            signingConfig signingConfigs.release
+
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }
@@ -39,6 +63,20 @@ android {
     }
 
     compileOptions.incremental = true
+
+    lintOptions {
+        disable 'InvalidPackage'
+        disable 'MissingTranslation'
+        abortOnError false
+        checkReleaseBuilds false
+    }
+
+    packagingOptions {
+        exclude 'META-INF/services/javax.annotation.processing.Processor'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+    }
+
 //    externalNativeBuild {
 //        cmake {
 //            path "src/main/cpp/CMakeLists.txt"
@@ -103,4 +141,22 @@ dependencies {
     //    compile "org.jetbrains.anko:anko-sdk15:$anko_version" // sdk19, sdk21, sdk23 are also available
     //    compile "org.jetbrains.anko:anko-support-v4:$anko_version" // In case you need support-v4 bindings
     //    compile "org.jetbrains.anko:anko-appcompat-v7:$anko_version" // For appcompat-v7 bindings
+}
+
+File signPropFile = file('signing.properties');
+if (signPropFile.exists()) {
+    def Properties signProps = new Properties()
+    signProps.load(new FileInputStream(signPropFile))
+
+    if (signProps.containsKey('STORE_FILE') && signProps.containsKey('STORE_PASSWORD') &&
+            signProps.containsKey('KEY_ALIAS') && signProps.containsKey('KEY_PASSWORD')) {
+        android.signingConfigs.release.storeFile = file(signProps['STORE_FILE'])
+        android.signingConfigs.release.storePassword = signProps['STORE_PASSWORD']
+        android.signingConfigs.release.keyAlias = signProps['KEY_ALIAS']
+        android.signingConfigs.release.keyPassword = signProps['KEY_PASSWORD']
+    } else {
+        android.buildTypes.release.signingConfig = null
+    }
+} else {
+    android.buildTypes.release.signingConfig = null
 }
