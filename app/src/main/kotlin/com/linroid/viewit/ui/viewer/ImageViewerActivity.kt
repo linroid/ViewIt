@@ -102,7 +102,7 @@ class ImageViewerActivity() : ImmersiveActivity(), View.OnClickListener {
     }
 
     override fun onClick(v: View) {
-        val image = imageRepo.getImageAt(viewPager.currentItem, appInfo)
+        val image = imageRepo.images[viewPager.currentItem]
         when (v.id) {
             R.id.action_share -> {
                 shareImage(image)
@@ -125,7 +125,7 @@ class ImageViewerActivity() : ImmersiveActivity(), View.OnClickListener {
                 })
                 .setPositiveButton(R.string.delete_anyway, { dialog: DialogInterface, i: Int ->
                     dialog.dismiss()
-                    imageRepo.deleteImage(viewPager.currentItem, appInfo)
+                    imageRepo.deleteImage(image, appInfo)
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe({
                                 toastShort(getString(R.string.msg_delete_image_success))
@@ -168,12 +168,11 @@ class ImageViewerActivity() : ImmersiveActivity(), View.OnClickListener {
     }
 
     private fun loadData() {
-        val images = imageRepo.getImages(appInfo)
-        adapter = ImageViewerPagerAdapter(supportFragmentManager, images.size)
+        adapter = ImageViewerPagerAdapter(supportFragmentManager, imageRepo.images.size)
         viewPager.offscreenPageLimit = 2
         viewPager.adapter = adapter
         viewPager.currentItem = position
-        imageRepo.register(appInfo)
+        imageRepo.register()
                 .observeOn(AndroidSchedulers.mainThread())
                 .bindToLifecycle(this)
                 .subscribe { event ->

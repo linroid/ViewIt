@@ -4,7 +4,7 @@
     <string name="action_settings">设置</string>
     <string name="button_allow">允许</string>
     <string name="button_deny">拒绝</string>
-    <string name="msg_scan_completed_with_images">扫描完成， 共找到 %1$d 张图片:)</string>
+    <string name="msg_scan_completed_with_images">显示 %1$d 张图片，过滤了 %2$d张:)</string>
     <string name="msg_scanning_image">扫描中…</string>
     <string name="permission_storage_neverask">不再申请 Storage 权限</string>
     <string name="msg_scan_failed">:(\\n发生了一个错误: %1$s</string>
@@ -16,7 +16,6 @@
     <string name="title_share_image">分享到</string>
     <string name="msg_warning_delete_image">删除这张图片可能导致[%1$s]运行异常，请谨慎操作!</string>
     <string name="delete_anyway">仍然删除</string>
-    <string name="title_activity_gallery_scanned">"%1$s (%2$d 张)"</string>
     <string name="action_view_app_info">查看应用信息</string>
     <string name="action_sort">排序</string>
     <string name="snack_action_open_saved_image">查看</string>
@@ -26,4 +25,5 @@
     <string name="action_sort_by_time">按时间</string>
     <string name="viewer_action_error">:( 发生了一个错误: %1$s</string>
     <string name="msg_scan_completed_without_image">扫描完成，未找到图片:(</string>
+    <string name="subtitle_scanned_images">%1$d 张</string>
 </resources>

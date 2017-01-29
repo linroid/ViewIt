@@ -41,7 +41,7 @@ class GalleryItemViewProvider @Inject constructor(val activity: GalleryActivity,
         if (!RootUtils.isRootFile(activity, image.path)) {
             Glide.with(holder.image.context).load(image.path).centerCrop().into(holder.image)
         } else {
-            imageRepo.mountImage(image, info)
+            imageRepo.mountImage(image)
                     .observeOn(AndroidSchedulers.mainThread())
                     .bindToLifecycle(holder.itemView)
                     .subscribe({ image ->

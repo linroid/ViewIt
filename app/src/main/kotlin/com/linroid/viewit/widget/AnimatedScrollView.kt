@@ -1,16 +1,16 @@
 package com.linroid.viewit.widget
 
 import android.content.Context
-import android.support.v4.view.ViewCompat
+import android.graphics.drawable.Animatable
 import android.util.AttributeSet
-import android.widget.FrameLayout
-import timber.log.Timber
+import android.widget.ImageView
 
 /**
  * @author linroid <linroid@gmail.com>
- * @since 25/01/2017
+ * @since 28/01/2017
  */
-class InsetsFrameLayout : FrameLayout {
+class AnimatedScrollView : ImageView, Animatable {
+
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
         init()
     }
@@ -24,12 +24,15 @@ class InsetsFrameLayout : FrameLayout {
     }
 
     private fun init() {
-        clipToPadding = false
-        fitsSystemWindows = true
-        ViewCompat.setOnApplyWindowInsetsListener(this) { v, insets ->
-            Timber.i(insets.toString())
-            setPadding(insets.systemWindowInsetLeft, insets.systemWindowInsetTop, insets.systemWindowInsetRight, insets.systemWindowInsetBottom);
-            return@setOnApplyWindowInsetsListener insets.consumeSystemWindowInsets()
-        }
+    }
+
+    override fun isRunning(): Boolean {
+        return true
+    }
+
+    override fun start() {
+    }
+
+    override fun stop() {
     }
 }

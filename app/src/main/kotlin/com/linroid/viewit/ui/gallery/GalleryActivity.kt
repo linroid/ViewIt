@@ -1,8 +1,9 @@
 package com.linroid.viewit.ui.gallery
 
 import android.Manifest
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.annotation.SuppressLint
-import android.app.ProgressDialog
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.net.Uri
@@ -13,6 +14,8 @@ import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.widget.Toast
 import butterknife.bindView
 import com.linroid.viewit.App
@@ -25,11 +28,14 @@ import com.linroid.viewit.utils.ARG_APP_INFO
 import com.linroid.viewit.utils.PREF_FILTER_SIZE
 import com.linroid.viewit.utils.PREF_SORT_TYPE
 import com.linroid.viewit.utils.pref.LongPreference
+import com.linroid.viewit.widget.AnimatedSetView
 import com.trello.rxlifecycle.kotlin.bindToLifecycle
+import kotlinx.android.synthetic.main.item_image.*
 import me.drakeet.multitype.MultiTypeAdapter
 import permissions.dispatcher.*
 import rx.android.schedulers.AndroidSchedulers
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -51,6 +57,7 @@ class GalleryActivity : BaseActivity() {
     lateinit var appName: CharSequence
 
     val galleryView: RecyclerView by bindView(R.id.recycler)
+    val animView: AnimatedSetView by  bindView(R.id.loading_anim)
 
     companion object {
         fun navTo(source: BaseActivity, info: ApplicationInfo) {
@@ -83,7 +90,8 @@ class GalleryActivity : BaseActivity() {
         galleryView.adapter = adapter
         galleryView.itemAnimator = DefaultItemAnimator()
         galleryView.setHasFixedSize(true)
-        registerImages();
+        registerImages()
+        supportActionBar?.subtitle = "扫描中..."
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -183,70 +191,90 @@ class GalleryActivity : BaseActivity() {
     private fun registerImages() {
         filterSizePref.listen()
                 .mergeWith(sortTypePref.listen())
-                .flatMap { imageRepo.refresh(appInfo) }
+                .flatMap { imageRepo.refresh() }
                 .bindToLifecycle(this)
                 .subscribe { Timber.i("refresh images success") }
-        imageRepo.register(appInfo)
+        imageRepo.register()
                 .bindToLifecycle(this)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ event ->
-                    supportActionBar?.title = getString(R.string.title_activity_gallery_scanned, appName, event.images.size)
                     when (event.type) {
                         UPDATE_EVENT -> {
                             images.clear()
                             images.addAll(event.images)
-                            adapter.notifyDataSetChanged();
+                            adapter.notifyDataSetChanged()
+                            updateImageCount()
                         }
                         REMOVE_EVENT -> {
                             images.removeAt(event.position)
                             adapter.notifyItemRemoved(event.position);
+                            updateImageCount()
                         }
                         INSERT_EVENT -> {
                             images.add(event.position, event.images[event.position])
                             adapter.notifyItemInserted(event.position);
+                            updateImageCount()
                         }
                     }
                 })
     }
 
+    private fun updateImageCount() {
+        if (images.size > 0) {
+            supportActionBar?.subtitle = getString(R.string.subtitle_scanned_images, images.size)
+        } else {
+            supportActionBar?.subtitle = getString(R.string.image_not_found)
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
-        imageRepo.destroy(appInfo)
     }
 
     @SuppressLint("StringFormatMatches")
     @NeedsPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
     fun scanImages() {
-        val progress: ProgressDialog = ProgressDialog(this).apply {
-            setMessage(getString(R.string.msg_scanning_image))
-            isIndeterminate = true
-            setCancelable(false)
-        }
-        progress.show()
-        imageRepo.scan(appInfo, sortTypePref.get())
+        showLoading()
+        var count = 0;
+        imageRepo.scan()
                 .bindToLifecycle(this)
+                .buffer(100, TimeUnit.MILLISECONDS)
+                .onBackpressureBuffer()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-
+                    count += it.size
+                    supportActionBar?.subtitle = getString(R.string.subtitle_scanned_images, count)
                 }, { error ->
                     Timber.e(error, "onError")
-                    progress.dismiss()
                     Toast.makeText(this, getString(R.string.msg_scan_failed, error.message), Toast.LENGTH_SHORT).show()
+                    hideLoading()
                 }, {
-                    val msg = if (images.size > 0) getString(R.string.msg_scan_completed_with_images, images.size) else getString(R.string.msg_scan_completed_without_image)
+                    val msg = if (count > 0) getString(R.string.msg_scan_completed_with_images, count, imageRepo.originImages.size - count) else getString(R.string.msg_scan_completed_without_image)
                     Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
-                    progress.dismiss()
+                    hideLoading()
                 })
+    }
+
+    private fun showLoading() {
+        animView.start()
+        animView.visibility = VISIBLE
+        animView.animate().alpha(1F).setDuration(300).start()
+    }
+
+    private fun hideLoading() {
+        animView.visibility = VISIBLE
+        animView.animate().alpha(0F).setDuration(300).setListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator?) {
+                animView.visibility = GONE
+                animView.stop()
+            }
+        }).start()
+
     }
 
     @OnShowRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)
     fun showRationaleForStorage(request: PermissionRequest) {
         request.proceed()
-//        AlertDialog.Builder(this)
-//                .setMessage(R.string.permission_storage_rationale)
-//                .setPositiveButton(R.string.button_allow, { dialog, button -> request.proceed() })
-//                .setNegativeButton(R.string.button_deny, { dialog, button -> request.cancel() })
-//                .show()
     }
 
     @OnPermissionDenied(Manifest.permission.WRITE_EXTERNAL_STORAGE)

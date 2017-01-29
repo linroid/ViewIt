@@ -16,7 +16,7 @@ import com.linroid.viewit.data.scanner.InternalImageScanner
 import com.linroid.viewit.utils.*
 import com.linroid.viewit.utils.pref.LongPreference
 import rx.Observable
-import rx.android.schedulers.AndroidSchedulers
+import rx.lang.kotlin.PublishSubject
 import rx.lang.kotlin.filterNotNull
 import rx.lang.kotlin.onErrorReturnNull
 import rx.schedulers.Schedulers
@@ -45,7 +45,7 @@ const val SORT_BY_TIME = 0x3L
 @IntDef(SORT_BY_DEFAULT, SORT_BY_SIZE, SORT_BY_TIME)
 annotation class ImageSortType
 
-class ImageRepo {
+class ImageRepo(val appInfo: ApplicationInfo) {
     @Inject
     lateinit var context: Context
     @Inject
@@ -67,16 +67,14 @@ class ImageRepo {
         App.graph.inject(this)
     }
 
-    private val subjects = HashMap<String, PublishSubject<ImageEvent>>()
+    private val eventBus = PublishSubject<ImageEvent>()
     private val cacheDir: File = File(context.cacheDir, "mounts")
-    private val imagesMap = HashMap<String, MutableList<Image>>()
+    val originImages = ArrayList<Image>()
+    val images = ArrayList<Image>()
 
-    fun refresh(appInfo: ApplicationInfo): Observable<List<Image>> {
+    fun refresh(): Observable<List<Image>> {
         Timber.d("refresh")
-        val subject = getSubject(appInfo.packageName)
-        val images = getImages(appInfo.packageName)
-        if (images.size == 0) return scan(appInfo, sortTypePref.get())
-        return Observable.from(images)
+        return Observable.from(originImages)
                 .filter { image ->
                     image.size >= filterSizePref.get() * 1024 //KB
                 }
@@ -90,15 +88,15 @@ class ImageRepo {
                 }
                 .toList()
                 .doOnNext {
-                    subject.onNext(ImageEvent(UPDATE_EVENT, 0, it.size, it))
+                    images.clear()
+                    images.addAll(it)
+                    eventBus.onNext(ImageEvent(UPDATE_EVENT, 0, images.size, images))
                 }
     }
 
-    fun scan(appInfo: ApplicationInfo, @ImageSortType sortType: Long): Observable<List<Image>> {
+    fun scan(): Observable<Image> {
+        val sortType = sortTypePref.get()
         Timber.d("scan images for ${appInfo.packageName}, sortTypePref:$sortType")
-        val subject = getSubject(appInfo.packageName)
-        val images = getImages(appInfo.packageName)
-
         val externalData: File = context.externalCacheDir.parentFile.parentFile
         var observable = externalScanner.scan(appInfo.packageName, File(externalData, appInfo.packageName))
 
@@ -122,58 +120,27 @@ class ImageRepo {
             observable = observable.concatWith(externalScanner.scan(appInfo.packageName, dirs))
         }
 
-        return observable.toList()
-                .observeOn(AndroidSchedulers.mainThread())
+        val scanned: MutableList<Image> = ArrayList()
+        return observable
                 .doOnNext {
-                    Timber.d("doOnNext")
-                    images.clear()
-                    images.addAll(it)
-                }.flatMap { refresh(appInfo) }
+                    scanned.add(it)
+                }
+                .doOnCompleted {
+                    Timber.d("doOnCompleted")
+                    originImages.clear()
+                    originImages.addAll(scanned)
+                    refresh().subscribe { }
+                }
+                .filter { image ->
+                    image.size >= filterSizePref.get() * 1024 //KB
+                }
     }
 
-    fun register(appInfo: ApplicationInfo): PublishSubject<ImageEvent> {
-        return getSubject(appInfo.packageName)
+    fun register(): PublishSubject<ImageEvent> {
+        return eventBus
     }
 
-    fun destroy(appInfo: ApplicationInfo) {
-        val packageName = appInfo.packageName
-        if (subjects.containsKey(packageName)) {
-            val subject = subjects[packageName]
-            subjects.remove(packageName)
-        }
-    }
-
-    private fun getSubject(packageName: String): PublishSubject<ImageEvent> {
-        val subject: PublishSubject<ImageEvent>?
-        if (subjects.containsKey(packageName)) {
-            subject = subjects[packageName]
-        } else {
-            subject = PublishSubject.create()
-            subjects.put(packageName, subject)
-        }
-        return subject!!
-    }
-
-    fun getImages(appInfo: ApplicationInfo): MutableList<Image> {
-        return getImages(appInfo.packageName)
-    }
-
-    fun getImageAt(position: Int, appInfo: ApplicationInfo): Image {
-        return getImages(appInfo.packageName)[position]
-    }
-
-    private fun getImages(packageName: String): MutableList<Image> {
-        val images: MutableList<Image>?
-        if (imagesMap.containsKey(packageName)) {
-            images = imagesMap[packageName]
-        } else {
-            images = ArrayList<Image>()
-            imagesMap.put(packageName, images)
-        }
-        return images!!
-    }
-
-    fun mountImage(image: Image, appInfo: ApplicationInfo): Observable<Image> {
+    fun mountImage(image: Image): Observable<Image> {
         val packageCacheDir: File = File(cacheDir, appInfo.packageName)
         val packInfo: PackageInfo = packageManager.getPackageInfo(appInfo.packageName, 0)
         val dataDir: String = packInfo.applicationInfo.dataDir
@@ -224,9 +191,7 @@ class ImageRepo {
         }.subscribeOn(Schedulers.io())
     }
 
-    fun deleteImage(position: Int, appInfo: ApplicationInfo): Observable<Boolean> {
-        val images = getImages(appInfo.packageName)
-        val image = images[position]
+    fun deleteImage(image: Image, appInfo: ApplicationInfo): Observable<Boolean> {
         return Observable.just(image.path)
                 .flatMap { path ->
                     if (RootUtils.isRootFile(context, path)) {
@@ -237,10 +202,11 @@ class ImageRepo {
                     }
                 }
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext {
-                    images.removeAt(position)
-                    getSubject(appInfo.packageName).onNext(ImageEvent(REMOVE_EVENT, position, 1, images))
+                    val position = images.indexOf(image)
+                    images.remove(image)
+                    originImages.remove(image)
+                    eventBus.onNext(ImageEvent(REMOVE_EVENT, position, 1, images))
                 }
     }
 

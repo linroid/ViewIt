@@ -2,6 +2,7 @@ package com.linroid.viewit.ioc.module
 
 import android.content.pm.ApplicationInfo
 import com.linroid.viewit.data.ImageRepo
+import com.linroid.viewit.data.ImageRepoManager
 import com.linroid.viewit.data.model.Image
 import com.linroid.viewit.ioc.quailifer.ActivityScope
 import com.linroid.viewit.ui.gallery.GalleryActivity
@@ -37,4 +38,10 @@ class GalleryModule(val activity: GalleryActivity, val info: ApplicationInfo) {
     @Provides
     @ActivityScope
     fun provideImages(): MutableList<Any> = ArrayList()
+
+    @Provides
+    @ActivityScope
+    fun provideRepo(repoManager: ImageRepoManager): ImageRepo {
+        return repoManager.getRepo(info)
+    }
 }

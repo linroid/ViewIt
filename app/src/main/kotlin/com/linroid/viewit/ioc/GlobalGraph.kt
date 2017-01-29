@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import com.linroid.rxshell.RxShell
 import com.linroid.viewit.App
 import com.linroid.viewit.data.ImageRepo
+import com.linroid.viewit.data.ImageRepoManager
 import com.linroid.viewit.ioc.module.AndroidModule
 import com.linroid.viewit.ioc.module.DataModule
 import com.linroid.viewit.ioc.module.PrefModule
@@ -32,7 +33,7 @@ interface GlobalGraph {
 
     fun context(): Context
     fun rxShell(): RxShell
-    fun imageRepo(): ImageRepo
+    fun repoManager(): ImageRepoManager
     fun sharedPreferences(): SharedPreferences
 
     @Named(PREF_FILTER_SIZE)

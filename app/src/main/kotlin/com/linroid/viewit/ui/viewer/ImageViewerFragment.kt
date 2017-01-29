@@ -94,12 +94,12 @@ class ImageViewerFragment : BaseFragment() {
     private fun loadImage(act: ImageViewerActivity) {
         Timber.i("position:$position")
         var isGif = false;
-        val image = imageRepo.getImageAt(position, appInfo)
+        val image = imageRepo.images[position]
         Observable.just(image)
                 .flatMap { image ->
                     isGif = image.type == ImageType.GIF
                     if (RootUtils.isRootFile(act, image.path)) {
-                        return@flatMap imageRepo.mountImage(image, appInfo);
+                        return@flatMap imageRepo.mountImage(image);
                     }
                     return@flatMap Observable.just(image)
                 }

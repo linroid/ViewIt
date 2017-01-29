@@ -14,6 +14,8 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        manifestPlaceholders = [APPLICATION_ID: applicationId]
 //        ndk {
 //            abiFilters 'x86', 'x86_64', 'armeabi', 'armeabi-v7a', 'arm64-v8a'
 //        }
@@ -43,6 +45,8 @@ android {
             minifyEnabled false
             zipAlignEnabled false
             signingConfig signingConfigs.debug
+
+            manifestPlaceholders = [APPLICATION_ID: defaultConfig.applicationId + applicationIdSuffix]
         }
         release {
             minifyEnabled true
