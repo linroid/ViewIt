@@ -45,6 +45,7 @@ import javax.inject.Named
 @RuntimePermissions
 class GalleryActivity : BaseActivity() {
     @Inject lateinit var imageRepo: ImageRepo
+    @Inject lateinit var repoManager: ImageRepoManager
     @Inject lateinit var images: MutableList<Any>
     @Inject lateinit var adapter: MultiTypeAdapter
     @field:[Inject Named(PREF_SORT_TYPE)]
@@ -228,6 +229,7 @@ class GalleryActivity : BaseActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        repoManager.removeRepo(appInfo)
     }
 
     @SuppressLint("StringFormatMatches")
