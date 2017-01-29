@@ -32,5 +32,6 @@ An error occurred: %1$s</string>
     <string name="action_filter_300K">小于300K</string>
     <string name="action_filter_none">不过滤</string>
     <string name="subtitle_scanned_images">%1$d Images</string>
+    <string name="subtitle_displayed_images">%1$d/%2$d Images</string>
     <string name="image_not_found">No Image</string>
 </resources>

@@ -30,7 +30,6 @@ import com.linroid.viewit.utils.PREF_SORT_TYPE
 import com.linroid.viewit.utils.pref.LongPreference
 import com.linroid.viewit.widget.AnimatedSetView
 import com.trello.rxlifecycle.kotlin.bindToLifecycle
-import kotlinx.android.synthetic.main.item_image.*
 import me.drakeet.multitype.MultiTypeAdapter
 import permissions.dispatcher.*
 import rx.android.schedulers.AndroidSchedulers
@@ -220,8 +219,8 @@ class GalleryActivity : BaseActivity() {
     }
 
     private fun updateImageCount() {
-        if (images.size > 0) {
-            supportActionBar?.subtitle = getString(R.string.subtitle_scanned_images, images.size)
+        if (imageRepo.originImages.size > 0) {
+            supportActionBar?.subtitle = getString(R.string.subtitle_displayed_images, images.size, imageRepo.originImages.size)
         } else {
             supportActionBar?.subtitle = getString(R.string.image_not_found)
         }
@@ -252,6 +251,7 @@ class GalleryActivity : BaseActivity() {
                     val msg = if (count > 0) getString(R.string.msg_scan_completed_with_images, count, imageRepo.originImages.size - count) else getString(R.string.msg_scan_completed_without_image)
                     Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
                     hideLoading()
+                    updateImageCount()
                 })
     }
 

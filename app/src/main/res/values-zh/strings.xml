@@ -25,5 +25,7 @@
     <string name="action_sort_by_time">按时间</string>
     <string name="viewer_action_error">:( 发生了一个错误: %1$s</string>
     <string name="msg_scan_completed_without_image">扫描完成，未找到图片:(</string>
+    <string name="subtitle_displayed_images">%1$d/%2$d 张</string>
     <string name="subtitle_scanned_images">%1$d 张</string>
+    <string name="image_not_found">0 张</string>
 </resources>
