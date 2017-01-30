@@ -28,9 +28,10 @@ import javax.inject.Inject
  * @author linroid <linroid@gmail.com>
  * @since 07/01/2017
  */
-class GalleryItemViewProvider @Inject constructor(val activity: GalleryActivity,
-                                                  val imageRepo: ImageRepo,
-                                                  val info: ApplicationInfo) : ItemViewProvider<Image, GalleryItemViewProvider.ViewHolder>() {
+class ImageViewProvider @Inject constructor(val activity: GalleryActivity,
+                                            val imageRepo: ImageRepo,
+                                            val info: ApplicationInfo)
+    : ItemViewProvider<Image, ImageViewProvider.ViewHolder>() {
 
 
     override fun onCreateViewHolder(inflater: LayoutInflater, parent: ViewGroup): ViewHolder {
@@ -38,7 +39,7 @@ class GalleryItemViewProvider @Inject constructor(val activity: GalleryActivity,
     }
 
     override fun onBindViewHolder(holder: ViewHolder, image: Image) {
-        if (!RootUtils.isRootFile(activity, image.path)) {
+        if (!RootUtils.isRootFile(activity, image.source)) {
             Glide.with(holder.image.context).load(image.path).centerCrop().into(holder.image)
         } else {
             imageRepo.mountImage(image)
@@ -46,7 +47,7 @@ class GalleryItemViewProvider @Inject constructor(val activity: GalleryActivity,
                     .bindToLifecycle(holder.itemView)
                     .subscribe({ image ->
                         Glide.with(holder.image.context)
-                                .load(File(image.mountPath))
+                                .load(image.mountFile)
                                 .centerCrop()
                                 .listener(object : RequestListener<File, GlideDrawable> {
                                     override fun onException(e: Exception, model: File, target: Target<GlideDrawable>, isFirstResource: Boolean): Boolean {

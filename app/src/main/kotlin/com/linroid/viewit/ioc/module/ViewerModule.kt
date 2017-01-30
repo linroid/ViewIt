@@ -26,7 +26,7 @@ class ViewerModule(val activity: ImageViewerActivity, val appInfo: ApplicationIn
 
     @Provides
     @ActivityScope
-    fun provideObservable(imageRepo: ImageRepo): Observable<ImageRepo.ImageEvent> = imageRepo.register()
+    fun provideObservable(imageRepo: ImageRepo): Observable<ImageRepo.ImageEvent> = imageRepo.registerImageEvent()
 
     @Provides
     @ActivityScope

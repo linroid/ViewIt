@@ -6,3 +6,4 @@ package com.linroid.viewit.utils
  */
 const val ARG_APP_INFO: String = "app_info";
 const val ARG_POSITION: String = "position";
+const val ARG_IMAGE_TREE_PATH: String = "image_tree_path"

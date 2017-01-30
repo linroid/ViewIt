@@ -1,5 +1,6 @@
 package com.linroid.viewit.ioc.module
 
+import android.content.Context
 import com.linroid.viewit.data.ImageRepoManager
 import dagger.Module
 import dagger.Provides
@@ -12,7 +13,7 @@ import javax.inject.Singleton
 @Module
 class RepoModule {
     @Singleton @Provides
-    fun provideImageRepoManager(): ImageRepoManager {
-        return ImageRepoManager()
+    fun provideImageRepoManager(context: Context): ImageRepoManager {
+        return ImageRepoManager(context)
     }
 }

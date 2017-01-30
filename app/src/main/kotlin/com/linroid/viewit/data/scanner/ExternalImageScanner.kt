@@ -36,7 +36,7 @@ class ExternalImageScanner @Inject constructor() : ImageScanner() {
         if (file.isFile) {
             val type = ImageMIME.getImageType(file)
             if (type != ImageType.UNKNOWN) {
-                val image = Image(file.absolutePath, file.length(), file.lastModified(), type)
+                val image = Image(file, file.length(), file.lastModified(), type)
                 subscriber.onNext(image);
             }
         } else if (file.isDirectory) {

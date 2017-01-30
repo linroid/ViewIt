@@ -172,7 +172,7 @@ class ImageViewerActivity() : ImmersiveActivity(), View.OnClickListener {
         viewPager.offscreenPageLimit = 2
         viewPager.adapter = adapter
         viewPager.currentItem = position
-        imageRepo.register()
+        imageRepo.registerImageEvent()
                 .observeOn(AndroidSchedulers.mainThread())
                 .bindToLifecycle(this)
                 .subscribe { event ->

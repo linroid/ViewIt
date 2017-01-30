@@ -26,4 +26,8 @@ object RootUtils {
         return !path.startsWith(Environment.getExternalStorageDirectory().absolutePath)
     }
 
+    fun isRootFile(context: Context, file: File): Boolean {
+        return !file.absolutePath.startsWith(Environment.getExternalStorageDirectory().absolutePath)
+    }
+
 }

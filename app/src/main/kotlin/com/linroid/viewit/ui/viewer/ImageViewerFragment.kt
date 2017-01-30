@@ -4,9 +4,7 @@ import android.app.Activity
 import android.content.pm.ApplicationInfo
 import android.net.Uri
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageView
 import butterknife.bindView
 import com.bumptech.glide.Glide
@@ -69,10 +67,7 @@ class ImageViewerFragment : BaseFragment() {
         Timber.d("onAttach")
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val view = inflater?.inflate(R.layout.fragment_image_viewer, container, false)
-        return view!!;
-    }
+    override fun provideLayoutId(): Int = R.layout.fragment_image_viewer
 
     val imageClickListener = View.OnClickListener {
         if (activity is ImmersiveActivity) {
@@ -98,7 +93,7 @@ class ImageViewerFragment : BaseFragment() {
         Observable.just(image)
                 .flatMap { image ->
                     isGif = image.type == ImageType.GIF
-                    if (RootUtils.isRootFile(act, image.path)) {
+                    if (RootUtils.isRootFile(act, image.source)) {
                         return@flatMap imageRepo.mountImage(image);
                     }
                     return@flatMap Observable.just(image)

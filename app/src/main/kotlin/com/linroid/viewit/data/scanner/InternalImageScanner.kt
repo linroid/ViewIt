@@ -30,7 +30,7 @@ class InternalImageScanner @Inject constructor(val rxShell: RxShell) : ImageScan
                     val typeVal = parser[2].toInt()
                     val type: ImageType = ImageType.from(typeVal)
                     val path = parser[3]
-                    Image(path, size, lastModified, type)
+                    Image(File(path), size, lastModified, type)
                 }
                 .filter { image -> image.type != ImageType.UNKNOWN }
     }

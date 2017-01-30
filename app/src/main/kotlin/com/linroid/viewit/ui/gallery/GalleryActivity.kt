@@ -21,7 +21,9 @@ import butterknife.bindView
 import com.linroid.viewit.App
 import com.linroid.viewit.R
 import com.linroid.viewit.data.*
+import com.linroid.viewit.data.model.ImageTree
 import com.linroid.viewit.ioc.DaggerGalleryGraph
+import com.linroid.viewit.ioc.GalleryGraph
 import com.linroid.viewit.ioc.module.GalleryModule
 import com.linroid.viewit.ui.BaseActivity
 import com.linroid.viewit.utils.ARG_APP_INFO
@@ -69,20 +71,24 @@ class GalleryActivity : BaseActivity() {
 
     override fun provideContentLayoutId(): Int = R.layout.activity_gallery
 
+    private lateinit var graph: GalleryGraph
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val arguments = intent.extras
         appInfo = arguments.getParcelable(ARG_APP_INFO)
         appName = packageManager.getApplicationLabel(appInfo);
         supportActionBar?.title = appName
-        DaggerGalleryGraph.builder()
+        graph = DaggerGalleryGraph.builder()
                 .globalGraph(App.get().graph())
                 .galleryModule(GalleryModule(this, appInfo))
                 .build()
-                .inject(this)
+        graph.inject(this)
         initView()
         GalleryActivityPermissionsDispatcher.scanImagesWithCheck(this);
     }
+
+    fun graph(): GalleryGraph = graph
 
     private fun initView() {
         val gridLayoutManager = GridLayoutManager(this, 4);
@@ -194,29 +200,35 @@ class GalleryActivity : BaseActivity() {
                 .flatMap { imageRepo.refresh() }
                 .bindToLifecycle(this)
                 .subscribe { Timber.i("refresh images success") }
-        imageRepo.register()
+        imageRepo.registerImageEvent()
                 .bindToLifecycle(this)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ event ->
                     when (event.type) {
                         UPDATE_EVENT -> {
                             images.clear()
-                            images.addAll(event.images)
+                            images.addAll(event.effectedImages)
+
                             adapter.notifyDataSetChanged()
+                            galleryView.smoothScrollToPosition(0)
                             updateImageCount()
                         }
                         REMOVE_EVENT -> {
-                            images.removeAt(event.position)
-                            adapter.notifyItemRemoved(event.position);
+                            images.removeAll(event.effectedImages)
+                            adapter.notifyItemRangeRemoved(event.position, event.effectCount)
                             updateImageCount()
                         }
                         INSERT_EVENT -> {
-                            images.add(event.position, event.images[event.position])
-                            adapter.notifyItemInserted(event.position);
+                            images.addAll(event.position, event.effectedImages)
+                            adapter.notifyItemRangeInserted(event.position, event.effectCount)
                             updateImageCount()
                         }
                     }
                 })
+        // todo remove
+        imageRepo.registerTreeBuilder()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { visitTree(it) }
     }
 
     private fun updateImageCount() {
@@ -257,6 +269,14 @@ class GalleryActivity : BaseActivity() {
                 })
     }
 
+    fun visitTree(tree: ImageTree) {
+        Timber.d("visitTree:$tree")
+        supportFragmentManager.beginTransaction()
+                .add(R.id.container, ImageTreeFragment.newInstance(tree))
+                .addToBackStack("image-tree")
+                .commit()
+    }
+
     private fun showLoading() {
         animView.start()
         animView.visibility = VISIBLE
@@ -292,5 +312,9 @@ class GalleryActivity : BaseActivity() {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         GalleryActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults)
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
     }
 }
