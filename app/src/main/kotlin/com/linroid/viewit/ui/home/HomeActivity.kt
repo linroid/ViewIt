@@ -11,6 +11,7 @@ import butterknife.bindView
 import com.linroid.viewit.R
 import com.linroid.viewit.data.scanner.AppScanner
 import com.linroid.viewit.ui.BaseActivity
+import com.linroid.viewit.ui.about.AboutActivity
 import com.trello.rxlifecycle.kotlin.bindToLifecycle
 import me.drakeet.multitype.MultiTypeAdapter
 import rx.android.schedulers.AndroidSchedulers
@@ -66,14 +67,11 @@ class HomeActivity : BaseActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        val id = item.itemId
-
-
-        if (id == R.id.action_settings) {
-            return true
+        when (item.itemId) {
+            R.id.action_about -> {
+                AboutActivity.navTo(this)
+                return true
+            }
         }
 
         return super.onOptionsItemSelected(item)

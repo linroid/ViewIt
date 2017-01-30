@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">看应用</string>
-    <string name="action_settings">设置</string>
+    <string name="action_about">关于</string>
     <string name="button_allow">允许</string>
     <string name="button_deny">拒绝</string>
     <string name="msg_scan_completed_with_images">显示 %1$d 张图片，过滤了 %2$d张:)</string>

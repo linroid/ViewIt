@@ -141,6 +141,7 @@ dependencies {
     compile 'com.github.piasy:GlideImageLoader:1.2.5'
     // progress pie indicator
     compile 'com.github.piasy:ProgressPieIndicator:1.2.5'
+    compile 'me.drakeet.support:about:1.0.2'
     // https://github.com/Kotlin/anko
     //    compile "org.jetbrains.anko:anko-sdk15:$anko_version" // sdk19, sdk21, sdk23 are also available
     //    compile "org.jetbrains.anko:anko-support-v4:$anko_version" // In case you need support-v4 bindings

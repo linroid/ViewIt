@@ -16,6 +16,7 @@
     </style>
 
     <style name="Widget.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+
     <style name="Widget.Popup" parent="ThemeOverlay.AppCompat.Light"/>
 
 </resources>

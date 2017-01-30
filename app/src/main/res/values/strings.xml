@@ -1,17 +1,15 @@
 <resources>
     <string name="app_name">ViewIt!</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_about">About</string>
     <string name="button_allow">Allow</string>
     <string name="button_deny">Deny</string>
     <string name="permission_storage_neverask">Never ask for storage permission</string>
     <string name="msg_scan_completed_with_images">%1$d images shown, %2$d filtered:)</string>
     <string name="msg_scan_completed_without_image">Scan completed, but no image found:(</string>
     <string name="msg_scanning_image">Scanning…</string>
-    <string name="msg_scan_failed">:(
-An error occurred:%1$s</string>
+    <string name="msg_scan_failed">:(\nAn error occurred:%1$s</string>
     <string name="action_detail">View Detail</string>
-    <string name="viewer_action_error">:(
-An error occurred: %1$s</string>
+    <string name="viewer_action_error">:(\nAn error occurred: %1$s</string>
     <string name="snack_action_open_saved_image">View</string>
     <string name="action_sort">Sort</string>
     <string name="action_view_app_info">Application Detail</string>
@@ -23,7 +21,7 @@ An error occurred: %1$s</string>
     <string name="title_share_image">Share with</string>
     <string name="title_warning_delete_image">️Warning⚠️</string>
     <string name="toast_save_image_success">Image saved at:%1$s</string>
-    <string name="action_sort_by_default">Default order</string>
+    <string name="action_sort_by_default">By path</string>
     <string name="action_sort_by_size">By size</string>
     <string name="action_sort_by_time">By Time</string>
     <string name="action_filter_size">过滤文件</string>
@@ -34,4 +32,10 @@ An error occurred: %1$s</string>
     <string name="subtitle_scanned_images">%1$d Images</string>
     <string name="subtitle_displayed_images">%1$d/%2$d Images</string>
     <string name="image_not_found">No Image</string>
+    <string name="about_introduce_content">平时我们在使用 APP 时会看到很多图片，但总有一部分图片不能保存或者导出，这时候就需要「看应用」来帮你了。\n\n它可以找到应用下载的所有图片，并且可以将其归类，方便你找到诸如微信表情、好友头像之类的图片\n\n看应用是我业余独立开发的免费应用，如果你喜欢，可以进行打赏支持，非常感谢！！</string>
+    <string name="about_header_introduce">介绍与帮助</string>
+    <string name="about_action_donate">打赏</string>
+    <string name="about_title">看应用 —— 图片还可以这么找！</string>
+    <string name="share_content">分享一款应用：「看应用」，它可以帮你找到应用下载的所有图片，它还可以帮你归类这些图片方便查找，比如微信表情、好友头像、拍照等等，推荐：http://fir.im/viewit</string>
+    <string name="action_share_app">分享「看应用」给你的朋友</string>
 </resources>
