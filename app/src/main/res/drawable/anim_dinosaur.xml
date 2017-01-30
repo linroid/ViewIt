@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animation-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:duration="50" android:drawable="@drawable/dinosaur_01" />
+    <item android:duration="50" android:drawable="@drawable/dinosaur_03" />
+    <item android:duration="50" android:drawable="@drawable/dinosaur_04" />
+</animation-list>
