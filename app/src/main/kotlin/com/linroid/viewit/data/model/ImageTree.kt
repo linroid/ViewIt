@@ -67,4 +67,19 @@ data class ImageTree(val dir: String, var parent: ImageTree? = null) {
                 if (dir.endsWith(File.separator)) 0 else 1
                 ]
     }
+
+    fun getAllImages(): List<Image> {
+        val list = ArrayList<Image>()
+        getAllImages(list)
+        return list
+    }
+
+    private fun getAllImages(list: MutableList<Image>) {
+        if (images.size > 0) {
+            list.addAll(images)
+        }
+        if (children.size > 0) {
+            children.forEach { s, child -> child.getAllImages(list) }
+        }
+    }
 }

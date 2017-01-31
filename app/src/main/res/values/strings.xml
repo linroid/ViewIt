@@ -43,4 +43,13 @@
     <string name="path_format_sdcard">SDCard</string>
     <string name="path_format_external_data">外部存储</string>
     <string name="path_format_internal_data">内部存储</string>
+
+    <string name="label_category_tree">目录</string>
+    <string name="label_category_recommend">推荐</string>
+    <string name="label_category_favorite">收藏</string>
+    <string name="label_category_tree_images">包含图片(%1$d 张)</string>
+    <string name="label_category_action_filter">过滤了 %1$d 张</string>
+    <string name="label_category_action_all_images">全部图片(%1$d 张)</string>
+    <string name="action_add_favorite">收藏这个目录</string>
+    <string name="subtitle_scanning">扫描中…</string>
 </resources>

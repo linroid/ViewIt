@@ -32,17 +32,17 @@ object FormatUtils {
 
         if (path.startsWith(internalDataDir)) {
             val ssb = SpannableStringBuilder(context.getString(R.string.path_format_internal_data))
-            ssb.setSpan(StyleSpan(Typeface.BOLD_ITALIC), 0, ssb.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            ssb.setSpan(StyleSpan(Typeface.BOLD), 0, ssb.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
             ssb.append(path.substringAfter(internalDataDir))
             return ssb
         } else if (path.startsWith(externalDataDir)) {
             val ssb = SpannableStringBuilder(context.getString(R.string.path_format_external_data))
-            ssb.setSpan(StyleSpan(Typeface.BOLD_ITALIC), 0, ssb.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            ssb.setSpan(StyleSpan(Typeface.BOLD), 0, ssb.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
             ssb.append(path.substringAfter(externalDataDir))
             return ssb
         } else if (path.startsWith(sdcardDir)) {
             val ssb = SpannableStringBuilder(context.getString(R.string.path_format_sdcard))
-            ssb.setSpan(StyleSpan(Typeface.BOLD_ITALIC), 0, ssb.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            ssb.setSpan(StyleSpan(Typeface.BOLD), 0, ssb.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
             ssb.append(path.substringAfter(sdcardDir))
             return ssb
         }

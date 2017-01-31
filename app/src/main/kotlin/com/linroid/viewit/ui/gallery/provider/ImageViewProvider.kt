@@ -1,4 +1,4 @@
-package com.linroid.viewit.ui.gallery
+package com.linroid.viewit.ui.gallery.provider
 
 import android.content.pm.ApplicationInfo
 import android.support.v7.widget.RecyclerView
@@ -15,6 +15,7 @@ import com.bumptech.glide.request.target.Target
 import com.linroid.viewit.R
 import com.linroid.viewit.data.ImageRepo
 import com.linroid.viewit.data.model.Image
+import com.linroid.viewit.ui.gallery.GalleryActivity
 import com.linroid.viewit.ui.viewer.ImageViewerActivity
 import com.linroid.viewit.utils.RootUtils
 import com.trello.rxlifecycle.kotlin.bindToLifecycle

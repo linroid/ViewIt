@@ -9,9 +9,6 @@ import android.content.pm.ApplicationInfo
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
-import android.support.v7.widget.DefaultItemAnimator
-import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View.GONE
@@ -20,25 +17,21 @@ import android.widget.Toast
 import butterknife.bindView
 import com.linroid.viewit.App
 import com.linroid.viewit.R
-import com.linroid.viewit.data.*
+import com.linroid.viewit.data.ImageRepo
+import com.linroid.viewit.data.ImageRepoManager
 import com.linroid.viewit.data.model.ImageTree
 import com.linroid.viewit.ioc.DaggerGalleryGraph
 import com.linroid.viewit.ioc.GalleryGraph
 import com.linroid.viewit.ioc.module.GalleryModule
 import com.linroid.viewit.ui.BaseActivity
 import com.linroid.viewit.utils.ARG_APP_INFO
-import com.linroid.viewit.utils.PREF_FILTER_SIZE
-import com.linroid.viewit.utils.PREF_SORT_TYPE
-import com.linroid.viewit.utils.pref.LongPreference
 import com.linroid.viewit.widget.AnimatedSetView
 import com.trello.rxlifecycle.kotlin.bindToLifecycle
-import me.drakeet.multitype.MultiTypeAdapter
 import permissions.dispatcher.*
 import rx.android.schedulers.AndroidSchedulers
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
-import javax.inject.Named
 
 /**
  * @author linroid <linroid@gmail.com>
@@ -46,20 +39,14 @@ import javax.inject.Named
  */
 @RuntimePermissions
 class GalleryActivity : BaseActivity() {
+    private val STACK_NAME = "gallery-stack"
     @Inject lateinit var imageRepo: ImageRepo
     @Inject lateinit var repoManager: ImageRepoManager
-    @Inject lateinit var images: MutableList<Any>
-    @Inject lateinit var adapter: MultiTypeAdapter
-    @field:[Inject Named(PREF_SORT_TYPE)]
-    lateinit var sortTypePref: LongPreference
-    @field:[Inject Named(PREF_FILTER_SIZE)]
-    lateinit var filterSizePref: LongPreference
-
     lateinit var appInfo: ApplicationInfo
     lateinit var appName: CharSequence
 
-    val galleryView: RecyclerView by bindView(R.id.recycler)
     val animView: AnimatedSetView by  bindView(R.id.loading_anim)
+    private lateinit var graph: GalleryGraph
 
     companion object {
         fun navTo(source: BaseActivity, info: ApplicationInfo) {
@@ -71,7 +58,6 @@ class GalleryActivity : BaseActivity() {
 
     override fun provideContentLayoutId(): Int = R.layout.activity_gallery
 
-    private lateinit var graph: GalleryGraph
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -86,18 +72,19 @@ class GalleryActivity : BaseActivity() {
         graph.inject(this)
         initView()
         GalleryActivityPermissionsDispatcher.scanImagesWithCheck(this);
+        addSummaryFragment()
+    }
+
+    private fun addSummaryFragment() {
+        supportFragmentManager.beginTransaction()
+                .add(R.id.container, SummaryFragment.newInstance())
+                .commit()
     }
 
     fun graph(): GalleryGraph = graph
 
     private fun initView() {
-        val gridLayoutManager = GridLayoutManager(this, 4);
-        galleryView.layoutManager = gridLayoutManager
-        galleryView.adapter = adapter
-        galleryView.itemAnimator = DefaultItemAnimator()
-        galleryView.setHasFixedSize(true)
-        registerImages()
-        supportActionBar?.subtitle = "扫描中..."
+        supportActionBar?.subtitle = getString(R.string.subtitle_scanning)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -105,47 +92,7 @@ class GalleryActivity : BaseActivity() {
         return super.onCreateOptionsMenu(menu)
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
-        when (sortTypePref.get()) {
-            SORT_BY_DEFAULT -> {
-                menu.findItem(R.id.action_sort_by_default).isChecked = true
-            }
-            SORT_BY_SIZE -> {
-                menu.findItem(R.id.action_sort_by_size).isChecked = true
-            }
-            SORT_BY_TIME -> {
-                menu.findItem(R.id.action_sort_by_time).isChecked = true
-            }
-        }
-        when (filterSizePref.get()) {
-            0L -> {
-                menu.findItem(R.id.action_filter_none).isChecked = true
-            }
-            30L -> {
-                menu.findItem(R.id.action_filter_30K).isChecked = true
-            }
-            100L -> {
-                menu.findItem(R.id.action_filter_100K).isChecked = true
-            }
-            300L -> {
-                menu.findItem(R.id.action_filter_300K).isChecked = true
-            }
-        }
-
-        return super.onPrepareOptionsMenu(menu)
-    }
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.groupId) {
-            R.id.action_sort -> {
-                handleSortAction(item)
-                return true
-            }
-            R.id.action_filter -> {
-                handleFilterAction(item)
-                return true
-            }
-        }
         when (item.itemId) {
             R.id.action_view_app_info -> {
                 val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
@@ -153,90 +100,8 @@ class GalleryActivity : BaseActivity() {
                 startActivity(intent)
                 return true
             }
-
         }
-
         return super.onOptionsItemSelected(item)
-    }
-
-    private fun handleFilterAction(item: MenuItem) {
-        var size: Long = 0
-        when (item.itemId) {
-            R.id.action_filter_none -> size = 0
-            R.id.action_filter_30K -> size = 30
-            R.id.action_filter_100K -> size = 100
-            R.id.action_filter_300K -> size = 300
-        }
-        if (size == filterSizePref.get()) {
-            return
-        }
-        filterSizePref.set(size)
-        supportInvalidateOptionsMenu()
-    }
-
-    private fun handleSortAction(item: MenuItem) {
-        var type = SORT_BY_DEFAULT
-        when (item.itemId) {
-            R.id.action_sort_by_default -> {
-                type = SORT_BY_DEFAULT
-            }
-            R.id.action_sort_by_size -> {
-                type = SORT_BY_SIZE
-            }
-            R.id.action_sort_by_time -> {
-                type = SORT_BY_TIME
-            }
-        }
-        if (type == sortTypePref.get()) {
-            return
-        }
-        sortTypePref.set(type)
-        supportInvalidateOptionsMenu()
-    }
-
-    private fun registerImages() {
-        filterSizePref.listen()
-                .mergeWith(sortTypePref.listen())
-                .flatMap { imageRepo.refresh() }
-                .bindToLifecycle(this)
-                .subscribe { Timber.i("refresh images success") }
-        imageRepo.registerImageEvent()
-                .bindToLifecycle(this)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ event ->
-                    when (event.type) {
-                        UPDATE_EVENT -> {
-                            images.clear()
-                            images.addAll(event.effectedImages)
-
-                            adapter.notifyDataSetChanged()
-                            galleryView.smoothScrollToPosition(0)
-                            updateImageCount()
-                        }
-                        REMOVE_EVENT -> {
-                            images.removeAll(event.effectedImages)
-                            adapter.notifyItemRangeRemoved(event.position, event.effectCount)
-                            updateImageCount()
-                        }
-                        INSERT_EVENT -> {
-                            images.addAll(event.position, event.effectedImages)
-                            adapter.notifyItemRangeInserted(event.position, event.effectCount)
-                            updateImageCount()
-                        }
-                    }
-                })
-        // todo remove
-        imageRepo.registerTreeBuilder()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { visitTree(it) }
-    }
-
-    private fun updateImageCount() {
-        if (imageRepo.originImages.size > 0) {
-            supportActionBar?.subtitle = getString(R.string.subtitle_displayed_images, images.size, imageRepo.originImages.size)
-        } else {
-            supportActionBar?.subtitle = getString(R.string.image_not_found)
-        }
     }
 
     override fun onDestroy() {
@@ -262,10 +127,9 @@ class GalleryActivity : BaseActivity() {
                     Toast.makeText(this, getString(R.string.msg_scan_failed, error.message), Toast.LENGTH_SHORT).show()
                     hideLoading()
                 }, {
-                    val msg = if (count > 0) getString(R.string.msg_scan_completed_with_images, count, imageRepo.originImages.size - count) else getString(R.string.msg_scan_completed_without_image)
+                    val msg = if (count > 0) getString(R.string.msg_scan_completed_with_images, count, imageRepo.images.size - count) else getString(R.string.msg_scan_completed_without_image)
                     Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
                     hideLoading()
-                    updateImageCount()
                 })
     }
 
@@ -273,7 +137,15 @@ class GalleryActivity : BaseActivity() {
         Timber.d("visitTree:$tree")
         supportFragmentManager.beginTransaction()
                 .add(R.id.container, ImageTreeFragment.newInstance(tree))
-                .addToBackStack("image-tree")
+                .addToBackStack(STACK_NAME)
+                .commit()
+    }
+
+    fun viewGallery(tree: ImageTree) {
+        Timber.d("viewGallery:$tree")
+        supportFragmentManager.beginTransaction()
+                .add(R.id.container, AllImagesFragment.newInstance(tree))
+                .addToBackStack(STACK_NAME)
                 .commit()
     }
 

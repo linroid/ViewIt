@@ -40,11 +40,11 @@ const val INSERT_EVENT = 0x3L
 @IntDef(UPDATE_EVENT, REMOVE_EVENT, INSERT_EVENT)
 annotation class ImageEventType
 
-const val SORT_BY_DEFAULT = 0x1L
+const val SORT_BY_PATH = 0x1L
 const val SORT_BY_SIZE = 0x2L
 const val SORT_BY_TIME = 0x3L
 
-@IntDef(SORT_BY_DEFAULT, SORT_BY_SIZE, SORT_BY_TIME)
+@IntDef(SORT_BY_PATH, SORT_BY_SIZE, SORT_BY_TIME)
 annotation class ImageSortType
 
 class ImageRepo(val context: Context, val appInfo: ApplicationInfo) {
@@ -64,36 +64,13 @@ class ImageRepo(val context: Context, val appInfo: ApplicationInfo) {
     lateinit var filterSizePref: LongPreference
 
     private val eventBus = PublishSubject<ImageEvent>()
-    private val treeBuilder = BehaviorSubject<ImageTree>()
+    val treeBuilder = BehaviorSubject<ImageTree>()
     private val cacheDir: File = File(context.cacheDir, "mounts")
-    val originImages = ArrayList<Image>()
     val images = ArrayList<Image>()
 
     init {
         App.graph.inject(this)
         createTreeBuilder()
-    }
-
-    fun refresh(): Observable<List<Image>> {
-        Timber.d("refresh")
-        return Observable.from(originImages)
-                .filter { image ->
-                    image.size >= filterSizePref.get() * 1024 //KB
-                }
-                .sorted { image, image2 ->
-                    when (sortTypePref.get()) {
-                        SORT_BY_DEFAULT -> return@sorted -image.path.compareTo(image2.path)
-                        SORT_BY_SIZE -> return@sorted -image.size.compareTo(image2.size)
-                        SORT_BY_TIME -> return@sorted -image.lastModified.compareTo(image2.lastModified)
-                    }
-                    return@sorted 0
-                }
-                .toList()
-                .doOnNext {
-                    images.clear()
-                    images.addAll(it)
-                    eventBus.onNext(ImageEvent(UPDATE_EVENT, 0, images.size, images))
-                }
     }
 
     fun scan(): Observable<Image> {
@@ -129,12 +106,9 @@ class ImageRepo(val context: Context, val appInfo: ApplicationInfo) {
                 }
                 .doOnCompleted {
                     Timber.d("doOnCompleted")
-                    originImages.clear()
-                    originImages.addAll(scanned)
-                    refresh().subscribe { }
-                }
-                .filter { image ->
-                    image.size >= filterSizePref.get() * 1024 //KB
+                    images.clear()
+                    images.addAll(scanned)
+                    eventBus.onNext(ImageEvent(UPDATE_EVENT, 0, images.size, images))
                 }
     }
 
@@ -207,7 +181,6 @@ class ImageRepo(val context: Context, val appInfo: ApplicationInfo) {
                 .doOnNext {
                     val position = images.indexOf(image)
                     images.remove(image)
-                    originImages.remove(image)
                     eventBus.onNext(ImageEvent(REMOVE_EVENT, position, 1, arrayListOf(image)))
                 }
     }
@@ -216,14 +189,16 @@ class ImageRepo(val context: Context, val appInfo: ApplicationInfo) {
         return treeBuilder
     }
 
+    fun getImageTree(): ImageTree? = treeBuilder.value
+
     private fun createTreeBuilder() {
         eventBus.observeOn(Schedulers.computation()).subscribe {
-            Timber.d("should update treeBuilder:$it")
+            Timber.d("should update treeBuilder")
             when (it.type) {
                 UPDATE_EVENT -> {
                     val map = HashMap<String, ImageTree>()
                     val rootTree = ImageTree(File.separator)
-                    originImages.forEach {
+                    images.forEach {
                         val dir = it.source.parent
                         var tree = map[dir]
                         if (tree == null) {

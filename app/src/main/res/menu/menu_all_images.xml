@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:tools="http://schemas.android.com/tools">
+    <item
+        android:icon="@drawable/ic_sort"
+        android:title="@string/action_sort"
+        app:showAsAction="always"
+        tools:ignore="AlwaysShowAction">
+        <menu>
+            <group
+                android:id="@+id/action_sort"
+                android:checkableBehavior="single">
+                <item
+                    android:id="@+id/action_sort_by_default"
+                    android:title="@string/action_sort_by_default">
+                </item>
+                <item
+                    android:id="@+id/action_sort_by_size"
+                    android:title="@string/action_sort_by_size"/>
+                <item
+                    android:id="@+id/action_sort_by_time"
+                    android:title="@string/action_sort_by_time"/>
+            </group>
+        </menu>
+
+    </item>
+    <item
+        android:title="@string/action_filter_size"
+        app:showAsAction="never"
+        tools:ignore="AlwaysShowAction">
+        <menu>
+            <group
+                android:id="@+id/action_filter"
+                android:checkableBehavior="single">
+                <item
+                    android:id="@+id/action_filter_none"
+                    android:title="@string/action_filter_none">
+                </item>
+                <item
+                    android:id="@+id/action_filter_30K"
+                    android:title="@string/action_filter_30K">
+                </item>
+                <item
+                    android:id="@+id/action_filter_100K"
+                    android:title="@string/action_filter_100K"/>
+                <item
+                    android:id="@+id/action_filter_300K"
+                    android:title="@string/action_filter_300K"/>
+            </group>
+        </menu>
+
+    </item>
+</menu>

@@ -4,4 +4,7 @@
     <color name="colorPrimaryDark">#24a060</color>
     <color name="colorAccent">#FF4081</color>
     <color name="e">#555555</color>
+    <color name="text_highlight">#24a060</color>
+
+    <color name="gallery_window_background">#F7F7F7</color>
 </resources>

@@ -9,7 +9,6 @@ import android.support.v7.widget.RecyclerView
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
-import android.widget.TextView
 import butterknife.bindView
 import com.linroid.viewit.R
 import com.linroid.viewit.data.ImageRepo
@@ -20,33 +19,19 @@ import com.linroid.viewit.ui.gallery.provider.Category
 import com.linroid.viewit.ui.gallery.provider.CategoryViewProvider
 import com.linroid.viewit.ui.gallery.provider.ImageTreeViewProvider
 import com.linroid.viewit.ui.gallery.provider.ImageViewProvider
-import com.linroid.viewit.utils.ARG_IMAGE_TREE_PATH
-import com.linroid.viewit.utils.FormatUtils
 import com.trello.rxlifecycle.kotlin.bindToLifecycle
 import me.drakeet.multitype.MultiTypeAdapter
 import rx.android.schedulers.AndroidSchedulers
-import timber.log.Timber
+import java.io.File
 import java.util.*
 import javax.inject.Inject
 
 /**
  * @author linroid <linroid@gmail.com>
- * @since 30/01/2017
+ * @since 31/01/2017
  */
-class ImageTreeFragment : BaseFragment() {
-    val SPAN_COUNT = 4
-
-    companion object {
-        fun newInstance(tree: ImageTree): ImageTreeFragment {
-            val args = Bundle()
-            args.putString(ARG_IMAGE_TREE_PATH, tree.dir)
-            val fragment = ImageTreeFragment()
-            fragment.arguments = args
-            return fragment
-        }
-    }
-
-    private lateinit var treePath: String
+class SummaryFragment : BaseFragment() {
+    val SPAN_COUNT = 3
 
     @Inject lateinit var imageRepo: ImageRepo
     @Inject lateinit var appInfo: ApplicationInfo
@@ -55,15 +40,22 @@ class ImageTreeFragment : BaseFragment() {
     private val items = ArrayList<Any>()
     private var adapter = MultiTypeAdapter(items)
 
-    val recyclerView: RecyclerView by bindView(R.id.recyclerView)
-    val dirView: TextView by bindView(R.id.dir)
+    private val recyclerView: RecyclerView by bindView(R.id.recyclerView)
+
+    companion object {
+        fun newInstance(): SummaryFragment {
+            val args = Bundle()
+            val fragment = SummaryFragment()
+            fragment.arguments = args
+            return fragment
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Timber.d("onCreate:$arguments")
-        treePath = arguments!!.getString(ARG_IMAGE_TREE_PATH)!!
-        setHasOptionsMenu(true)
     }
+
+    override fun provideLayoutId(): Int = R.layout.fragment_summary
 
     override fun onAttach(activity: Activity?) {
         super.onAttach(activity)
@@ -72,12 +64,10 @@ class ImageTreeFragment : BaseFragment() {
         }
     }
 
-    override fun provideLayoutId(): Int = R.layout.fragment_image_tree
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         adapter.register(Image::class.java, ImageViewProvider(activity, imageRepo, appInfo))
-        adapter.register(ImageTree::class.java, ImageTreeViewProvider(activity, treePath, appInfo))
+        adapter.register(ImageTree::class.java, ImageTreeViewProvider(activity, File.separator, appInfo))
         adapter.register(Category::class.java, CategoryViewProvider())
 
         val gridLayoutManager = GridLayoutManager(getActivity(), SPAN_COUNT)
@@ -96,27 +86,33 @@ class ImageTreeFragment : BaseFragment() {
                 .observeOn(AndroidSchedulers.mainThread())
                 .bindToLifecycle(view)
                 .subscribe {
-                    refresh(it.getChildTree(treePath))
+                    refresh(it)
                 }
     }
 
-    private fun refresh(tree: ImageTree?) {
-        dirView.text = FormatUtils.formatPath(tree?.dir, appInfo)
+    private fun refresh(tree: ImageTree) {
         items.clear()
-        if (tree != null) {
-            if (tree.children.size > 0) {
-                items.add(Category(getString(R.string.label_category_tree),
-                        getString(R.string.label_category_action_all_images, tree.getAllImages().size),
-                        View.OnClickListener { activity.viewGallery(tree) }))
-                tree.children.forEach { subPath, imageTree ->
-                    addTree(imageTree)
-                }
+        items.add(Category(getString(R.string.label_category_recommend)))
+        tree.children.forEach { subPath, imageTree ->
+            addTree(imageTree)
+        }
+        items.add(Category(getString(R.string.label_category_favorite)))
+        tree.children.forEach { subPath, imageTree ->
+            addTree(imageTree)
+        }
+        if (tree.children.size > 0) {
+            items.add(Category(getString(R.string.label_category_tree),
+                    getString(R.string.label_category_action_all_images, tree.getAllImages().size),
+                    View.OnClickListener { activity.viewGallery(tree) }))
+
+            tree.children.forEach { subPath, imageTree ->
+                addTree(imageTree)
             }
-            if (tree.images.size > 0) {
-                items.add(Category(getString(R.string.label_category_tree_images, tree.images.size)))
-                tree.images.forEach {
-                    items.add(it)
-                }
+        }
+        if (tree.images.size > 0) {
+            items.add(Category(getString(R.string.label_category_tree_images, tree.images.size)))
+            tree.images.forEach {
+                items.add(it)
             }
         }
         adapter.notifyDataSetChanged()
@@ -130,8 +126,4 @@ class ImageTreeFragment : BaseFragment() {
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.menu_image_tree, menu)
-    }
 }

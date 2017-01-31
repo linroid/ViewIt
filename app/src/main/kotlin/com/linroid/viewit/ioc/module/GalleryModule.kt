@@ -6,7 +6,7 @@ import com.linroid.viewit.data.ImageRepoManager
 import com.linroid.viewit.data.model.Image
 import com.linroid.viewit.ioc.quailifer.ActivityScope
 import com.linroid.viewit.ui.gallery.GalleryActivity
-import com.linroid.viewit.ui.gallery.ImageViewProvider
+import com.linroid.viewit.ui.gallery.provider.ImageViewProvider
 import dagger.Module
 import dagger.Provides
 import me.drakeet.multitype.MultiTypeAdapter
