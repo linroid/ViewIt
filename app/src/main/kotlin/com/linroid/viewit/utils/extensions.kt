@@ -7,6 +7,6 @@ import rx.Subscription
  * @since 07/01/2017
  */
 
-fun Subscription?.unSubscribeIfNotNull() {
+fun Subscription?.unsubscribeIfNotNull() {
     this?.unsubscribe()
 }

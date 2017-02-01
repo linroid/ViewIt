@@ -1,5 +1,7 @@
 package com.linroid.viewit.data.model
 
+import com.linroid.viewit.App
+import com.linroid.viewit.utils.RootUtils
 import java.io.File
 
 /**
@@ -11,6 +13,15 @@ data class Image(val source: File, val size: Long, val lastModified: Long, val t
         get() = source.absolutePath
 
     fun mimeType() = type.mime
-    fun file(): File = mountFile ?: source
+    fun file(): File? {
+        if (mountFile != null) {
+            return mountFile
+        }
+        if (RootUtils.isRootFile(App.get(), source)) {
+            return mountFile
+        }
+        return source
+    }
+
     fun postfix(): String = type.postfix
 }

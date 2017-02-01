@@ -9,6 +9,7 @@ import com.linroid.viewit.R
 import com.linroid.viewit.data.model.Image
 import com.linroid.viewit.utils.AndroidUtils
 import com.linroid.viewit.utils.THUMBNAIL_MAX_COUNT
+import timber.log.Timber
 import java.util.*
 
 /**
@@ -81,13 +82,29 @@ class ThumbnailView : ViewGroup {
         }
     }
 
+    fun clear() {
+        (0 until childCount)
+                .map { getChildAt(it) as ImageView }
+                .forEach {
+                    it.setImageBitmap(null)
+                    it.setImageDrawable(null)
+                    Glide.clear(it)
+                }
+
+    }
+
     fun setImages(images: List<Image>) {
+        clear()
         val count = Math.min(images.size, THUMBNAIL_MAX_COUNT)
         for (i in 0 until count) {
             val child = getChildAt(i) as ImageView
+            val perWidth = (measuredWidth - dividerSize) / 2
+            val perHeight = (measuredHeight - dividerSize) / 2
             Glide.with(context)
                     .load(images[i].file())
+                    .override(perWidth, perHeight)
                     .centerCrop()
+                    .crossFade()
                     .into(child)
         }
     }

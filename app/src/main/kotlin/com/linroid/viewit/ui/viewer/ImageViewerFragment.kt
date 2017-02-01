@@ -93,7 +93,7 @@ class ImageViewerFragment : BaseFragment() {
         Observable.just(image)
                 .flatMap { image ->
                     isGif = image.type == ImageType.GIF
-                    if (RootUtils.isRootFile(act, image.source)) {
+                    if (image.file() == null) {
                         return@flatMap imageRepo.mountImage(image);
                     }
                     return@flatMap Observable.just(image)

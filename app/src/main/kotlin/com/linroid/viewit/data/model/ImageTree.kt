@@ -90,16 +90,17 @@ data class ImageTree(val dir: String, var parent: ImageTree? = null) {
         }
     }
 
-    //    val thumbnailImages: List<Image> by lazy {
-//        val list = ArrayList<Image>()
-//        thumbnailImages(list)
-//        return@lazy list
-//    }
-    fun thumbnailImages(): List<Image> {
+    val thumbnailImages: List<Image> by lazy {
         val list = ArrayList<Image>()
         thumbnailImages(list)
-        return list
+        return@lazy list
     }
+
+//    fun thumbnailImages(): List<Image> {
+//        val list = ArrayList<Image>()
+//        thumbnailImages(list)
+//        return list
+//    }
 
     private fun thumbnailImages(list: ArrayList<Image>) {
         list.addAll(images.take(THUMBNAIL_MAX_COUNT - list.size))

@@ -140,31 +140,27 @@ class ImageRepo(val context: Context, val appInfo: ApplicationInfo) {
     }
 
     fun saveImage(image: Image, appInfo: ApplicationInfo): Observable<File> {
-        return Observable.create<File> { subscriber ->
-            if (Environment.getExternalStorageState() != android.os.Environment.MEDIA_MOUNTED) {
-                subscriber.onError(IllegalStateException(context.getString(R.string.msg_save_image_failed_without_sdcard)));
-                return@create
-            }
-            val targetName = "${packageManager.getApplicationLabel(appInfo)}_${System.currentTimeMillis()}.${image.postfix()}"
-            @SuppressLint("SdCardPath")
-            val pictureDirectory = "/sdcard${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)}";
-            val saveDirectory = File(pictureDirectory, context.getString(R.string.app_name));
-            val desFile: File;
-            try {
-                if (!saveDirectory.exists()) {
-                    saveDirectory.mkdirs();
-                }
-                desFile = File(saveDirectory, targetName);
-                if (!desFile.exists()) {
-                    desFile.createNewFile();
-                }
-                FileUtils.copyFile(image.file(), desFile);
-                subscriber.onNext(desFile)
-                subscriber.onCompleted()
-            } catch (error: Exception) {
-                subscriber.onError(error)
-            }
-        }.subscribeOn(Schedulers.io())
+        return Observable.just(image)
+                .flatMap { if (it.file() == null) mountImage(image) else Observable.just(image) }
+                .flatMap {
+                    if (Environment.getExternalStorageState() != android.os.Environment.MEDIA_MOUNTED) {
+                        throw IllegalStateException(context.getString(R.string.msg_save_image_failed_without_sdcard));
+                    }
+                    val targetName = "${packageManager.getApplicationLabel(appInfo)}_${System.currentTimeMillis()}.${image.postfix()}"
+                    @SuppressLint("SdCardPath")
+                    val pictureDirectory = "/sdcard${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)}";
+                    val saveDirectory = File(pictureDirectory, context.getString(R.string.app_name));
+                    val desFile: File;
+                    if (!saveDirectory.exists()) {
+                        saveDirectory.mkdirs();
+                    }
+                    desFile = File(saveDirectory, targetName);
+                    if (!desFile.exists()) {
+                        desFile.createNewFile();
+                    }
+                    FileUtils.copyFile(image.file()!!, desFile);
+                    return@flatMap Observable.just(desFile)
+                }.subscribeOn(Schedulers.io())
     }
 
     fun deleteImage(image: Image, appInfo: ApplicationInfo): Observable<Boolean> {

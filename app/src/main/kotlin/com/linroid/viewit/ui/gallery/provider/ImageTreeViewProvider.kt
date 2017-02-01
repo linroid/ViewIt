@@ -14,12 +14,15 @@ import com.linroid.viewit.data.model.ImageTree
 import com.linroid.viewit.ui.gallery.GalleryActivity
 import com.linroid.viewit.utils.FormatUtils
 import com.linroid.viewit.utils.PathUtils
+import com.linroid.viewit.utils.unsubscribeIfNotNull
 import com.linroid.viewit.widget.ThumbnailView
 import com.trello.rxlifecycle.kotlin.bindToLifecycle
 import me.drakeet.multitype.ItemViewProvider
 import rx.Observable
+import rx.Subscription
 import rx.android.schedulers.AndroidSchedulers
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 
 /**
  * @author linroid <linroid@gmail.com>
@@ -28,21 +31,13 @@ import timber.log.Timber
 class ImageTreeViewProvider(val activity: GalleryActivity, val visitPath: String, val appInfo: ApplicationInfo, val imageRepo: ImageRepo)
     : ItemViewProvider<ImageTree, ImageTreeViewProvider.ViewHolder>() {
 
+
     override fun onBindViewHolder(holder: ViewHolder, tree: ImageTree) {
         holder.nameTV.text = FormatUtils.formatPath(PathUtils.relative(visitPath, tree.dir), appInfo)
         holder.itemView.setOnClickListener({
             activity.visitTree(tree)
         })
-        Observable.from(tree.thumbnailImages())
-                .flatMap { imageRepo.mountImage(it) }
-                .toList()
-                .observeOn(AndroidSchedulers.mainThread())
-                .bindToLifecycle(holder.thumbnailView)
-                .subscribe({
-                    holder.thumbnailView.setImages(it)
-                }, { error ->
-                    Timber.e(error)
-                })
+        holder.loadImages(imageRepo, tree)
         holder.itemView.setOnLongClickListener {
             Toast.makeText(holder.itemView.context, tree.dir, Toast.LENGTH_LONG).show()
             true
@@ -59,5 +54,29 @@ class ImageTreeViewProvider(val activity: GalleryActivity, val visitPath: String
         val nameTV: TextView by bindView(R.id.name)
         val thumbnailView: ThumbnailView by bindView(R.id.thumbnail)
         val imagesCountView: TextView by bindView(R.id.images_count)
+
+        var subscription: Subscription? = null
+
+        fun loadImages(imageRepo: ImageRepo, tree: ImageTree) {
+            subscription.unsubscribeIfNotNull()
+            thumbnailView.clear()
+            subscription = Observable.from(tree.thumbnailImages)
+                    .delaySubscription(1, TimeUnit.SECONDS)
+                    .flatMap {
+                        if (it.file() == null) {
+                            return@flatMap imageRepo.mountImage(it)
+                        } else {
+                            return@flatMap Observable.just(it)
+                        }
+                    }
+                    .toList()
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .bindToLifecycle(thumbnailView)
+                    .subscribe({
+                        thumbnailView.setImages(it)
+                    }, { error ->
+                        Timber.e(error)
+                    })
+        }
     }
 }
