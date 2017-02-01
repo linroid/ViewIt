@@ -1,20 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="?selectableItemBackground"
     android:orientation="vertical"
     android:padding="4dp">
 
-    <ImageView
-        android:id="@+id/icon"
-        android:layout_width="88dp"
-        android:layout_height="88dp"
-        android:layout_gravity="center_horizontal"
-        android:src="@drawable/ic_folder"
-        tools:ignore="ContentDescription"/>
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/icon"
+            android:layout_width="88dp"
+            android:layout_height="88dp"
+            android:layout_gravity="center_horizontal"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_folder"
+            tools:ignore="ContentDescription"/>
+
+        <com.linroid.viewit.widget.ThumbnailView
+            android:id="@+id/thumbnail"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="4dp"
+            app:dividerSize="2dp"
+            tools:ignore="RtlHardcoded"/>
+
+        <TextView
+            android:id="@+id/images_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|bottom"
+            android:layout_marginLeft="4dp"
+            android:paddingLeft="2dp"
+            android:paddingRight="2dp"
+            android:textSize="10sp"
+            tools:ignore="RtlHardcoded,SmallSp"
+            tools:text="@string/label_images_count"/>
+    </FrameLayout>
 
     <TextView
         android:id="@+id/name"

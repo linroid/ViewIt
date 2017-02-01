@@ -1,11 +1,8 @@
 package com.linroid.viewit.ui.gallery
 
 import android.app.Activity
-import android.content.Intent
 import android.content.pm.ApplicationInfo
-import android.net.Uri
 import android.os.Bundle
-import android.provider.Settings
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -227,7 +224,7 @@ class AllImagesFragment : BaseFragment() {
                 )
                 .subscribe({
                     Timber.i("image tree updated")
-                    updateImageTree(it, view)
+                    updateImageTree(it)
                 }, { error ->
                     Timber.e(error)
                 }, {
@@ -235,9 +232,9 @@ class AllImagesFragment : BaseFragment() {
                 })
     }
 
-    private fun updateImageTree(tree: ImageTree, view: View) {
+    private fun updateImageTree(tree: ImageTree) {
         var filterCount = 0
-        Observable.just(tree).map { it.getChildTree(treePath)?.getAllImages() }
+        Observable.just(tree).map { it.getChildTree(treePath)?.allImages() }
                 .flatMap { Observable.from(it) }
                 .filter { image ->
                     val res = image.size >= filterSizePref.get() * 1024 //KB
@@ -257,7 +254,7 @@ class AllImagesFragment : BaseFragment() {
                 .subscribeOn(Schedulers.computation())
                 .toList()
                 .observeOn(AndroidSchedulers.mainThread())
-                .bindToLifecycle(view)
+                .bindToLifecycle(this)
                 .subscribe {
                     items.clear()
                     if (filterCount == 0) {

@@ -67,7 +67,7 @@ class SummaryFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         adapter.register(Image::class.java, ImageViewProvider(activity, imageRepo, appInfo))
-        adapter.register(ImageTree::class.java, ImageTreeViewProvider(activity, File.separator, appInfo))
+        adapter.register(ImageTree::class.java, ImageTreeViewProvider(activity, File.separator, appInfo, imageRepo))
         adapter.register(Category::class.java, CategoryViewProvider())
 
         val gridLayoutManager = GridLayoutManager(getActivity(), SPAN_COUNT)
@@ -102,7 +102,7 @@ class SummaryFragment : BaseFragment() {
         }
         if (tree.children.size > 0) {
             items.add(Category(getString(R.string.label_category_tree),
-                    getString(R.string.label_category_action_all_images, tree.getAllImages().size),
+                    getString(R.string.label_category_action_all_images, tree.allImages().size),
                     View.OnClickListener { activity.viewGallery(tree) }))
 
             tree.children.forEach { subPath, imageTree ->

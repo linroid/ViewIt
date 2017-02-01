@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ThumbnailView">
+        <attr name="dividerSize" format="dimension"/>
+    </declare-styleable>
+</resources>

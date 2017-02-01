@@ -1,8 +1,10 @@
 package com.linroid.viewit.data.model
 
 import com.linroid.viewit.utils.PathUtils
+import com.linroid.viewit.utils.THUMBNAIL_MAX_COUNT
 import java.io.File
 import java.util.*
+import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * @author linroid <linroid@gmail.com>
@@ -68,18 +70,57 @@ data class ImageTree(val dir: String, var parent: ImageTree? = null) {
                 ]
     }
 
-    fun getAllImages(): List<Image> {
+    //    val allImages: List<Image> by lazy {
+//        val list = ArrayList<Image>()
+//        allImages(list)
+//        return@lazy list
+//    }
+    fun allImages(): List<Image> {
         val list = ArrayList<Image>()
-        getAllImages(list)
+        allImages(list)
         return list
     }
 
-    private fun getAllImages(list: MutableList<Image>) {
+    private fun allImages(list: MutableList<Image>) {
         if (images.size > 0) {
             list.addAll(images)
         }
         if (children.size > 0) {
-            children.forEach { s, child -> child.getAllImages(list) }
+            children.forEach { s, child -> child.allImages(list) }
         }
+    }
+
+    //    val thumbnailImages: List<Image> by lazy {
+//        val list = ArrayList<Image>()
+//        thumbnailImages(list)
+//        return@lazy list
+//    }
+    fun thumbnailImages(): List<Image> {
+        val list = ArrayList<Image>()
+        thumbnailImages(list)
+        return list
+    }
+
+    private fun thumbnailImages(list: ArrayList<Image>) {
+        list.addAll(images.take(THUMBNAIL_MAX_COUNT - list.size))
+        if (list.size < THUMBNAIL_MAX_COUNT) {
+            children.forEach { s, tree ->
+                tree.thumbnailImages(list)
+                if (list.size >= THUMBNAIL_MAX_COUNT) {
+                    return@forEach
+                }
+            }
+        }
+    }
+
+    fun allImagesCount(): Int {
+        val count = AtomicInteger(0)
+        allImagesCount(count)
+        return count.get()
+    }
+
+    private fun allImagesCount(count: AtomicInteger) {
+        count.addAndGet(images.size)
+        children.forEach { s, imageTree -> imageTree.allImagesCount(count) }
     }
 }

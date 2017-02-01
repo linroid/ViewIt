@@ -77,7 +77,7 @@ class ImageTreeFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         adapter.register(Image::class.java, ImageViewProvider(activity, imageRepo, appInfo))
-        adapter.register(ImageTree::class.java, ImageTreeViewProvider(activity, treePath, appInfo))
+        adapter.register(ImageTree::class.java, ImageTreeViewProvider(activity, treePath, appInfo, imageRepo))
         adapter.register(Category::class.java, CategoryViewProvider())
 
         val gridLayoutManager = GridLayoutManager(getActivity(), SPAN_COUNT)
@@ -94,7 +94,7 @@ class ImageTreeFragment : BaseFragment() {
 
         imageRepo.registerTreeBuilder()
                 .observeOn(AndroidSchedulers.mainThread())
-                .bindToLifecycle(view)
+                .bindToLifecycle(this)
                 .subscribe {
                     refresh(it.getChildTree(treePath))
                 }
@@ -106,7 +106,7 @@ class ImageTreeFragment : BaseFragment() {
         if (tree != null) {
             if (tree.children.size > 0) {
                 items.add(Category(getString(R.string.label_category_tree),
-                        getString(R.string.label_category_action_all_images, tree.getAllImages().size),
+                        getString(R.string.label_category_action_all_images, tree.allImagesCount()),
                         View.OnClickListener { activity.viewGallery(tree) }))
                 tree.children.forEach { subPath, imageTree ->
                     addTree(imageTree)
