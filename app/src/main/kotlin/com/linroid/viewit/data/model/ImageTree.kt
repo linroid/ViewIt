@@ -13,11 +13,16 @@ import java.util.concurrent.atomic.AtomicInteger
 data class ImageTree(val dir: String, var parent: ImageTree? = null) {
     val images = ArrayList<Image>()
     val children = HashMap<String, ImageTree>()
+
     fun add(child: ImageTree) {
         val subDir = subDir(child.dir)
         if (dir == PathUtils.parent(child.dir)) {
             child.parent = this
-            children.put(subDir, child)
+            if (children.containsKey(subDir)) {
+                children[subDir]!!.merge(child)
+            } else {
+                children.put(subDir, child)
+            }
             return
         }
         val subTree: ImageTree;
@@ -30,8 +35,24 @@ data class ImageTree(val dir: String, var parent: ImageTree? = null) {
         children.put(subDir, subTree)
     }
 
-    fun firstChild(): ImageTree {
-        return children.values.first()
+    private fun merge(other: ImageTree) {
+        images.addAll(other.images)
+        other.children.forEach { subDir, imageTree ->
+            if(children.containsKey(subDir)) {
+                children[subDir]!!.merge(imageTree)
+            } else {
+                children.put(subDir, imageTree)
+            }
+        }
+    }
+
+    fun nonEmptyChild(): ImageTree {
+        if (images.size == 0) {
+            if (children.size == 1) {
+                return children.values.first().nonEmptyChild()
+            }
+        }
+        return this
     }
 
     fun removeImage(image: Image) {
