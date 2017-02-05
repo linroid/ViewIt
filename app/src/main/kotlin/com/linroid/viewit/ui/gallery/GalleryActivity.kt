@@ -21,6 +21,7 @@ import com.linroid.viewit.App
 import com.linroid.viewit.R
 import com.linroid.viewit.data.ImageRepo
 import com.linroid.viewit.data.ImageRepoManager
+import com.linroid.viewit.data.model.Favorite
 import com.linroid.viewit.data.model.ImageTree
 import com.linroid.viewit.ioc.DaggerGalleryGraph
 import com.linroid.viewit.ioc.GalleryGraph
@@ -84,7 +85,7 @@ class GalleryActivity : BaseActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu_gallery, menu)
+        menuInflater.inflate(R.menu.gallery, menu)
         return super.onCreateOptionsMenu(menu)
     }
 
@@ -137,21 +138,26 @@ class GalleryActivity : BaseActivity() {
 
     fun visitTree(tree: ImageTree) {
         Timber.d("visitTree:$tree")
-        addToStack(ImageTreeFragment.newInstance(tree), "tree:${tree.dir}")
+        addToStack(TreeViewerFragment.newInstance(tree), "tree:${tree.dir}")
     }
 
     fun viewImages(tree: ImageTree) {
         Timber.d("viewImages:$tree")
-        addToStack(AllImagesFragment.newInstance(tree), "images:${tree.dir}")
+        addToStack(ImagesViewerFragment.newInstance(tree), "images:${tree.dir}")
+    }
+
+    fun viewFavorite(favorite: Favorite) {
+        Timber.d("viewFavorite:$favorite")
+        addToStack(FavoriteViewerFragment.newInstance(favorite, appInfo), "favorite:${favorite.path}")
     }
 
     private fun addToStack(fragment: Fragment, name: String) {
         val count = supportFragmentManager.backStackEntryCount;
         val action = supportFragmentManager.beginTransaction()
         action.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        val topFragment = supportFragmentManager.fragments?.findLast { it!=null }
+        val topFragment = supportFragmentManager.fragments?.findLast { it != null }
         action.setCustomAnimations(R.anim.fragment_none, R.anim.fragment_none, R.anim.fragment_none, R.anim.fragment_none)
-        if (topFragment != null && topFragment is GalleryAbstractFragment) {
+        if (topFragment != null && topFragment is GalleryChildFragment) {
             action.hide(topFragment)
         }
         action.add(R.id.container, fragment, name)

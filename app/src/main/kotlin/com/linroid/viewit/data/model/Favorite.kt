@@ -12,7 +12,7 @@ open class Favorite : RealmObject() {
     @PrimaryKey
     open var id: Long = 0
     open var name: String = ""
-    open var pathPattern: String = ""
+    open var path: String = ""
     open var packageName: String = ""
     @Ignore
     open var tree: ImageTree? = null

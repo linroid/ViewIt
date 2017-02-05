@@ -28,13 +28,8 @@ import javax.inject.Inject
  * @author linroid <linroid@gmail.com>
  * @since 31/01/2017
  */
-class SummaryFragment : GalleryAbstractFragment() {
+class SummaryFragment : GalleryChildFragment() {
     val SPAN_COUNT = 3
-
-    @Inject lateinit var imageRepo: ImageRepo
-    @Inject lateinit var favoriteRepo: FavoriteRepo
-    @Inject lateinit var appInfo: ApplicationInfo
-    @Inject lateinit var activity: GalleryActivity
 
     private val items = ArrayList<Any>()
     private var adapter = MultiTypeAdapter(items)
@@ -108,24 +103,6 @@ class SummaryFragment : GalleryAbstractFragment() {
         }
         recommendCategory.items = recommendItems
 
-        // favorites
-        favoriteRepo.findFavorites(appInfo)
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext { favorites ->
-                    favorites.forEachIndexed { i, favorite ->
-                        val path = PathUtils.formatToDevice(favorite.pathPattern, appInfo);
-                        favorite.tree = tree.getChildTree(path)
-                    }
-                }
-                .subscribe({ favorites ->
-                    favoriteCategory.items = favorites
-                    adapter.notifyDataSetChanged()
-                }, { error ->
-                    Timber.e(error, "findFavorites")
-                }, {
-
-                })
-
         // tree
         val treeItems = ArrayList<ImageTree>()
         tree.children.forEach { subPath, imageTree ->
@@ -141,6 +118,23 @@ class SummaryFragment : GalleryAbstractFragment() {
         imageCategory.label = getString(R.string.label_category_action_all_images, tree.images.size)
         imageCategory.items = tree.images
 
+        // favorites
+        favoriteRepo.list(appInfo)
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext { favorites ->
+                    favorites.forEachIndexed { i, favorite ->
+                        val path = PathUtils.formatToDevice(favorite.path, appInfo);
+                        favorite.tree = tree.getChildTree(path)
+                    }
+                }
+                .subscribe({ favorites ->
+                    favoriteCategory.items = favorites
+                    adapter.notifyDataSetChanged()
+                }, { error ->
+                    Timber.e(error, "list")
+                }, {
+
+                })
         adapter.notifyDataSetChanged()
     }
 

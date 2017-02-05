@@ -61,7 +61,7 @@ class FavoriteCreateActivity : BaseActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu_favorite_create, menu)
+        menuInflater.inflate(R.menu.favorite_create, menu)
         return super.onCreateOptionsMenu(menu)
     }
 
@@ -100,7 +100,7 @@ class FavoriteCreateActivity : BaseActivity() {
 //                }, { error ->
 //                    Timber.e(error)
 //                })
-        favoriteRepo.asyncCreateFavorite(appInfo, pattern, name)
+        favoriteRepo.create(appInfo, pattern, name)
         toastShort(R.string.msg_create_favorite_success)
         finish()
     }

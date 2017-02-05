@@ -50,8 +50,11 @@
     <string name="label_category_tree_images">包含图片(%1$d 张)</string>
     <string name="label_category_action_filter">过滤了 %1$d 张</string>
     <string name="label_category_action_all_images">全部图片(%1$d 张)</string>
-    <string name="action_add_favorite">收藏这个目录</string>
     <string name="subtitle_scanning">扫描中…</string>
     <string name="label_images_count">%1$d 张</string>
     <string name="msg_create_favorite_success">收藏成功</string>
+    <string name="action_delete_favorite">移除这个收藏</string>
+    <string name="action_create_favorite">收藏这个目录</string>
+    <string name="action_save_favorite">保存</string>
+    <string name="alert_delete_favorite">确定要删除这个收藏吗?</string>
 </resources>

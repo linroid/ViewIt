@@ -111,7 +111,7 @@ if $cygwin ; then
     CLASSPATH=`cygpath --file --mixed "$CLASSPATH"`
     JAVACMD=`cygpath --unix "$JAVACMD"`
 
-    # We build the pathPattern for arguments to be converted via cygpath
+    # We build the path for arguments to be converted via cygpath
     ROOTDIRSRAW=`find -L / -maxdepth 1 -mindepth 1 -type d 2>/dev/null`
     SEP=""
     for file in $ROOTDIRSRAW ; do
@@ -119,7 +119,7 @@ if $cygwin ; then
         SEP="|"
     done
     OURCYGPATTERN="(^($ROOTDIRS))"
-    # Add a user-defined pathPattern to the cygpath arguments
+    # Add a user-defined path to the cygpath arguments
     if [ "$GRADLE_CYGPATTERN" != "" ] ; then
         OURCYGPATTERN="$OURCYGPATTERN|($GRADLE_CYGPATTERN)"
     fi

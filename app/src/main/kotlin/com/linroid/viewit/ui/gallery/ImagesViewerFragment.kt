@@ -40,7 +40,7 @@ import javax.inject.Named
  * @author linroid <linroid@gmail.com>
  * @since 31/01/2017
  */
-class AllImagesFragment : GalleryAbstractFragment() {
+open class ImagesViewerFragment : GalleryViewerFragment() {
     private val SPAN_COUNT = 4
 
     @field:[Inject Named(PREF_SORT_TYPE)]
@@ -48,22 +48,17 @@ class AllImagesFragment : GalleryAbstractFragment() {
     @field:[Inject Named(PREF_FILTER_SIZE)]
     lateinit var filterSizePref: LongPreference
 
-    @Inject lateinit var imageRepo: ImageRepo
-    @Inject lateinit var appInfo: ApplicationInfo
-    @Inject lateinit var activity: GalleryActivity
-
     private val items = ArrayList<Any>()
     private var adapter = MultiTypeAdapter(items)
-    private lateinit var treePath: String
     private lateinit var imageCategory: Category
 
     private val recyclerView: RecyclerView by bindView(R.id.recyclerView)
 
     companion object {
-        fun newInstance(tree: ImageTree): AllImagesFragment {
+        fun newInstance(tree: ImageTree): ImagesViewerFragment {
             val args = Bundle()
             args.putString(ARG_IMAGE_TREE_PATH, tree.dir)
-            val fragment = AllImagesFragment()
+            val fragment = ImagesViewerFragment()
             fragment.arguments = args
             return fragment
         }
@@ -74,7 +69,6 @@ class AllImagesFragment : GalleryAbstractFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        treePath = arguments!!.getString(ARG_IMAGE_TREE_PATH)!!
     }
 
     override fun onAttach(activity: Activity?) {
@@ -86,7 +80,7 @@ class AllImagesFragment : GalleryAbstractFragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.menu_all_images, menu)
+        inflater.inflate(R.menu.gallery_images_viewer, menu)
     }
 
 
@@ -235,7 +229,7 @@ class AllImagesFragment : GalleryAbstractFragment() {
 
     private fun updateImageTree(tree: ImageTree) {
         var filterCount = 0
-        Observable.just(tree).map { it.getChildTree(treePath)?.allImages() }
+        Observable.just(tree).map { it.getChildTree(path)?.allImages() }
                 .flatMap { Observable.from(it) }
                 .filter { image ->
                     val res = image.size >= filterSizePref.get() * 1024 //KB

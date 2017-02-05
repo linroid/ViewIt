@@ -2,8 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/action_favorite_create"
-        android:icon="@drawable/ic_star_border"
-        android:title="@string/action_add_favorite"
+        android:id="@+id/action_save_favorite"
+        android:title="@string/action_save_favorite"
         app:showAsAction="always"/>
 </menu>

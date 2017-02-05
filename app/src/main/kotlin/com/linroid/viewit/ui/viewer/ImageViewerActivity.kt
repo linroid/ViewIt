@@ -199,7 +199,7 @@ class ImageViewerActivity() : ImmersiveActivity(), View.OnClickListener {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_image_viewer, menu)
+        menuInflater.inflate(R.menu.image_viewer, menu)
         return super.onCreateOptionsMenu(menu)
     }
 

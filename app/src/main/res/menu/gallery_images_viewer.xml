@@ -4,6 +4,7 @@
       xmlns:tools="http://schemas.android.com/tools">
     <item
         android:icon="@drawable/ic_sort"
+        android:orderInCategory="10"
         android:title="@string/action_sort"
         app:showAsAction="always"
         tools:ignore="AlwaysShowAction">
@@ -26,7 +27,9 @@
 
     </item>
     <item
+        android:orderInCategory="9"
         android:title="@string/action_filter_size"
+        android:icon="@drawable/ic_filter_list"
         app:showAsAction="never"
         tools:ignore="AlwaysShowAction">
         <menu>

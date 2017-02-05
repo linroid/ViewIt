@@ -34,24 +34,18 @@ import javax.inject.Inject
  * @author linroid <linroid@gmail.com>
  * @since 30/01/2017
  */
-class ImageTreeFragment : GalleryAbstractFragment() {
+class TreeViewerFragment : GalleryViewerFragment() {
     val SPAN_COUNT = 4
 
     companion object {
-        fun newInstance(tree: ImageTree): ImageTreeFragment {
+        fun newInstance(tree: ImageTree): TreeViewerFragment {
             val args = Bundle()
             args.putString(ARG_IMAGE_TREE_PATH, tree.dir)
-            val fragment = ImageTreeFragment()
+            val fragment = TreeViewerFragment()
             fragment.arguments = args
             return fragment
         }
     }
-
-    private lateinit var treePath: String
-
-    @Inject lateinit var imageRepo: ImageRepo
-    @Inject lateinit var appInfo: ApplicationInfo
-    @Inject lateinit var activity: GalleryActivity
 
     private val items = ArrayList<Any>()
     private var adapter = MultiTypeAdapter(items)
@@ -66,7 +60,6 @@ class ImageTreeFragment : GalleryAbstractFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Timber.d("onCreate:$arguments")
-        treePath = arguments!!.getString(ARG_IMAGE_TREE_PATH)!!
         setHasOptionsMenu(true)
     }
 
@@ -82,7 +75,7 @@ class ImageTreeFragment : GalleryAbstractFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         adapter.register(Image::class.java, ImageViewProvider(activity, imageRepo, appInfo))
-        adapter.register(ImageTree::class.java, ImageTreeViewProvider(activity, treePath, appInfo, imageRepo))
+        adapter.register(ImageTree::class.java, ImageTreeViewProvider(activity, path, appInfo, imageRepo))
         adapter.register(Category::class.java, CategoryViewProvider())
         treeCategory = Category(null, getString(R.string.label_category_tree), items)
         imageCategory = Category(treeCategory, getString(R.string.label_category_tree_images, 0), items)
@@ -103,7 +96,7 @@ class ImageTreeFragment : GalleryAbstractFragment() {
                 .observeOn(AndroidSchedulers.mainThread())
                 .bindToLifecycle(this)
                 .subscribe {
-                    refresh(it.getChildTree(treePath))
+                    refresh(it.getChildTree(path))
                 }
     }
 
@@ -130,16 +123,10 @@ class ImageTreeFragment : GalleryAbstractFragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.menu_image_tree, menu)
+        inflater.inflate(R.menu.gallery_tree_viewer, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.action_favorite_create -> {
-                FavoriteCreateActivity.navTo(activity, treePath, appInfo)
-                return true
-            }
-        }
         return super.onOptionsItemSelected(item)
     }
 }

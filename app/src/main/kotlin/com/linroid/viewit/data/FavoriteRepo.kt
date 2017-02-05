@@ -10,7 +10,14 @@ import rx.Observable
  * @since 01/02/2017
  */
 class FavoriteRepo(val realm: Realm) {
-    fun findFavorites(appInfo: ApplicationInfo): Observable<List<Favorite>> {
+
+    fun find(pathPattern: String): Observable<Favorite> {
+        return realm.where(Favorite::class.java).equalTo("path", pathPattern)
+                .findFirstAsync()
+                .asObservable()
+    }
+
+    fun list(appInfo: ApplicationInfo): Observable<List<Favorite>> {
         return realm.where(Favorite::class.java).equalTo("packageName", appInfo.packageName)
                 .findAllAsync()
                 .asObservable()
@@ -19,26 +26,30 @@ class FavoriteRepo(val realm: Realm) {
                 }
     }
 
-    fun createFavorite(appInfo: ApplicationInfo, pathPattern: String, name: String): Observable<Favorite> {
+    fun createFavorite(appInfo: ApplicationInfo, path: String, name: String): Observable<Favorite> {
         return realm.asObservable().map {
             val nextID = realm.where(Favorite::class.java).max("id").toLong() + 1
             val favorite = realm.createObject(Favorite::class.java, nextID)
             favorite.packageName = appInfo.packageName
             favorite.name = name
-            favorite.pathPattern = pathPattern
+            favorite.path = path
             realm.copyToRealm(favorite)
             return@map favorite
         }
     }
 
-    fun asyncCreateFavorite(appInfo: ApplicationInfo, pathPattern: String, name: String) {
+    fun create(appInfo: ApplicationInfo, path: String, name: String) {
         realm.executeTransaction {
             val maxID = realm.where(Favorite::class.java).max("id")?.toLong() ?: 0
             val nextID = maxID + 1
             val favorite = realm.createObject(Favorite::class.java, nextID)
             favorite.name = name
-            favorite.pathPattern = pathPattern
+            favorite.path = path
             favorite.packageName = appInfo.packageName
         }
+    }
+
+    fun delete(path: String) {
+
     }
 }

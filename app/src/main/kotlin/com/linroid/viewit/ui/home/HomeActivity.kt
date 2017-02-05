@@ -62,7 +62,7 @@ class HomeActivity : BaseActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.menu_home, menu)
+        menuInflater.inflate(R.menu.home, menu)
         return true
     }
 

@@ -2,9 +2,9 @@ package com.linroid.viewit.ioc
 
 import com.linroid.viewit.ioc.module.GalleryModule
 import com.linroid.viewit.ioc.quailifer.ActivityScope
-import com.linroid.viewit.ui.gallery.AllImagesFragment
+import com.linroid.viewit.ui.gallery.ImagesViewerFragment
 import com.linroid.viewit.ui.gallery.GalleryActivity
-import com.linroid.viewit.ui.gallery.ImageTreeFragment
+import com.linroid.viewit.ui.gallery.TreeViewerFragment
 import com.linroid.viewit.ui.gallery.SummaryFragment
 import dagger.Component
 
@@ -19,7 +19,7 @@ import dagger.Component
 )
 interface GalleryGraph {
     fun inject(activity: GalleryActivity)
-    fun inject(fragment: ImageTreeFragment)
-    fun inject(fragment: AllImagesFragment)
+    fun inject(fragment: TreeViewerFragment)
+    fun inject(fragment: ImagesViewerFragment)
     fun inject(fragment: SummaryFragment)
 }

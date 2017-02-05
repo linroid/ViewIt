@@ -62,7 +62,7 @@ class AboutActivity : AbsAboutActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_about, menu)
+        menuInflater.inflate(R.menu.about, menu)
         return super.onCreateOptionsMenu(menu)
     }
 

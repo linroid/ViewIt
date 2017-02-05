@@ -39,6 +39,9 @@ class FavoriteViewProvider(val activity: GalleryActivity, val appInfo: Applicati
             }
         })
         holder.loadImages(imageRepo, favorite.tree)
+        holder.itemView.setOnClickListener {
+            activity.viewFavorite(favorite)
+        }
         holder.itemView.setOnLongClickListener {
             if (favorite.tree != null) {
                 Toast.makeText(holder.itemView.context, favorite.tree!!.dir, Toast.LENGTH_LONG).show()
