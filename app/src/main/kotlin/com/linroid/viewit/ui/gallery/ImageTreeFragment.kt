@@ -8,6 +8,7 @@ import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.Menu
 import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
 import butterknife.bindView
@@ -15,7 +16,7 @@ import com.linroid.viewit.R
 import com.linroid.viewit.data.ImageRepo
 import com.linroid.viewit.data.model.Image
 import com.linroid.viewit.data.model.ImageTree
-import com.linroid.viewit.ui.BaseFragment
+import com.linroid.viewit.ui.favorite.FavoriteCreateActivity
 import com.linroid.viewit.ui.gallery.provider.Category
 import com.linroid.viewit.ui.gallery.provider.CategoryViewProvider
 import com.linroid.viewit.ui.gallery.provider.ImageTreeViewProvider
@@ -33,7 +34,7 @@ import javax.inject.Inject
  * @author linroid <linroid@gmail.com>
  * @since 30/01/2017
  */
-class ImageTreeFragment : BaseFragment() {
+class ImageTreeFragment : GalleryAbstractFragment() {
     val SPAN_COUNT = 4
 
     companion object {
@@ -54,6 +55,10 @@ class ImageTreeFragment : BaseFragment() {
 
     private val items = ArrayList<Any>()
     private var adapter = MultiTypeAdapter(items)
+
+    private lateinit var treeCategory: Category
+    private lateinit var imageCategory: Category
+
 
     val recyclerView: RecyclerView by bindView(R.id.recyclerView)
     val dirView: TextView by bindView(R.id.dir)
@@ -79,6 +84,8 @@ class ImageTreeFragment : BaseFragment() {
         adapter.register(Image::class.java, ImageViewProvider(activity, imageRepo, appInfo))
         adapter.register(ImageTree::class.java, ImageTreeViewProvider(activity, treePath, appInfo, imageRepo))
         adapter.register(Category::class.java, CategoryViewProvider())
+        treeCategory = Category(null, getString(R.string.label_category_tree), items)
+        imageCategory = Category(treeCategory, getString(R.string.label_category_tree_images, 0), items)
 
         val gridLayoutManager = GridLayoutManager(getActivity(), SPAN_COUNT)
         gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
@@ -104,34 +111,35 @@ class ImageTreeFragment : BaseFragment() {
         dirView.text = FormatUtils.formatPath(tree?.dir, appInfo)
         items.clear()
         if (tree != null) {
-            if (tree.children.size > 0) {
-                items.add(Category(getString(R.string.label_category_tree),
-                        getString(R.string.label_category_action_all_images, tree.allImagesCount()),
-                        View.OnClickListener { activity.viewGallery(tree) }))
-                tree.children.forEach { subPath, imageTree ->
-                    addTree(imageTree)
-                }
+            val treeItems = ArrayList<ImageTree>()
+            tree.children.forEach { subPath, imageTree ->
+                treeItems.add(imageTree.nonEmptyChild())
             }
-            if (tree.images.size > 0) {
-                items.add(Category(getString(R.string.label_category_tree_images, tree.images.size)))
-                tree.images.forEach {
-                    items.add(it)
-                }
+            treeCategory.apply {
+                action = getString(R.string.label_category_action_all_images, tree.allImagesCount())
+                actionClickListener = View.OnClickListener { activity.viewImages(tree) }
+                items = treeItems
+            }
+            imageCategory.apply {
+                label = getString(R.string.label_category_tree_images, tree.images.size)
+                items = tree.images
             }
         }
         adapter.notifyDataSetChanged()
     }
 
-    private fun addTree(tree: ImageTree) {
-        if (tree.children.size == 1 && tree.images.size == 0) {
-            addTree(tree.firstChild())
-        } else {
-            items.add(tree)
-        }
-    }
-
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.menu_image_tree, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.action_favorite_create -> {
+                FavoriteCreateActivity.navTo(activity, treePath, appInfo)
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 }

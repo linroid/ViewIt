@@ -18,7 +18,6 @@ import com.linroid.viewit.data.SORT_BY_SIZE
 import com.linroid.viewit.data.SORT_BY_TIME
 import com.linroid.viewit.data.model.Image
 import com.linroid.viewit.data.model.ImageTree
-import com.linroid.viewit.ui.BaseFragment
 import com.linroid.viewit.ui.gallery.provider.Category
 import com.linroid.viewit.ui.gallery.provider.CategoryViewProvider
 import com.linroid.viewit.ui.gallery.provider.ImageViewProvider
@@ -41,7 +40,7 @@ import javax.inject.Named
  * @author linroid <linroid@gmail.com>
  * @since 31/01/2017
  */
-class AllImagesFragment : BaseFragment() {
+class AllImagesFragment : GalleryAbstractFragment() {
     private val SPAN_COUNT = 4
 
     @field:[Inject Named(PREF_SORT_TYPE)]
@@ -56,6 +55,7 @@ class AllImagesFragment : BaseFragment() {
     private val items = ArrayList<Any>()
     private var adapter = MultiTypeAdapter(items)
     private lateinit var treePath: String
+    private lateinit var imageCategory: Category
 
     private val recyclerView: RecyclerView by bindView(R.id.recyclerView)
 
@@ -175,6 +175,7 @@ class AllImagesFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         adapter.register(Image::class.java, ImageViewProvider(activity, imageRepo, appInfo))
         adapter.register(Category::class.java, CategoryViewProvider())
+        imageCategory = Category(null, getString(R.string.label_category_tree_images, 0), items)
 
         val gridLayoutManager = GridLayoutManager(getActivity(), SPAN_COUNT)
         gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
@@ -255,16 +256,24 @@ class AllImagesFragment : BaseFragment() {
                 .toList()
                 .observeOn(AndroidSchedulers.mainThread())
                 .bindToLifecycle(this)
-                .subscribe {
+                .subscribe { images ->
                     items.clear()
                     if (filterCount == 0) {
-                        items.add(Category(getString(R.string.label_category_tree_images, it.size)))
+                        imageCategory.apply {
+                            label = getString(R.string.label_category_tree_images, images.size)
+                            action = null
+                            actionClickListener = null
+                        }
                     } else {
-                        items.add(Category(getString(R.string.label_category_tree_images, it.size),
-                                getString(R.string.label_category_action_filter, filterCount),
-                                View.OnClickListener { activity.findViewById(R.id.action_filter)?.performClick() }))
+                        imageCategory.apply {
+                            label = getString(R.string.label_category_tree_images, images.size)
+                            action = getString(R.string.label_category_action_filter, filterCount)
+                            actionClickListener = View.OnClickListener {
+                                activity.findViewById(R.id.action_filter)?.performClick()
+                            }
+                        }
                     }
-                    items.addAll(it)
+                    imageCategory.items = images
                     adapter.notifyDataSetChanged()
                 }
 

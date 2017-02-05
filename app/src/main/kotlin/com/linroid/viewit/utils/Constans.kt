@@ -20,3 +20,9 @@ val APP_EXTERNAL_PATHS = mapOf(
         "com.tencent.mm" to arrayListOf("Tencent/MicroMsg"),
         "com.tencent.mobileqq" to arrayListOf("Tencent/QQ_Favorite", "Tencent/MobileQQ", "Tencent/QQ_Images", "Tencent/QQfile_recv")
 )
+
+const val EXTERNAL_DATA_DIR = "\$EXTERNAL"
+const val INTERNAL_DATA_DIR = "\$INTERNAL"
+const val SDCARD_DIR = "\$SDCARD"
+
+const val DB_VERSION = 1L

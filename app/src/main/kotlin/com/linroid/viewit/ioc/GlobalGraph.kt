@@ -4,18 +4,21 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.linroid.rxshell.RxShell
 import com.linroid.viewit.App
+import com.linroid.viewit.data.FavoriteRepo
 import com.linroid.viewit.data.ImageRepo
 import com.linroid.viewit.data.ImageRepoManager
 import com.linroid.viewit.ioc.module.AndroidModule
 import com.linroid.viewit.ioc.module.DataModule
 import com.linroid.viewit.ioc.module.PrefModule
 import com.linroid.viewit.ioc.module.RepoModule
+import com.linroid.viewit.ui.favorite.FavoriteCreateActivity
 import com.linroid.viewit.ui.home.HomeActivity
 import com.linroid.viewit.utils.PREF_FILTER_SIZE
 import com.linroid.viewit.utils.PREF_SORT_TYPE
 import com.linroid.viewit.utils.RxOnce
 import com.linroid.viewit.utils.pref.LongPreference
 import dagger.Component
+import io.realm.Realm
 import javax.inject.Named
 import javax.inject.Singleton
 
@@ -28,6 +31,7 @@ import javax.inject.Singleton
 interface GlobalGraph {
     fun inject(app: App)
     fun inject(activity: HomeActivity)
+    fun inject(activity: FavoriteCreateActivity)
     fun inject(imageRepo: ImageRepo)
     fun inject(rxOnce: RxOnce)
 
@@ -35,9 +39,13 @@ interface GlobalGraph {
     fun rxShell(): RxShell
     fun repoManager(): ImageRepoManager
     fun sharedPreferences(): SharedPreferences
+    fun realm(): Realm
+    fun dbRepo(): FavoriteRepo
 
     @Named(PREF_FILTER_SIZE)
     fun filterSizePref(): LongPreference
+
     @Named(PREF_SORT_TYPE)
     fun sortTypePref(): LongPreference
+
 }

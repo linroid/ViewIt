@@ -46,6 +46,13 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.home.HomeActivity"/>
         </activity>
+        <activity
+            android:name=".ui.favorite.FavoriteCreateActivity"
+            android:parentActivityName=".ui.gallery.GalleryActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.gallery.GalleryActivity"/>
+        </activity>
 
         <provider
             android:name="android.support.v4.content.FileProvider"

@@ -40,7 +40,7 @@ class ImageViewProvider @Inject constructor(val activity: GalleryActivity,
     }
 
     override fun onBindViewHolder(holder: ViewHolder, image: Image) {
-        if (!RootUtils.isRootFile(activity, image.source)) {
+        if (!RootUtils.isRootFile(image.source)) {
             Glide.with(holder.image.context).load(image.path).centerCrop().into(holder.image)
         } else {
             imageRepo.mountImage(image)

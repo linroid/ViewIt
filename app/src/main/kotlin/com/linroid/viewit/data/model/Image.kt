@@ -17,7 +17,7 @@ data class Image(val source: File, val size: Long, val lastModified: Long, val t
         if (mountFile != null) {
             return mountFile
         }
-        if (RootUtils.isRootFile(App.get(), source)) {
+        if (RootUtils.isRootFile(source)) {
             return mountFile
         }
         return source

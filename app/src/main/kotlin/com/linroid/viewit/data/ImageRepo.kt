@@ -166,7 +166,7 @@ class ImageRepo(val context: Context, val appInfo: ApplicationInfo) {
     fun deleteImage(image: Image, appInfo: ApplicationInfo): Observable<Boolean> {
         return Observable.just(image.path)
                 .flatMap { path ->
-                    if (RootUtils.isRootFile(context, path)) {
+                    if (RootUtils.isRootFile(path)) {
                         return@flatMap rxShell.deleteFile(path)
                     } else {
                         File(image.path).delete()

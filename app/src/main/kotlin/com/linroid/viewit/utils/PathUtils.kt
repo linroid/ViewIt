@@ -1,5 +1,10 @@
 package com.linroid.viewit.utils
 
+import android.content.pm.ApplicationInfo
+import android.content.pm.PackageInfo
+import android.os.Environment
+import com.linroid.viewit.App
+import com.linroid.viewit.R
 import java.io.File
 
 /**
@@ -39,5 +44,45 @@ object PathUtils {
         } else {
             return path.substringAfterLast(File.separator)
         }
+    }
+
+    fun formatToVariable(path: String, appInfo: ApplicationInfo): String {
+        val context = App.get()
+
+        val packInfo: PackageInfo = context.packageManager.getPackageInfo(appInfo.packageName, 0)
+        val internalDataDir = packInfo.applicationInfo.dataDir
+        val externalDataDir = PathUtils.append(context.externalCacheDir.parentFile.parent, appInfo.packageName)
+        val sdcardDir = Environment.getExternalStorageDirectory().absolutePath
+
+        if (path.startsWith(internalDataDir)) {
+            return path.replaceFirst(internalDataDir, INTERNAL_DATA_DIR)
+        } else if (path.startsWith(externalDataDir)) {
+            return path.replaceFirst(externalDataDir, EXTERNAL_DATA_DIR)
+        } else if (path.startsWith(sdcardDir)) {
+            return path.replaceFirst(sdcardDir, SDCARD_DIR)
+        }
+        return path
+    }
+
+    /**
+     * 格式化为设备的绝对路径
+     */
+    fun formatToDevice(path: String, appInfo: ApplicationInfo): String {
+        val context = App.get()
+        if (path == File.separator) {
+            return context.getString(R.string.path_format_root)
+        }
+        val packInfo: PackageInfo = context.packageManager.getPackageInfo(appInfo.packageName, 0)
+        if (path.startsWith(INTERNAL_DATA_DIR)) {
+            val internalDataDir = packInfo.applicationInfo.dataDir
+            return path.replace(INTERNAL_DATA_DIR, internalDataDir)
+        } else if (path.startsWith(EXTERNAL_DATA_DIR)) {
+            val externalDataDir = PathUtils.append(context.externalCacheDir.parentFile.parent, appInfo.packageName)
+            return path.replace(EXTERNAL_DATA_DIR, externalDataDir)
+        } else if (path.startsWith(SDCARD_DIR)) {
+            val sdcardDir = Environment.getExternalStorageDirectory().absolutePath
+            return path.replace(SDCARD_DIR, sdcardDir)
+        }
+        return path
     }
 }

@@ -27,7 +27,11 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         if (BuildConfig.DEBUG) {
-            Timber.plant(Timber.DebugTree())
+            Timber.plant(object : Timber.DebugTree() {
+                override fun formatMessage(message: String?, args: Array<out Any>?): String {
+                    return "[${Thread.currentThread().name}]${super.formatMessage(message, args)}"
+                }
+            })
         }
         graph = DaggerGlobalGraph.builder()
                 .androidModule(AndroidModule(this))

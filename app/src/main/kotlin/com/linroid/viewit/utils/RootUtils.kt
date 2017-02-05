@@ -22,11 +22,11 @@ object RootUtils {
         }
     }
 
-    fun isRootFile(context: Context, path: String): Boolean {
+    fun isRootFile(path: String): Boolean {
         return !path.startsWith(Environment.getExternalStorageDirectory().absolutePath)
     }
 
-    fun isRootFile(context: Context, file: File): Boolean {
+    fun isRootFile(file: File): Boolean {
         return !file.absolutePath.startsWith(Environment.getExternalStorageDirectory().absolutePath)
     }
 

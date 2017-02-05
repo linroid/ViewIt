@@ -9,6 +9,8 @@ import android.content.pm.ApplicationInfo
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
+import android.support.v4.app.Fragment
+import android.support.v4.app.FragmentTransaction
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View.GONE
@@ -72,13 +74,7 @@ class GalleryActivity : BaseActivity() {
         graph.inject(this)
         initView()
         GalleryActivityPermissionsDispatcher.scanImagesWithCheck(this);
-        addSummaryFragment()
-    }
-
-    private fun addSummaryFragment() {
-        supportFragmentManager.beginTransaction()
-                .add(R.id.container, SummaryFragment.newInstance())
-                .commit()
+        showSummary()
     }
 
     fun graph(): GalleryGraph = graph
@@ -133,18 +129,32 @@ class GalleryActivity : BaseActivity() {
                 })
     }
 
-    fun visitTree(tree: ImageTree) {
-        Timber.d("visitTree:$tree")
+    private fun showSummary() {
         supportFragmentManager.beginTransaction()
-                .add(R.id.container, ImageTreeFragment.newInstance(tree))
-                .addToBackStack(STACK_NAME)
+                .add(R.id.container, SummaryFragment.newInstance(), "summary")
                 .commit()
     }
 
-    fun viewGallery(tree: ImageTree) {
-        Timber.d("viewGallery:$tree")
-        supportFragmentManager.beginTransaction()
-                .add(R.id.container, AllImagesFragment.newInstance(tree))
+    fun visitTree(tree: ImageTree) {
+        Timber.d("visitTree:$tree")
+        addToStack(ImageTreeFragment.newInstance(tree), "tree:${tree.dir}")
+    }
+
+    fun viewImages(tree: ImageTree) {
+        Timber.d("viewImages:$tree")
+        addToStack(AllImagesFragment.newInstance(tree), "images:${tree.dir}")
+    }
+
+    private fun addToStack(fragment: Fragment, name: String) {
+        val count = supportFragmentManager.backStackEntryCount;
+        val action = supportFragmentManager.beginTransaction()
+        action.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        val topFragment = supportFragmentManager.fragments?.findLast { it!=null }
+        action.setCustomAnimations(R.anim.fragment_none, R.anim.fragment_none, R.anim.fragment_none, R.anim.fragment_none)
+        if (topFragment != null && topFragment is GalleryAbstractFragment) {
+            action.hide(topFragment)
+        }
+        action.add(R.id.container, fragment, name)
                 .addToBackStack(STACK_NAME)
                 .commit()
     }
@@ -163,7 +173,6 @@ class GalleryActivity : BaseActivity() {
                 animView.stop()
             }
         }).start()
-
     }
 
     @OnShowRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)
