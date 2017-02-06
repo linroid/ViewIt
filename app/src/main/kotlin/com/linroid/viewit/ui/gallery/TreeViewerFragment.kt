@@ -1,7 +1,6 @@
 package com.linroid.viewit.ui.gallery
 
-import android.app.Activity
-import android.content.pm.ApplicationInfo
+import android.content.Context
 import android.os.Bundle
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.GridLayoutManager
@@ -13,10 +12,8 @@ import android.view.View
 import android.widget.TextView
 import butterknife.bindView
 import com.linroid.viewit.R
-import com.linroid.viewit.data.ImageRepo
 import com.linroid.viewit.data.model.Image
 import com.linroid.viewit.data.model.ImageTree
-import com.linroid.viewit.ui.favorite.FavoriteCreateActivity
 import com.linroid.viewit.ui.gallery.provider.Category
 import com.linroid.viewit.ui.gallery.provider.CategoryViewProvider
 import com.linroid.viewit.ui.gallery.provider.ImageTreeViewProvider
@@ -28,7 +25,6 @@ import me.drakeet.multitype.MultiTypeAdapter
 import rx.android.schedulers.AndroidSchedulers
 import timber.log.Timber
 import java.util.*
-import javax.inject.Inject
 
 /**
  * @author linroid <linroid@gmail.com>
@@ -63,10 +59,10 @@ class TreeViewerFragment : GalleryViewerFragment() {
         setHasOptionsMenu(true)
     }
 
-    override fun onAttach(activity: Activity?) {
-        super.onAttach(activity)
-        if (activity is GalleryActivity) {
-            activity.graph().inject(this)
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is GalleryActivity) {
+            context.graph().inject(this)
         }
     }
 

@@ -1,7 +1,6 @@
 package com.linroid.viewit.ui.gallery
 
-import android.app.Activity
-import android.content.pm.ApplicationInfo
+import android.content.Context
 import android.os.Bundle
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.GridLayoutManager
@@ -12,7 +11,6 @@ import android.view.MenuItem
 import android.view.View
 import butterknife.bindView
 import com.linroid.viewit.R
-import com.linroid.viewit.data.ImageRepo
 import com.linroid.viewit.data.SORT_BY_PATH
 import com.linroid.viewit.data.SORT_BY_SIZE
 import com.linroid.viewit.data.SORT_BY_TIME
@@ -71,10 +69,10 @@ open class ImagesViewerFragment : GalleryViewerFragment() {
         setHasOptionsMenu(true)
     }
 
-    override fun onAttach(activity: Activity?) {
-        super.onAttach(activity)
-        if (activity is GalleryActivity) {
-            activity.graph().inject(this)
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is GalleryActivity) {
+            context.graph().inject(this)
         }
     }
 
@@ -82,7 +80,6 @@ open class ImagesViewerFragment : GalleryViewerFragment() {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.gallery_images_viewer, menu)
     }
-
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         item.expandActionView()

@@ -44,7 +44,7 @@ class FavoriteRepo(val realm: Realm) {
         realm.executeTransaction {
             realm.where(Favorite::class.java)
                     .equalTo("path", PathUtils.formatToVariable(path, appInfo))
-                    .findFirst().deleteFromRealm()
+                    .findFirst()?.deleteFromRealm()
         }
     }
 }

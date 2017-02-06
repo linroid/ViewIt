@@ -9,6 +9,7 @@ import android.os.Environment
 import android.os.PersistableBundle
 import android.provider.MediaStore
 import android.support.design.widget.Snackbar
+import android.support.v4.content.ContextCompat
 import android.support.v4.content.FileProvider
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AlertDialog
@@ -151,7 +152,7 @@ class ImageViewerActivity() : ImmersiveActivity(), View.OnClickListener {
                         intent.action = Intent.ACTION_VIEW;
                         intent.setDataAndType(uri, image.mimeType());
                         startActivity(intent);
-                    }).setActionTextColor(resources.getColor(R.color.colorPrimary)).show();
+                    }).setActionTextColor(ContextCompat.getColor(this, R.color.colorPrimary)).show();
 
         }, { error ->
             Toast.makeText(this, error.message, Toast.LENGTH_SHORT).show()

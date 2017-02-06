@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.trello.rxlifecycle.components.support.RxFragment
-import timber.log.Timber
 
 /**
  * @author linroid <linroid@gmail.com>

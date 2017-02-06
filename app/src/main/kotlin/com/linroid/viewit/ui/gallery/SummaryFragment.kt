@@ -1,7 +1,6 @@
 package com.linroid.viewit.ui.gallery
 
-import android.app.Activity
-import android.content.pm.ApplicationInfo
+import android.content.Context
 import android.os.Bundle
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.GridLayoutManager
@@ -9,8 +8,6 @@ import android.support.v7.widget.RecyclerView
 import android.view.View
 import butterknife.bindView
 import com.linroid.viewit.R
-import com.linroid.viewit.data.FavoriteRepo
-import com.linroid.viewit.data.ImageRepo
 import com.linroid.viewit.data.model.Favorite
 import com.linroid.viewit.data.model.Image
 import com.linroid.viewit.data.model.ImageTree
@@ -22,7 +19,6 @@ import rx.android.schedulers.AndroidSchedulers
 import timber.log.Timber
 import java.io.File
 import java.util.*
-import javax.inject.Inject
 
 /**
  * @author linroid <linroid@gmail.com>
@@ -56,10 +52,10 @@ class SummaryFragment : GalleryChildFragment() {
 
     override fun provideLayoutId(): Int = R.layout.fragment_summary
 
-    override fun onAttach(activity: Activity?) {
-        super.onAttach(activity)
-        if (activity is GalleryActivity) {
-            activity.graph().inject(this)
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is GalleryActivity) {
+            context.graph().inject(this)
         }
     }
 
@@ -139,7 +135,6 @@ class SummaryFragment : GalleryChildFragment() {
     }
 
     private fun resetData() {
-        items.clear()
         favoriteCategory.items = null
         recommendCategory.items = null
     }
