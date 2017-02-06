@@ -41,7 +41,7 @@ class Category(
             Timber.w("remove items: ${position + 1}..$oldEnd, total:${listItems.size}")
             listItems.removeAll(listItems.subList(position + 1, oldEnd + 1))
         }
-        if (newCount > 1) {
+        if (newCount > 0) {
             Timber.w("add category[$label] at:${position + 1}")
             listItems.add(position + 1, this)
             listItems.addAll(position + 2, new!!)

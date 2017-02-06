@@ -77,7 +77,7 @@ class ImageRepo(val context: Context, val appInfo: ApplicationInfo) {
         val sortType = sortTypePref.get()
         Timber.d("scan images for ${appInfo.packageName}, sortTypePref:$sortType")
         val externalData: File = context.externalCacheDir.parentFile.parentFile
-        var observable = externalScanner.scan(appInfo.packageName, File(externalData, appInfo.packageName))
+        var observable = internalScanner.scan(appInfo.packageName, File(externalData, appInfo.packageName))
 
         if (RootUtils.isRootAvailable()) {
             val packInfo: PackageInfo = packageManager.getPackageInfo(appInfo.packageName, 0)
@@ -96,7 +96,7 @@ class ImageRepo(val context: Context, val appInfo: ApplicationInfo) {
                     dirs.add(File(sdcard, it))
                 }
             }
-            observable = observable.concatWith(externalScanner.scan(appInfo.packageName, dirs))
+            observable = observable.concatWith(internalScanner.scan(appInfo.packageName, dirs))
         }
 
         val scanned: MutableList<Image> = ArrayList()

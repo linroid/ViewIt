@@ -251,7 +251,7 @@ open class ImagesViewerFragment : GalleryViewerFragment() {
                 .observeOn(AndroidSchedulers.mainThread())
                 .bindToLifecycle(this)
                 .subscribe { images ->
-                    items.clear()
+//                    items.clear()
                     if (filterCount == 0) {
                         imageCategory.apply {
                             label = getString(R.string.label_category_tree_images, images.size)
