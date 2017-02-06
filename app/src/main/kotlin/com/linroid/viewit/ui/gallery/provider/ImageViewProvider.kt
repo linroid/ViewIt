@@ -60,7 +60,6 @@ class ImageViewProvider @Inject constructor(val activity: GalleryActivity,
                                         return false
                                     }
                                 })
-                                .error(R.mipmap.ic_launcher_round)
                                 .into(holder.image)
                     }, { error ->
                         Timber.e(error)
