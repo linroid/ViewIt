@@ -5,7 +5,8 @@ import android.content.res.AssetManager
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.linroid.rxshell.RxShell
-import com.linroid.viewit.data.FavoriteRepo
+import com.linroid.viewit.data.DBRepo
+import com.linroid.viewit.data.RecommendationRepo
 import com.linroid.viewit.utils.BINARY_DIRECTORY
 import com.linroid.viewit.utils.BINARY_SEARCH_IMAGE
 import com.linroid.viewit.utils.DB_VERSION
@@ -96,12 +97,21 @@ class DataModule {
     fun provideRealm(context: Context): Realm {
         Realm.init(context)
         Timber.d("provideRealm")
-        return Realm.getDefaultInstance()
+        return Realm.getInstance(RealmConfiguration.Builder()
+                .schemaVersion(DB_VERSION)
+                .deleteRealmIfMigrationNeeded()
+                .build())
     }
 
     @Singleton
     @Provides
-    fun provideDBRepo(realm: Realm): FavoriteRepo {
-        return FavoriteRepo(realm)
+    fun provideDBRepo(realm: Realm): DBRepo {
+        return DBRepo(realm)
+    }
+
+    @Singleton
+    @Provides
+    fun provideRecommendationRepo(): RecommendationRepo {
+        return RecommendationRepo()
     }
 }

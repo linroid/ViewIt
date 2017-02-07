@@ -11,11 +11,14 @@ import android.widget.TextView
 import butterknife.bindView
 import com.linroid.viewit.App
 import com.linroid.viewit.R
-import com.linroid.viewit.data.FavoriteRepo
+import com.linroid.viewit.data.DBRepo
+import com.linroid.viewit.data.RecommendationRepo
 import com.linroid.viewit.ui.BaseActivity
 import com.linroid.viewit.utils.ARG_APP_INFO
 import com.linroid.viewit.utils.ARG_IMAGE_TREE_PATH
 import com.linroid.viewit.utils.PathUtils
+import rx.android.schedulers.AndroidSchedulers
+import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -25,7 +28,9 @@ import javax.inject.Inject
 class FavoriteCreateActivity : BaseActivity() {
 
     @Inject
-    lateinit var favoriteRepo: FavoriteRepo
+    lateinit var DBRepo: DBRepo
+    @Inject
+    lateinit var recommendationRepo: RecommendationRepo
 
     private lateinit var treePath: String
     private lateinit var appInfo: ApplicationInfo
@@ -90,18 +95,16 @@ class FavoriteCreateActivity : BaseActivity() {
     private fun performSave() {
         val pattern = pathField.text.toString()
         val name = nameField.text.toString()
-//        favoriteRepo.createFavorite(appInfo, pattern, name)
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .bindToLifecycle(this)
-//                .subscribe({
-//                    Timber.i("save favorite success!${it.toString()}")
-//                    toastShort(R.string.msg_create_favorite_success)
-//                    finish()
-//                }, { error ->
-//                    Timber.e(error)
-//                })
-        favoriteRepo.create(appInfo, pattern, name)
-        toastShort(R.string.msg_create_favorite_success)
-        finish()
+        val favorite = DBRepo.create(appInfo, pattern, name)
+        Timber.i("save favorite success!${favorite.toString()}")
+        recommendationRepo.uploadFavorite(favorite, appInfo)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    Timber.i("upload favorite success!${it.toString()}")
+                    toastShort(R.string.msg_create_favorite_success)
+                    finish()
+                }, { error ->
+                    Timber.e(error)
+                })
     }
 }

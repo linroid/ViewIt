@@ -23,6 +23,7 @@ import com.linroid.viewit.data.ImageRepo
 import com.linroid.viewit.data.ImageRepoManager
 import com.linroid.viewit.data.model.Favorite
 import com.linroid.viewit.data.model.ImageTree
+import com.linroid.viewit.data.model.Recommendation
 import com.linroid.viewit.ioc.DaggerGalleryGraph
 import com.linroid.viewit.ioc.GalleryGraph
 import com.linroid.viewit.ioc.module.GalleryModule
@@ -149,6 +150,10 @@ class GalleryActivity : BaseActivity() {
     fun viewFavorite(favorite: Favorite) {
         Timber.d("viewFavorite:$favorite")
         addToStack(FavoriteViewerFragment.newInstance(favorite, appInfo), "favorite:${favorite.path}")
+    }
+
+    fun visitRecommendation(data: Recommendation) {
+        Timber.d("viewRecommendation:$data")
     }
 
     private fun addToStack(fragment: Fragment, name: String) {

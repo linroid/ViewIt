@@ -38,7 +38,7 @@ data class ImageTree(val dir: String, var parent: ImageTree? = null) {
     private fun merge(other: ImageTree) {
         images.addAll(other.images)
         other.children.forEach { subDir, imageTree ->
-            if(children.containsKey(subDir)) {
+            if (children.containsKey(subDir)) {
                 children[subDir]!!.merge(imageTree)
             } else {
                 children.put(subDir, imageTree)
@@ -56,14 +56,14 @@ data class ImageTree(val dir: String, var parent: ImageTree? = null) {
     }
 
     fun removeImage(image: Image) {
-        val tree = getChildTree(PathUtils.parent(image.path))
+        val tree = find(PathUtils.parent(image.path))
         if (tree != null) {
             tree.images.remove(image)
         }
     }
 
     fun insertImage(image: Image) {
-        var tree = getChildTree(PathUtils.parent(image.path))
+        var tree = find(PathUtils.parent(image.path))
         if (tree != null) {
             tree.images.add(image)
         } else {
@@ -71,18 +71,6 @@ data class ImageTree(val dir: String, var parent: ImageTree? = null) {
             tree.images.add(image)
             add(tree)
         }
-    }
-
-    fun getChildTree(path: String): ImageTree? {
-        if (dir == path) {
-            return this
-        }
-        val subDir = subDir(path)
-        if (children.containsKey(subDir)) {
-            val child = children[subDir]
-            return children[subDir]!!.getChildTree(path)
-        }
-        return null
     }
 
     private fun subDir(path: String): String {
@@ -144,5 +132,21 @@ data class ImageTree(val dir: String, var parent: ImageTree? = null) {
     private fun allImagesCount(count: AtomicInteger) {
         count.addAndGet(images.size)
         children.forEach { s, imageTree -> imageTree.allImagesCount(count) }
+    }
+
+    fun match(path: String): ImageTree? {
+        return find(path)
+    }
+
+    fun find(path: String): ImageTree? {
+        if (dir == path) {
+            return this
+        }
+        val subDir = subDir(path)
+        if (children.containsKey(subDir)) {
+            val child = children[subDir]
+            return children[subDir]!!.find(path)
+        }
+        return null
     }
 }

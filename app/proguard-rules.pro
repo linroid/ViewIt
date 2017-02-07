@@ -99,7 +99,7 @@
 -dontnote com.android.vending.licensing.ILicensingService
 
 # Explicitly preserve all serialization members. The Serializable interface
-# is only a marker interface, so it wouldn't save them.
+# is only a marker interface, so it wouldn'data save them.
 -keepclassmembers class * implements java.io.Serializable {
     static final long serialVersionUID;
     private static final java.io.ObjectStreamField[] serialPersistentFields;

@@ -1,6 +1,7 @@
 package com.linroid.viewit
 
 import android.app.Application
+import com.avos.avoscloud.AVOSCloud
 import com.github.piasy.biv.BigImageViewer
 import com.github.piasy.biv.loader.glide.GlideImageLoader
 import com.linroid.viewit.ioc.DaggerGlobalGraph
@@ -26,13 +27,7 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        if (BuildConfig.DEBUG) {
-            Timber.plant(object : Timber.DebugTree() {
-                override fun formatMessage(message: String?, args: Array<out Any>?): String {
-                    return "[${Thread.currentThread().name}]${super.formatMessage(message, args)}"
-                }
-            })
-        }
+
         graph = DaggerGlobalGraph.builder()
                 .androidModule(AndroidModule(this))
                 .repoModule(RepoModule())
@@ -41,5 +36,19 @@ class App : Application() {
                 .build();
         instance = this;
         BigImageViewer.initialize(GlideImageLoader.with(this));
+        AVOSCloud.initialize(this, "08OVX4PAskiJf7j7G0l5ulGc-gzGzoHsz", "TwiiWxl2XWnTsU48wRfDbidq");
+        setupDebug()
+    }
+
+    private fun setupDebug() {
+        if (!BuildConfig.DEBUG) {
+            return
+        }
+        Timber.plant(object : Timber.DebugTree() {
+            override fun formatMessage(message: String?, args: Array<out Any>?): String {
+                return "[${Thread.currentThread().name}]${super.formatMessage(message, args)}"
+            }
+        })
+        AVOSCloud.setDebugLogEnabled(true);
     }
 }

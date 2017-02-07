@@ -10,7 +10,7 @@ import rx.Observable
  * @author linroid <linroid@gmail.com>
  * @since 01/02/2017
  */
-class FavoriteRepo(val realm: Realm) {
+class DBRepo(val realm: Realm) {
 
     fun find(path: String, appInfo: ApplicationInfo): Observable<Favorite> {
         return realm.where(Favorite::class.java).equalTo("path", PathUtils.formatToVariable(path, appInfo))
@@ -29,15 +29,16 @@ class FavoriteRepo(val realm: Realm) {
                 }
     }
 
-    fun create(appInfo: ApplicationInfo, path: String, name: String) {
-        realm.executeTransaction {
-            val maxID = realm.where(Favorite::class.java).max("id")?.toLong() ?: 0
-            val nextID = maxID + 1
-            val favorite = realm.createObject(Favorite::class.java, nextID)
-            favorite.name = name
-            favorite.path = path
-            favorite.packageName = appInfo.packageName
-        }
+    fun create(appInfo: ApplicationInfo, path: String, name: String): Favorite {
+        realm.beginTransaction()
+        val maxID = realm.where(Favorite::class.java).max("id")?.toLong() ?: 0
+        val nextID = maxID + 1
+        val favorite = realm.createObject(Favorite::class.java, nextID)
+        favorite.name = name
+        favorite.path = path
+        favorite.packageName = appInfo.packageName
+        realm.commitTransaction()
+        return favorite
     }
 
     fun delete(path: String, appInfo: ApplicationInfo) {

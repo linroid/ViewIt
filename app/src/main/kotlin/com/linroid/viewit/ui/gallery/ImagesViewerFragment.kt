@@ -11,9 +11,9 @@ import android.view.MenuItem
 import android.view.View
 import butterknife.bindView
 import com.linroid.viewit.R
-import com.linroid.viewit.data.SORT_BY_PATH
-import com.linroid.viewit.data.SORT_BY_SIZE
-import com.linroid.viewit.data.SORT_BY_TIME
+import com.linroid.viewit.data.ImageRepo.Companion.SORT_BY_PATH
+import com.linroid.viewit.data.ImageRepo.Companion.SORT_BY_SIZE
+import com.linroid.viewit.data.ImageRepo.Companion.SORT_BY_TIME
 import com.linroid.viewit.data.model.Image
 import com.linroid.viewit.data.model.ImageTree
 import com.linroid.viewit.ui.gallery.provider.Category
@@ -226,7 +226,7 @@ open class ImagesViewerFragment : GalleryViewerFragment() {
 
     private fun updateImageTree(tree: ImageTree) {
         var filterCount = 0
-        Observable.just(tree).map { it.getChildTree(path)?.allImages() }
+        Observable.just(tree).map { it.find(path)?.allImages() }
                 .flatMap { Observable.from(it) }
                 .filter { image ->
                     val res = image.size >= filterSizePref.get() * 1024 //KB

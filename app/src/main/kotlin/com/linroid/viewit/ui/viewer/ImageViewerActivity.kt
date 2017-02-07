@@ -21,10 +21,10 @@ import android.widget.Toast
 import butterknife.bindView
 import com.linroid.viewit.App
 import com.linroid.viewit.R
-import com.linroid.viewit.data.INSERT_EVENT
 import com.linroid.viewit.data.ImageRepo
-import com.linroid.viewit.data.REMOVE_EVENT
-import com.linroid.viewit.data.UPDATE_EVENT
+import com.linroid.viewit.data.ImageRepo.Companion.INSERT_EVENT
+import com.linroid.viewit.data.ImageRepo.Companion.REMOVE_EVENT
+import com.linroid.viewit.data.ImageRepo.Companion.UPDATE_EVENT
 import com.linroid.viewit.data.model.Image
 import com.linroid.viewit.ioc.DaggerViewerGraph
 import com.linroid.viewit.ioc.ViewerGraph
@@ -37,7 +37,6 @@ import com.linroid.viewit.utils.FILE_PROVIDER
 import com.trello.rxlifecycle.kotlin.bindToLifecycle
 import rx.android.schedulers.AndroidSchedulers
 import javax.inject.Inject
-
 
 /**
  * @author linroid <linroid@gmail.com>

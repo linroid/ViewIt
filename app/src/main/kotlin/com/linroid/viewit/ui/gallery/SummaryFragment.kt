@@ -8,9 +8,11 @@ import android.support.v7.widget.RecyclerView
 import android.view.View
 import butterknife.bindView
 import com.linroid.viewit.R
+import com.linroid.viewit.data.RecommendationRepo
 import com.linroid.viewit.data.model.Favorite
 import com.linroid.viewit.data.model.Image
 import com.linroid.viewit.data.model.ImageTree
+import com.linroid.viewit.data.model.Recommendation
 import com.linroid.viewit.ui.gallery.provider.*
 import com.linroid.viewit.utils.PathUtils
 import com.trello.rxlifecycle.kotlin.bindToLifecycle
@@ -19,6 +21,7 @@ import rx.android.schedulers.AndroidSchedulers
 import timber.log.Timber
 import java.io.File
 import java.util.*
+import javax.inject.Inject
 
 /**
  * @author linroid <linroid@gmail.com>
@@ -34,6 +37,8 @@ class SummaryFragment : GalleryChildFragment() {
     private lateinit var favoriteCategory: Category
     private lateinit var treeCategory: Category
     private lateinit var imageCategory: Category
+
+    @Inject lateinit internal var recommendationRepo: RecommendationRepo
 
     private val recyclerView: RecyclerView by bindView(R.id.recyclerView)
 
@@ -65,6 +70,7 @@ class SummaryFragment : GalleryChildFragment() {
         adapter.register(ImageTree::class.java, ImageTreeViewProvider(activity, File.separator, appInfo, imageRepo))
         adapter.register(Category::class.java, CategoryViewProvider())
         adapter.register(Favorite::class.java, FavoriteViewProvider(activity, appInfo, imageRepo))
+        adapter.register(Recommendation::class.java, RecommendationViewProvider(activity, appInfo, imageRepo))
         recommendCategory = Category(null, getString(R.string.label_category_recommend), items)
         favoriteCategory = Category(recommendCategory, getString(R.string.label_category_favorite), items)
         treeCategory = Category(favoriteCategory, getString(R.string.label_category_tree), items)
@@ -92,13 +98,6 @@ class SummaryFragment : GalleryChildFragment() {
 
     private fun refresh(tree: ImageTree) {
         resetData()
-        // recommend
-        val recommendItems = ArrayList<ImageTree>()
-        tree.children.forEach { subPath, imageTree ->
-            recommendItems.add(imageTree.nonEmptyChild())
-        }
-        recommendCategory.items = recommendItems
-
         // tree
         val treeItems = ArrayList<ImageTree>()
         tree.children.forEach { subPath, imageTree ->
@@ -114,20 +113,36 @@ class SummaryFragment : GalleryChildFragment() {
         imageCategory.label = getString(R.string.label_category_action_all_images, tree.images.size)
         imageCategory.items = tree.images
 
-        // favorites
-        favoriteRepo.list(appInfo)
+        // recommendation
+        recommendationRepo.list(appInfo)
+                .doOnNext { recommendations ->
+                    recommendations.forEach {
+                        it.tree = tree.match(PathUtils.formatToDevice(it.pattern, appInfo))
+                    }
+                }
                 .observeOn(AndroidSchedulers.mainThread())
+                .bindToLifecycle(this)
+                .subscribe({ recommendations ->
+                    recommendCategory.items = recommendations
+                }, { error ->
+                    Timber.e(error, "list recommendation")
+                })
+
+        // favorites
+        DBRepo.list(appInfo)
+                .observeOn(AndroidSchedulers.mainThread())
+                .bindToLifecycle(this)
                 .doOnNext { favorites ->
                     favorites.forEachIndexed { i, favorite ->
                         val path = PathUtils.formatToDevice(favorite.path, appInfo);
-                        favorite.tree = tree.getChildTree(path)
+                        favorite.tree = tree.find(path)
                     }
                 }
                 .subscribe({ favorites ->
                     favoriteCategory.items = favorites
                     adapter.notifyDataSetChanged()
                 }, { error ->
-                    Timber.e(error, "list")
+                    Timber.e(error, "list favorite")
                 }, {
 
                 })

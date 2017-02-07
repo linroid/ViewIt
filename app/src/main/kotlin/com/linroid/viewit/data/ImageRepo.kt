@@ -33,21 +33,23 @@ import javax.inject.Named
  * @author linroid <linroid@gmail.com>
  * @since 08/01/2017
  */
-const val UPDATE_EVENT = 0x1L
-const val REMOVE_EVENT = 0x2L
-const val INSERT_EVENT = 0x3L
-
-@IntDef(UPDATE_EVENT, REMOVE_EVENT, INSERT_EVENT)
-annotation class ImageEventType
-
-const val SORT_BY_PATH = 0x1L
-const val SORT_BY_SIZE = 0x2L
-const val SORT_BY_TIME = 0x3L
-
-@IntDef(SORT_BY_PATH, SORT_BY_SIZE, SORT_BY_TIME)
-annotation class ImageSortType
-
 class ImageRepo(val context: Context, val appInfo: ApplicationInfo) {
+    companion object {
+        const val UPDATE_EVENT = 0x1L
+        const val REMOVE_EVENT = 0x2L
+        const val INSERT_EVENT = 0x3L
+
+        @IntDef(UPDATE_EVENT, REMOVE_EVENT, INSERT_EVENT)
+        annotation class ImageEventType
+
+        const val SORT_BY_PATH = 0x1L
+        const val SORT_BY_SIZE = 0x2L
+        const val SORT_BY_TIME = 0x3L
+
+        @IntDef(SORT_BY_PATH, SORT_BY_SIZE, SORT_BY_TIME)
+        annotation class ImageSortType
+    }
+
     @Inject
     lateinit var packageManager: PackageManager
     @Inject
@@ -64,7 +66,7 @@ class ImageRepo(val context: Context, val appInfo: ApplicationInfo) {
     lateinit var filterSizePref: LongPreference
 
     private val eventBus = PublishSubject<ImageEvent>()
-    val treeBuilder = BehaviorSubject<ImageTree>()
+    private val treeBuilder = BehaviorSubject<ImageTree>()
     private val cacheDir: File = File(context.cacheDir, "mounts")
     val images = ArrayList<Image>()
 

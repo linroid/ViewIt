@@ -1,7 +1,7 @@
 package com.linroid.viewit.ui.gallery
 
 import android.content.pm.ApplicationInfo
-import com.linroid.viewit.data.FavoriteRepo
+import com.linroid.viewit.data.DBRepo
 import com.linroid.viewit.data.ImageRepo
 import com.linroid.viewit.ui.BaseFragment
 import timber.log.Timber
@@ -14,7 +14,7 @@ import javax.inject.Inject
 abstract class GalleryChildFragment : BaseFragment() {
 
     @Inject lateinit protected var imageRepo: ImageRepo
-    @Inject lateinit protected var favoriteRepo: FavoriteRepo
+    @Inject lateinit protected var DBRepo: DBRepo
     @Inject lateinit protected var appInfo: ApplicationInfo
     @Inject lateinit protected var activity: GalleryActivity
 

@@ -11,6 +11,8 @@ buildscript {
         jcenter()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
         maven { url "http://dl.bintray.com/piasy/maven" }
+        maven { url "https://jitpack.io" }
+        maven { url "http://mvn.leancloud.cn/nexus/content/repositories/releases" }
     }
 
     dependencies {
@@ -26,6 +28,8 @@ allprojects {
         jcenter()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
         maven { url "http://dl.bintray.com/piasy/maven" }
+        maven { url "https://jitpack.io" }
+        maven { url "http://mvn.leancloud.cn/nexus/content/repositories/releases" }
     }
 }
 

@@ -24,5 +24,3 @@ val APP_EXTERNAL_PATHS = mapOf(
 const val EXTERNAL_DATA_DIR = "\$EXTERNAL"
 const val INTERNAL_DATA_DIR = "\$INTERNAL"
 const val SDCARD_DIR = "\$SDCARD"
-
-const val DB_VERSION = 1L

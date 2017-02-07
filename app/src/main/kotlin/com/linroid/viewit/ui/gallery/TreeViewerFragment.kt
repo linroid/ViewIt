@@ -92,7 +92,7 @@ class TreeViewerFragment : GalleryViewerFragment() {
                 .observeOn(AndroidSchedulers.mainThread())
                 .bindToLifecycle(this)
                 .subscribe {
-                    refresh(it.getChildTree(path))
+                    refresh(it.find(path))
                 }
     }
 

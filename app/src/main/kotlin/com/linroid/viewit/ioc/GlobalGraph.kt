@@ -4,9 +4,10 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.linroid.rxshell.RxShell
 import com.linroid.viewit.App
-import com.linroid.viewit.data.FavoriteRepo
+import com.linroid.viewit.data.DBRepo
 import com.linroid.viewit.data.ImageRepo
 import com.linroid.viewit.data.ImageRepoManager
+import com.linroid.viewit.data.RecommendationRepo
 import com.linroid.viewit.ioc.module.AndroidModule
 import com.linroid.viewit.ioc.module.DataModule
 import com.linroid.viewit.ioc.module.PrefModule
@@ -40,7 +41,8 @@ interface GlobalGraph {
     fun repoManager(): ImageRepoManager
     fun sharedPreferences(): SharedPreferences
     fun realm(): Realm
-    fun dbRepo(): FavoriteRepo
+    fun dbRepo(): DBRepo
+    fun recommendationRepo(): RecommendationRepo
 
     @Named(PREF_FILTER_SIZE)
     fun filterSizePref(): LongPreference
