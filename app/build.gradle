@@ -109,11 +109,11 @@ dependencies {
     compile 'com.google.dagger:dagger:2.8'
     kapt 'com.google.dagger:dagger-compiler:2.8'
     // data
-    compile "com.squareup.retrofit2:retrofit:$retrofit_version"
-    compile "com.squareup.retrofit2:converter-gson:$retrofit_version"
-    compile "com.squareup.retrofit2:adapter-rxjava:$retrofit_version"
-    compile 'com.squareup.okhttp3:okhttp:3.5.0'
-    compile 'com.squareup.okhttp3:logging-interceptor:3.5.0'
+//    compile "com.squareup.retrofit2:retrofit:$retrofit_version"
+//    compile "com.squareup.retrofit2:converter-gson:$retrofit_version"
+//    compile "com.squareup.retrofit2:adapter-rxjava:$retrofit_version"
+//    compile 'com.squareup.okhttp3:okhttp:3.5.0'
+//    compile 'com.squareup.okhttp3:logging-interceptor:3.5.0'
     compile 'com.google.code.gson:gson:2.8.0'
     // rxjava
     compile 'io.reactivex:rxandroid:1.2.1'
@@ -121,13 +121,14 @@ dependencies {
     compile 'com.trello:rxlifecycle:1.0'
     compile 'com.trello:rxlifecycle-android:1.0'
     compile 'com.trello:rxlifecycle-components:1.0'
-    compile 'com.trello:rxlifecycle-navi:1.0'
+//    compile 'com.trello:rxlifecycle-navi:1.0'
     compile 'com.trello:rxlifecycle-kotlin:1.0'
-    compile 'com.jakewharton.rxbinding:rxbinding-kotlin:1.0.0'
-    compile 'com.jakewharton.rxbinding:rxbinding-support-v4-kotlin:1.0.0'
-    compile 'com.jakewharton.rxbinding:rxbinding-appcompat-v7-kotlin:1.0.0'
-    compile 'com.jakewharton.rxbinding:rxbinding-recyclerview-v7-kotlin:1.0.0'
-    compile 'com.jakewharton.rxbinding:rxbinding-design-kotlin:1.0.0'
+    //rxbinding
+//    compile 'com.jakewharton.rxbinding:rxbinding-kotlin:1.0.0'
+//    compile 'com.jakewharton.rxbinding:rxbinding-support-v4-kotlin:1.0.0'
+//    compile 'com.jakewharton.rxbinding:rxbinding-appcompat-v7-kotlin:1.0.0'
+//    compile 'com.jakewharton.rxbinding:rxbinding-recyclerview-v7-kotlin:1.0.0'
+//    compile 'com.jakewharton.rxbinding:rxbinding-design-kotlin:1.0.0'
     // kotlin
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile 'io.reactivex:rxkotlin:0.60.0'
@@ -140,7 +141,7 @@ dependencies {
     // load with glide
     compile 'com.github.piasy:GlideImageLoader:1.2.5'
     // progress pie indicator
-    compile 'com.github.piasy:ProgressPieIndicator:1.2.5'
+//    compile 'com.github.piasy:ProgressPieIndicator:1.2.5'
     compile 'me.drakeet.support:about:1.0.2'
     // https://github.com/Kotlin/anko
     //    compile "org.jetbrains.anko:anko-sdk15:$anko_version" // sdk19, sdk21, sdk23 are also available

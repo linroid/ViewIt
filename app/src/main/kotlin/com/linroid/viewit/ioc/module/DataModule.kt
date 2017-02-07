@@ -15,15 +15,8 @@ import dagger.Module
 import dagger.Provides
 import io.realm.Realm
 import io.realm.RealmConfiguration
-import okhttp3.Cache
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Retrofit
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory
-import retrofit2.converter.gson.GsonConverterFactory
 import timber.log.Timber
 import java.io.File
-import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 /**
@@ -32,15 +25,15 @@ import javax.inject.Singleton
  */
 @Module
 class DataModule {
-
-    @Provides
-    @Singleton
-    fun provideRetrofit(gson: Gson, httpClient: OkHttpClient): Retrofit {
-        return Retrofit.Builder().apply {
-            addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-            addConverterFactory(GsonConverterFactory.create(gson))
-        }.build();
-    }
+//
+//    @Provides
+//    @Singleton
+//    fun provideRetrofit(gson: Gson, httpClient: OkHttpClient): Retrofit {
+//        return Retrofit.Builder().apply {
+//            addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+//            addConverterFactory(GsonConverterFactory.create(gson))
+//        }.build();
+//    }
 
     @Provides
     @Singleton
@@ -50,26 +43,26 @@ class DataModule {
                 .create();
     }
 
-    @Provides
-    @Singleton
-    fun provideOkHttp(context: Context, logging: HttpLoggingInterceptor): OkHttpClient {
-        return OkHttpClient.Builder().apply {
-            val cacheDir = File(context.cacheDir, "http")
-            cache(Cache(cacheDir, 10 * 1024 * 1024L))
-            connectTimeout(10L, TimeUnit.SECONDS)
-            writeTimeout(10L, TimeUnit.SECONDS)
-            readTimeout(30L, TimeUnit.SECONDS)
-            addInterceptor(logging)
-        }.build()
-    }
+//    @Provides
+//    @Singleton
+//    fun provideOkHttp(context: Context, logging: HttpLoggingInterceptor): OkHttpClient {
+//        return OkHttpClient.Builder().apply {
+//            val cacheDir = File(context.cacheDir, "http")
+//            cache(Cache(cacheDir, 10 * 1024 * 1024L))
+//            connectTimeout(10L, TimeUnit.SECONDS)
+//            writeTimeout(10L, TimeUnit.SECONDS)
+//            readTimeout(30L, TimeUnit.SECONDS)
+//            addInterceptor(logging)
+//        }.build()
+//    }
 
-    @Singleton
-    @Provides
-    fun provideHttpLogging(): HttpLoggingInterceptor {
-        val logging = HttpLoggingInterceptor(HttpLoggingInterceptor.Logger { Timber.tag("OkHttp").d(it) })
-        logging.level = HttpLoggingInterceptor.Level.BASIC
-        return logging;
-    }
+//    @Singleton
+//    @Provides
+//    fun provideHttpLogging(): HttpLoggingInterceptor {
+//        val logging = HttpLoggingInterceptor(HttpLoggingInterceptor.Logger { Timber.tag("OkHttp").d(it) })
+//        logging.level = HttpLoggingInterceptor.Level.BASIC
+//        return logging;
+//    }
 
     @Singleton
     @Provides

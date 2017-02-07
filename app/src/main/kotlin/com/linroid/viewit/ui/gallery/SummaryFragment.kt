@@ -125,7 +125,7 @@ class SummaryFragment : GalleryChildFragment() {
                 .subscribe({ recommendations ->
                     recommendCategory.items = recommendations
                 }, { error ->
-                    Timber.e(error, "listFavorites recommendation")
+                    Timber.e(error, "list recommendation")
                 })
 
         // favorites
@@ -142,7 +142,7 @@ class SummaryFragment : GalleryChildFragment() {
                     favoriteCategory.items = favorites
                     adapter.notifyDataSetChanged()
                 }, { error ->
-                    Timber.e(error, "listFavorites favorite")
+                    Timber.e(error, "list favorites")
                 }, {
 
                 })
