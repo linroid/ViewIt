@@ -1,7 +1,7 @@
 package com.linroid.viewit.ioc.module
 
 import android.content.SharedPreferences
-import com.linroid.viewit.data.ImageRepo.Companion.SORT_BY_PATH
+import com.linroid.viewit.data.ScanRepo.Companion.SORT_BY_PATH
 import com.linroid.viewit.utils.PREF_FILTER_SIZE
 import com.linroid.viewit.utils.PREF_SORT_TYPE
 import com.linroid.viewit.utils.pref.LongPreference

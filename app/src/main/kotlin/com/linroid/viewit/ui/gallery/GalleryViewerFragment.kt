@@ -30,7 +30,7 @@ abstract class GalleryViewerFragment : GalleryChildFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        DBRepo.find(path, appInfo)
+        dbRepo.findFavorite(path, appInfo)
                 .bindToLifecycle(this)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
@@ -73,6 +73,6 @@ abstract class GalleryViewerFragment : GalleryChildFragment() {
     }
 
     private fun performDeleteFavorite() {
-        DBRepo.delete(path, appInfo)
+        dbRepo.deleteFavorite(path, appInfo)
     }
 }

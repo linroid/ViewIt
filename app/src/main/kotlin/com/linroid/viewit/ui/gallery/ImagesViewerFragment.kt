@@ -11,9 +11,9 @@ import android.view.MenuItem
 import android.view.View
 import butterknife.bindView
 import com.linroid.viewit.R
-import com.linroid.viewit.data.ImageRepo.Companion.SORT_BY_PATH
-import com.linroid.viewit.data.ImageRepo.Companion.SORT_BY_SIZE
-import com.linroid.viewit.data.ImageRepo.Companion.SORT_BY_TIME
+import com.linroid.viewit.data.ScanRepo.Companion.SORT_BY_PATH
+import com.linroid.viewit.data.ScanRepo.Companion.SORT_BY_SIZE
+import com.linroid.viewit.data.ScanRepo.Companion.SORT_BY_TIME
 import com.linroid.viewit.data.model.Image
 import com.linroid.viewit.data.model.ImageTree
 import com.linroid.viewit.ui.gallery.provider.Category
@@ -164,7 +164,7 @@ open class ImagesViewerFragment : GalleryViewerFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        adapter.register(Image::class.java, ImageViewProvider(activity, imageRepo, appInfo))
+        adapter.register(Image::class.java, ImageViewProvider(activity, scanRepo, appInfo))
         adapter.register(Category::class.java, CategoryViewProvider())
         imageCategory = Category(null, getString(R.string.label_category_tree_images, 0), items)
 
@@ -184,7 +184,7 @@ open class ImagesViewerFragment : GalleryViewerFragment() {
     }
 
     private fun registerComponents(view: View) {
-//        imageRepo.registerImageEvent()
+//        scanRepo.registerImageEvent()
 //                .bindToLifecycle(view)
 //                .observeOn(AndroidSchedulers.mainThread())
 //                .subscribe({ event ->
@@ -207,11 +207,11 @@ open class ImagesViewerFragment : GalleryViewerFragment() {
 //                    }
 //                    updateImageCount()
 //                })
-        imageRepo.registerTreeBuilder()
+        scanRepo.registerTreeBuilder()
                 .mergeWith(
                         filterSizePref.listen()
                                 .mergeWith(sortTypePref.listen())
-                                .map { imageRepo.getImageTree() }
+                                .map { scanRepo.getImageTree() }
                                 .filterNotNull()
                 )
                 .subscribe({
@@ -271,8 +271,8 @@ open class ImagesViewerFragment : GalleryViewerFragment() {
     }
 
     private fun updateImageCount() {
-        if (imageRepo.images.size > 0) {
-            getSupportActionBar()?.subtitle = getString(R.string.subtitle_displayed_images, imageRepo.images.size, imageRepo.images.size)
+        if (scanRepo.images.size > 0) {
+            getSupportActionBar()?.subtitle = getString(R.string.subtitle_displayed_images, scanRepo.images.size, scanRepo.images.size)
         } else {
             getSupportActionBar()?.subtitle = getString(R.string.image_not_found)
         }

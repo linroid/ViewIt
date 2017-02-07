@@ -10,13 +10,12 @@ import butterknife.bindView
 import com.bumptech.glide.Glide
 import com.github.piasy.biv.view.BigImageView
 import com.linroid.viewit.R
-import com.linroid.viewit.data.ImageRepo
+import com.linroid.viewit.data.ScanRepo
 import com.linroid.viewit.data.model.Image
 import com.linroid.viewit.data.model.ImageType
 import com.linroid.viewit.ui.BaseFragment
 import com.linroid.viewit.ui.ImmersiveActivity
 import com.linroid.viewit.utils.ARG_POSITION
-import com.linroid.viewit.utils.RootUtils
 import hugo.weaving.DebugLog
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
@@ -28,7 +27,7 @@ import javax.inject.Inject
  * @since 11/01/2017
  */
 class ImageViewerFragment : BaseFragment() {
-    @Inject lateinit var imageRepo: ImageRepo
+    @Inject lateinit var scanRepo: ScanRepo
     @Inject lateinit var appInfo: ApplicationInfo
 
     val bigImageViewer: BigImageView by bindView(R.id.big_image_viewer)
@@ -89,12 +88,12 @@ class ImageViewerFragment : BaseFragment() {
     private fun loadImage(act: ImageViewerActivity) {
         Timber.i("position:$position")
         var isGif = false;
-        val image = imageRepo.images[position]
+        val image = scanRepo.images[position]
         Observable.just(image)
                 .flatMap { image ->
                     isGif = image.type == ImageType.GIF
                     if (image.file() == null) {
-                        return@flatMap imageRepo.mountImage(image);
+                        return@flatMap scanRepo.mountImage(image);
                     }
                     return@flatMap Observable.just(image)
                 }

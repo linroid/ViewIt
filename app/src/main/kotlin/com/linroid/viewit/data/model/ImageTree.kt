@@ -80,9 +80,9 @@ data class ImageTree(val dir: String, var parent: ImageTree? = null) {
     }
 
     //    val allImages: List<Image> by lazy {
-//        val list = ArrayList<Image>()
-//        allImages(list)
-//        return@lazy list
+//        val listFavorites = ArrayList<Image>()
+//        allImages(listFavorites)
+//        return@lazy listFavorites
 //    }
     fun allImages(): List<Image> {
         val list = ArrayList<Image>()
@@ -106,9 +106,9 @@ data class ImageTree(val dir: String, var parent: ImageTree? = null) {
     }
 
 //    fun thumbnailImages(): List<Image> {
-//        val list = ArrayList<Image>()
-//        thumbnailImages(list)
-//        return list
+//        val listFavorites = ArrayList<Image>()
+//        thumbnailImages(listFavorites)
+//        return listFavorites
 //    }
 
     private fun thumbnailImages(list: ArrayList<Image>) {

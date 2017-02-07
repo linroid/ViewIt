@@ -19,8 +19,8 @@ import android.widget.Toast
 import butterknife.bindView
 import com.linroid.viewit.App
 import com.linroid.viewit.R
-import com.linroid.viewit.data.ImageRepo
-import com.linroid.viewit.data.ImageRepoManager
+import com.linroid.viewit.data.ScanRepo
+import com.linroid.viewit.data.ScanRepoManager
 import com.linroid.viewit.data.model.Favorite
 import com.linroid.viewit.data.model.ImageTree
 import com.linroid.viewit.data.model.Recommendation
@@ -44,8 +44,8 @@ import javax.inject.Inject
 @RuntimePermissions
 class GalleryActivity : BaseActivity() {
     private val STACK_NAME = "gallery-stack"
-    @Inject lateinit var imageRepo: ImageRepo
-    @Inject lateinit var repoManager: ImageRepoManager
+    @Inject lateinit var scanRepo: ScanRepo
+    @Inject lateinit var repoManager: ScanRepoManager
     lateinit var appInfo: ApplicationInfo
     lateinit var appName: CharSequence
 
@@ -112,7 +112,7 @@ class GalleryActivity : BaseActivity() {
     fun scanImages() {
         showLoading()
         var count = 0;
-        imageRepo.scan()
+        scanRepo.scan()
                 .bindToLifecycle(this)
                 .buffer(100, TimeUnit.MILLISECONDS)
                 .onBackpressureBuffer()
@@ -125,7 +125,7 @@ class GalleryActivity : BaseActivity() {
                     Toast.makeText(this, getString(R.string.msg_scan_failed, error.message), Toast.LENGTH_SHORT).show()
                     hideLoading()
                 }, {
-                    val msg = if (count > 0) getString(R.string.msg_scan_completed_with_images, count, imageRepo.images.size - count) else getString(R.string.msg_scan_completed_without_image)
+                    val msg = if (count > 0) getString(R.string.msg_scan_completed_with_images, count, scanRepo.images.size - count) else getString(R.string.msg_scan_completed_without_image)
                     Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
                     hideLoading()
                 })

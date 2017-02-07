@@ -12,7 +12,7 @@ import butterknife.bindView
 import com.linroid.viewit.App
 import com.linroid.viewit.R
 import com.linroid.viewit.data.DBRepo
-import com.linroid.viewit.data.RecommendationRepo
+import com.linroid.viewit.data.NetRepo
 import com.linroid.viewit.ui.BaseActivity
 import com.linroid.viewit.utils.ARG_APP_INFO
 import com.linroid.viewit.utils.ARG_IMAGE_TREE_PATH
@@ -28,9 +28,9 @@ import javax.inject.Inject
 class FavoriteCreateActivity : BaseActivity() {
 
     @Inject
-    lateinit var DBRepo: DBRepo
+    lateinit var dbRepo: DBRepo
     @Inject
-    lateinit var recommendationRepo: RecommendationRepo
+    lateinit var netRepo: NetRepo
 
     private lateinit var treePath: String
     private lateinit var appInfo: ApplicationInfo
@@ -95,9 +95,9 @@ class FavoriteCreateActivity : BaseActivity() {
     private fun performSave() {
         val pattern = pathField.text.toString()
         val name = nameField.text.toString()
-        val favorite = DBRepo.create(appInfo, pattern, name)
+        val favorite = dbRepo.createFavorite(appInfo, pattern, name)
         Timber.i("save favorite success!${favorite.toString()}")
-        recommendationRepo.uploadFavorite(favorite, appInfo)
+        netRepo.uploadFavorite(favorite, appInfo)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     Timber.i("upload favorite success!${it.toString()}")

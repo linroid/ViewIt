@@ -12,14 +12,14 @@ import rx.Observable
  */
 class DBRepo(val realm: Realm) {
 
-    fun find(path: String, appInfo: ApplicationInfo): Observable<Favorite> {
+    fun findFavorite(path: String, appInfo: ApplicationInfo): Observable<Favorite> {
         return realm.where(Favorite::class.java).equalTo("path", PathUtils.formatToVariable(path, appInfo))
                 .findFirstAsync()
                 .asObservable<Favorite>()
                 .filter { it.isLoaded }
     }
 
-    fun list(appInfo: ApplicationInfo): Observable<List<Favorite>> {
+    fun listFavorites(appInfo: ApplicationInfo): Observable<List<Favorite>> {
         return realm.where(Favorite::class.java).equalTo("packageName", appInfo.packageName)
                 .findAllAsync()
                 .asObservable()
@@ -29,7 +29,7 @@ class DBRepo(val realm: Realm) {
                 }
     }
 
-    fun create(appInfo: ApplicationInfo, path: String, name: String): Favorite {
+    fun createFavorite(appInfo: ApplicationInfo, path: String, name: String): Favorite {
         realm.beginTransaction()
         val maxID = realm.where(Favorite::class.java).max("id")?.toLong() ?: 0
         val nextID = maxID + 1
@@ -41,7 +41,7 @@ class DBRepo(val realm: Realm) {
         return favorite
     }
 
-    fun delete(path: String, appInfo: ApplicationInfo) {
+    fun deleteFavorite(path: String, appInfo: ApplicationInfo) {
         realm.executeTransaction {
             realm.where(Favorite::class.java)
                     .equalTo("path", PathUtils.formatToVariable(path, appInfo))

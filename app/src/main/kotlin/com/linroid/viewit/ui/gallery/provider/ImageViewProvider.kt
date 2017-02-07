@@ -13,7 +13,7 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.linroid.viewit.R
-import com.linroid.viewit.data.ImageRepo
+import com.linroid.viewit.data.ScanRepo
 import com.linroid.viewit.data.model.Image
 import com.linroid.viewit.ui.gallery.GalleryActivity
 import com.linroid.viewit.ui.viewer.ImageViewerActivity
@@ -30,7 +30,7 @@ import javax.inject.Inject
  * @since 07/01/2017
  */
 class ImageViewProvider @Inject constructor(val activity: GalleryActivity,
-                                            val imageRepo: ImageRepo,
+                                            val scanRepo: ScanRepo,
                                             val info: ApplicationInfo)
     : ItemViewProvider<Image, ImageViewProvider.ViewHolder>() {
 
@@ -43,7 +43,7 @@ class ImageViewProvider @Inject constructor(val activity: GalleryActivity,
         if (!RootUtils.isRootFile(image.source)) {
             Glide.with(holder.image.context).load(image.path).centerCrop().into(holder.image)
         } else {
-            imageRepo.mountImage(image)
+            scanRepo.mountImage(image)
                     .observeOn(AndroidSchedulers.mainThread())
                     .bindToLifecycle(holder.itemView)
                     .subscribe({ image ->

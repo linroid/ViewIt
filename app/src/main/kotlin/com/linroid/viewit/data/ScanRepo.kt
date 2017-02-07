@@ -33,7 +33,7 @@ import javax.inject.Named
  * @author linroid <linroid@gmail.com>
  * @since 08/01/2017
  */
-class ImageRepo(val context: Context, val appInfo: ApplicationInfo) {
+class ScanRepo(val context: Context, val appInfo: ApplicationInfo) {
     companion object {
         const val UPDATE_EVENT = 0x1L
         const val REMOVE_EVENT = 0x2L

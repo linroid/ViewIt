@@ -21,10 +21,10 @@ import android.widget.Toast
 import butterknife.bindView
 import com.linroid.viewit.App
 import com.linroid.viewit.R
-import com.linroid.viewit.data.ImageRepo
-import com.linroid.viewit.data.ImageRepo.Companion.INSERT_EVENT
-import com.linroid.viewit.data.ImageRepo.Companion.REMOVE_EVENT
-import com.linroid.viewit.data.ImageRepo.Companion.UPDATE_EVENT
+import com.linroid.viewit.data.ScanRepo
+import com.linroid.viewit.data.ScanRepo.Companion.INSERT_EVENT
+import com.linroid.viewit.data.ScanRepo.Companion.REMOVE_EVENT
+import com.linroid.viewit.data.ScanRepo.Companion.UPDATE_EVENT
 import com.linroid.viewit.data.model.Image
 import com.linroid.viewit.ioc.DaggerViewerGraph
 import com.linroid.viewit.ioc.ViewerGraph
@@ -44,7 +44,7 @@ import javax.inject.Inject
  */
 class ImageViewerActivity() : ImmersiveActivity(), View.OnClickListener {
 
-    @Inject lateinit var imageRepo: ImageRepo
+    @Inject lateinit var scanRepo: ScanRepo
     private val actionSave: ImageButton by bindView(R.id.action_save)
     private val actionDelete: ImageButton by bindView(R.id.action_delete)
     private val actionShare: ImageButton by bindView(R.id.action_share)
@@ -102,7 +102,7 @@ class ImageViewerActivity() : ImmersiveActivity(), View.OnClickListener {
     }
 
     override fun onClick(v: View) {
-        val image = imageRepo.images[viewPager.currentItem]
+        val image = scanRepo.images[viewPager.currentItem]
         when (v.id) {
             R.id.action_share -> {
                 shareImage(image)
@@ -125,7 +125,7 @@ class ImageViewerActivity() : ImmersiveActivity(), View.OnClickListener {
                 })
                 .setPositiveButton(R.string.delete_anyway, { dialog: DialogInterface, i: Int ->
                     dialog.dismiss()
-                    imageRepo.deleteImage(image, appInfo)
+                    scanRepo.deleteImage(image, appInfo)
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe({
                                 toastShort(getString(R.string.msg_delete_image_success))
@@ -138,7 +138,7 @@ class ImageViewerActivity() : ImmersiveActivity(), View.OnClickListener {
     }
 
     private fun saveImage(image: Image) {
-        imageRepo.saveImage(image, appInfo).subscribe({ savedFile ->
+        scanRepo.saveImage(image, appInfo).subscribe({ savedFile ->
             val values: ContentValues = ContentValues();
             values.put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis());
             values.put(MediaStore.Images.Media.MIME_TYPE, image.mimeType());
@@ -168,11 +168,11 @@ class ImageViewerActivity() : ImmersiveActivity(), View.OnClickListener {
     }
 
     private fun loadData() {
-        adapter = ImageViewerPagerAdapter(supportFragmentManager, imageRepo.images.size)
+        adapter = ImageViewerPagerAdapter(supportFragmentManager, scanRepo.images.size)
         viewPager.offscreenPageLimit = 2
         viewPager.adapter = adapter
         viewPager.currentItem = position
-        imageRepo.registerImageEvent()
+        scanRepo.registerImageEvent()
                 .observeOn(AndroidSchedulers.mainThread())
                 .bindToLifecycle(this)
                 .subscribe { event ->

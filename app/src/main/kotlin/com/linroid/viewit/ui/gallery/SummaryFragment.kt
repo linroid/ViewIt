@@ -8,7 +8,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.View
 import butterknife.bindView
 import com.linroid.viewit.R
-import com.linroid.viewit.data.RecommendationRepo
+import com.linroid.viewit.data.NetRepo
 import com.linroid.viewit.data.model.Favorite
 import com.linroid.viewit.data.model.Image
 import com.linroid.viewit.data.model.ImageTree
@@ -38,7 +38,7 @@ class SummaryFragment : GalleryChildFragment() {
     private lateinit var treeCategory: Category
     private lateinit var imageCategory: Category
 
-    @Inject lateinit internal var recommendationRepo: RecommendationRepo
+    @Inject lateinit internal var netRepo: NetRepo
 
     private val recyclerView: RecyclerView by bindView(R.id.recyclerView)
 
@@ -66,11 +66,11 @@ class SummaryFragment : GalleryChildFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        adapter.register(Image::class.java, ImageViewProvider(activity, imageRepo, appInfo))
-        adapter.register(ImageTree::class.java, ImageTreeViewProvider(activity, File.separator, appInfo, imageRepo))
+        adapter.register(Image::class.java, ImageViewProvider(activity, scanRepo, appInfo))
+        adapter.register(ImageTree::class.java, ImageTreeViewProvider(activity, File.separator, appInfo, scanRepo))
         adapter.register(Category::class.java, CategoryViewProvider())
-        adapter.register(Favorite::class.java, FavoriteViewProvider(activity, appInfo, imageRepo))
-        adapter.register(Recommendation::class.java, RecommendationViewProvider(activity, appInfo, imageRepo))
+        adapter.register(Favorite::class.java, FavoriteViewProvider(activity, appInfo, scanRepo))
+        adapter.register(Recommendation::class.java, RecommendationViewProvider(activity, appInfo, scanRepo))
         recommendCategory = Category(null, getString(R.string.label_category_recommend), items)
         favoriteCategory = Category(recommendCategory, getString(R.string.label_category_favorite), items)
         treeCategory = Category(favoriteCategory, getString(R.string.label_category_tree), items)
@@ -88,7 +88,7 @@ class SummaryFragment : GalleryChildFragment() {
         recyclerView.itemAnimator = DefaultItemAnimator()
         recyclerView.setHasFixedSize(true)
 
-        imageRepo.registerTreeBuilder()
+        scanRepo.registerTreeBuilder()
                 .observeOn(AndroidSchedulers.mainThread())
                 .bindToLifecycle(view)
                 .subscribe {
@@ -114,7 +114,7 @@ class SummaryFragment : GalleryChildFragment() {
         imageCategory.items = tree.images
 
         // recommendation
-        recommendationRepo.list(appInfo)
+        netRepo.listRecommendations(appInfo)
                 .doOnNext { recommendations ->
                     recommendations.forEach {
                         it.tree = tree.match(PathUtils.formatToDevice(it.pattern, appInfo))
@@ -125,11 +125,11 @@ class SummaryFragment : GalleryChildFragment() {
                 .subscribe({ recommendations ->
                     recommendCategory.items = recommendations
                 }, { error ->
-                    Timber.e(error, "list recommendation")
+                    Timber.e(error, "listFavorites recommendation")
                 })
 
         // favorites
-        DBRepo.list(appInfo)
+        dbRepo.listFavorites(appInfo)
                 .observeOn(AndroidSchedulers.mainThread())
                 .bindToLifecycle(this)
                 .doOnNext { favorites ->
@@ -142,7 +142,7 @@ class SummaryFragment : GalleryChildFragment() {
                     favoriteCategory.items = favorites
                     adapter.notifyDataSetChanged()
                 }, { error ->
-                    Timber.e(error, "list favorite")
+                    Timber.e(error, "listFavorites favorite")
                 }, {
 
                 })

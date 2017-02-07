@@ -8,20 +8,20 @@ import java.util.*
  * @author linroid <linroid@gmail.com>
  * @since 29/01/2017
  */
-class ImageRepoManager(val context: Context) {
-    private val repos = HashMap<String, ImageRepo>()
+class ScanRepoManager(val context: Context) {
+    private val repos = HashMap<String, ScanRepo>()
 
-    fun getRepo(appInfo: ApplicationInfo): ImageRepo {
+    fun getRepo(appInfo: ApplicationInfo): ScanRepo {
         if (repos.containsKey(appInfo.packageName)) {
             return repos[appInfo.packageName]!!
         } else {
-            val repo = ImageRepo(context, appInfo)
+            val repo = ScanRepo(context, appInfo)
             repos[appInfo.packageName] = repo
             return repo
         }
     }
 
-    fun removeRepo(appInfo: ApplicationInfo): ImageRepo? {
+    fun removeRepo(appInfo: ApplicationInfo): ScanRepo? {
         return repos.remove(appInfo.packageName)
     }
 }

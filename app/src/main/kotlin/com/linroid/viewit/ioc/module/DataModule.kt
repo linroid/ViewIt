@@ -6,7 +6,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.linroid.rxshell.RxShell
 import com.linroid.viewit.data.DBRepo
-import com.linroid.viewit.data.RecommendationRepo
+import com.linroid.viewit.data.NetRepo
 import com.linroid.viewit.utils.BINARY_DIRECTORY
 import com.linroid.viewit.utils.BINARY_SEARCH_IMAGE
 import com.linroid.viewit.utils.DB_VERSION
@@ -111,7 +111,7 @@ class DataModule {
 
     @Singleton
     @Provides
-    fun provideRecommendationRepo(): RecommendationRepo {
-        return RecommendationRepo()
+    fun provideNetRepo(): NetRepo {
+        return NetRepo()
     }
 }

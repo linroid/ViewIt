@@ -5,9 +5,9 @@ import android.content.SharedPreferences
 import com.linroid.rxshell.RxShell
 import com.linroid.viewit.App
 import com.linroid.viewit.data.DBRepo
-import com.linroid.viewit.data.ImageRepo
-import com.linroid.viewit.data.ImageRepoManager
-import com.linroid.viewit.data.RecommendationRepo
+import com.linroid.viewit.data.NetRepo
+import com.linroid.viewit.data.ScanRepo
+import com.linroid.viewit.data.ScanRepoManager
 import com.linroid.viewit.ioc.module.AndroidModule
 import com.linroid.viewit.ioc.module.DataModule
 import com.linroid.viewit.ioc.module.PrefModule
@@ -33,16 +33,16 @@ interface GlobalGraph {
     fun inject(app: App)
     fun inject(activity: HomeActivity)
     fun inject(activity: FavoriteCreateActivity)
-    fun inject(imageRepo: ImageRepo)
+    fun inject(scanRepo: ScanRepo)
     fun inject(rxOnce: RxOnce)
 
     fun context(): Context
     fun rxShell(): RxShell
-    fun repoManager(): ImageRepoManager
+    fun repoManager(): ScanRepoManager
     fun sharedPreferences(): SharedPreferences
     fun realm(): Realm
     fun dbRepo(): DBRepo
-    fun recommendationRepo(): RecommendationRepo
+    fun netRepo(): NetRepo
 
     @Named(PREF_FILTER_SIZE)
     fun filterSizePref(): LongPreference

@@ -8,6 +8,18 @@ package com.linroid.viewit.utils;
 public class WildcardMatcher {
 
     /**
+     * Constant value for char type that is in lowercase.
+     */
+    final private static int LOWERCASE = 10;
+    /**
+     * Constant value for char type that is in uppercase.
+     */
+    final private static int UPPERCASE = 20;
+    /**
+     * Constant value for char type that is not a letter.
+     */
+    final private static int NOT_A_LETTER = 30;
+    /**
      * Tag to indicate if the strings should be compared case sensitive or not.
      */
     private static boolean ignoreCase = false;
@@ -160,7 +172,7 @@ public class WildcardMatcher {
      * This is a inner method called by charEqualsIgnoreCase, which gi
      * ves the type of the cha.
      *
-     * @param c The char to find type.
+     * @param c The char to findFavorite type.
      * @return LOWERCASE--if the char is in lowercase.
      * UPPERCASE--if the char is in uppercase.
      * NOT_A_LETTER--if the char is not a letter.
@@ -174,19 +186,4 @@ public class WildcardMatcher {
         }
         return NOT_A_LETTER;
     }
-
-    /**
-     * Constant value for char type that is in lowercase.
-     */
-    final private static int LOWERCASE = 10;
-
-    /**
-     * Constant value for char type that is in uppercase.
-     */
-    final private static int UPPERCASE = 20;
-
-    /**
-     * Constant value for char type that is not a letter.
-     */
-    final private static int NOT_A_LETTER = 30;
 }
