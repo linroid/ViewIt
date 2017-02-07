@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.*
-import hugo.weaving.DebugLog
 import timber.log.Timber
 
 /**
@@ -29,7 +28,6 @@ abstract class ImmersiveActivity : BaseActivity() {
     private val delayHideCallback = Runnable { hide() }
     private val delayHideActionBarCallback = Runnable { supportActionBar?.hide() }
 
-    @DebugLog
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         decorView = window.decorView;
@@ -51,12 +49,10 @@ abstract class ImmersiveActivity : BaseActivity() {
         delayHide()
     }
 
-    @DebugLog
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
     }
 
-    @DebugLog
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
         if (ev.actionMasked == MotionEvent.ACTION_DOWN) {
             if (componentsHidden()) {
@@ -85,7 +81,6 @@ abstract class ImmersiveActivity : BaseActivity() {
         return supportActionBar?.isShowing?.not() ?: true
     }
 
-    @DebugLog
     private fun hide() {
         var uiOptions = decorView.systemUiVisibility
         uiOptions = uiOptions or SYSTEM_UI_FLAG_HIDE_NAVIGATION
@@ -95,7 +90,6 @@ abstract class ImmersiveActivity : BaseActivity() {
         shouldHideComponents()
     }
 
-    @DebugLog
     private fun show() {
         var uiOptions = decorView.systemUiVisibility
         uiOptions = uiOptions and SYSTEM_UI_FLAG_HIDE_NAVIGATION.inv()
@@ -107,7 +101,6 @@ abstract class ImmersiveActivity : BaseActivity() {
         delayHide()
     }
 
-    @DebugLog
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         return super.onTouchEvent(event)
     }

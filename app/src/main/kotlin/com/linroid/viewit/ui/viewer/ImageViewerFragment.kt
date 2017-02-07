@@ -16,7 +16,6 @@ import com.linroid.viewit.data.model.ImageType
 import com.linroid.viewit.ui.BaseFragment
 import com.linroid.viewit.ui.ImmersiveActivity
 import com.linroid.viewit.utils.ARG_POSITION
-import hugo.weaving.DebugLog
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import timber.log.Timber
@@ -44,7 +43,6 @@ class ImageViewerFragment : BaseFragment() {
         }
     }
 
-    @DebugLog
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val args = savedInstanceState ?: arguments
@@ -57,7 +55,6 @@ class ImageViewerFragment : BaseFragment() {
         outState.putInt(ARG_POSITION, position)
     }
 
-    @DebugLog
     override fun onAttach(activity: Activity?) {
         super.onAttach(activity)
         if (activity is ImageViewerActivity) {
@@ -74,7 +71,6 @@ class ImageViewerFragment : BaseFragment() {
         }
     }
 
-    @DebugLog
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         bigImageViewer.setOnClickListener(imageClickListener)
@@ -84,7 +80,6 @@ class ImageViewerFragment : BaseFragment() {
         }
     }
 
-    @DebugLog
     private fun loadImage(act: ImageViewerActivity) {
         Timber.i("position:$position")
         var isGif = false;
@@ -114,7 +109,6 @@ class ImageViewerFragment : BaseFragment() {
                 })
     }
 
-    @DebugLog
     fun updatePosition(newPos: Int) {
         position = newPos;
         arguments.putInt(ARG_POSITION, newPos)
