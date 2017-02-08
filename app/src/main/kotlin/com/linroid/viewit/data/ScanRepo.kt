@@ -70,6 +70,8 @@ class ScanRepo(val context: Context, val appInfo: ApplicationInfo) {
     private val cacheDir: File = File(context.cacheDir, "mounts")
     val images = ArrayList<Image>()
 
+    var viewerHolderImages: List<Image>? = null
+
     init {
         App.graph.inject(this)
         createTreeBuilder()

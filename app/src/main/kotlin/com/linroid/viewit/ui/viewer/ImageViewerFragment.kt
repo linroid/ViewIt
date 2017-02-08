@@ -15,7 +15,7 @@ import com.linroid.viewit.data.model.Image
 import com.linroid.viewit.data.model.ImageType
 import com.linroid.viewit.ui.BaseFragment
 import com.linroid.viewit.ui.ImmersiveActivity
-import com.linroid.viewit.utils.ARG_POSITION
+import com.linroid.viewit.utils.ARG_IMAGE
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import timber.log.Timber
@@ -31,13 +31,13 @@ class ImageViewerFragment : BaseFragment() {
 
     val bigImageViewer: BigImageView by bindView(R.id.big_image_viewer)
     val gifImageViewer: ImageView by bindView(R.id.gif_image_viewer)
-    var position: Int = 0
+    lateinit var image: Image
 
     companion object {
-        fun newInstance(position: Int): ImageViewerFragment {
+        fun newInstance(): ImageViewerFragment {
             val fragment = ImageViewerFragment()
             val args = Bundle()
-            args.putInt(ARG_POSITION, position)
+//            args.putInt(ARG_POSITION, position)
             fragment.arguments = args
             return fragment
         }
@@ -46,13 +46,13 @@ class ImageViewerFragment : BaseFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val args = savedInstanceState ?: arguments
-        position = args.getInt(ARG_POSITION)
+        image = args.getParcelable(ARG_IMAGE)
         Timber.d("onCreate")
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putInt(ARG_POSITION, position)
+        outState.putParcelable(ARG_IMAGE, image)
     }
 
     override fun onAttach(activity: Activity?) {
@@ -81,9 +81,8 @@ class ImageViewerFragment : BaseFragment() {
     }
 
     private fun loadImage(act: ImageViewerActivity) {
-        Timber.i("position:$position")
+        Timber.i("p")
         var isGif = false;
-        val image = scanRepo.images[position]
         Observable.just(image)
                 .flatMap { image ->
                     isGif = image.type == ImageType.GIF
@@ -109,11 +108,10 @@ class ImageViewerFragment : BaseFragment() {
                 })
     }
 
-    fun updatePosition(newPos: Int) {
-        position = newPos;
-        arguments.putInt(ARG_POSITION, newPos)
-
-        Timber.d("updatePosition")
+    fun updateImage(arg: Image) {
+        image = arg
+        arguments.putParcelable(ARG_IMAGE, image)
+        Timber.d("updateImage")
     }
 
 }

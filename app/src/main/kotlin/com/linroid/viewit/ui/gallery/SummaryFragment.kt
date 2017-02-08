@@ -69,7 +69,7 @@ class SummaryFragment : GalleryChildFragment() {
         super.onViewCreated(view, savedInstanceState)
         adapter.register(Image::class.java, ImageViewProvider(activity, scanRepo, object : ImageViewProvider.ImageListener {
             override fun onViewImage(image: Image) {
-                ImageViewerActivity.navTo(activity, appInfo,
+                ImageViewerActivity.navTo(activity, scanRepo,
                         imageCategory.items!!,
                         imageCategory.items!!.indexOf(image))
 

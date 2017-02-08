@@ -45,6 +45,7 @@ import javax.inject.Inject
 class ImageViewerActivity() : ImmersiveActivity(), View.OnClickListener {
 
     @Inject lateinit var scanRepo: ScanRepo
+
     private val actionSave: ImageButton by bindView(R.id.action_save)
     private val actionDelete: ImageButton by bindView(R.id.action_delete)
     private val actionShare: ImageButton by bindView(R.id.action_share)
@@ -58,9 +59,10 @@ class ImageViewerActivity() : ImmersiveActivity(), View.OnClickListener {
     private val viewPager: ViewPager by bindView(R.id.view_pager)
 
     companion object {
-        fun navTo(source: BaseActivity, info: ApplicationInfo, position: Int) {
+        fun navTo(source: BaseActivity, scanRepo: ScanRepo, images: List<Image>, position: Int) {
+            scanRepo.viewerHolderImages = images
             val intent = Intent(source, ImageViewerActivity::class.java);
-            intent.putExtra(ARG_APP_INFO, info)
+            intent.putExtra(ARG_APP_INFO, scanRepo.appInfo)
             intent.putExtra(ARG_POSITION, position)
             source.startActivity(intent)
         }
@@ -102,7 +104,7 @@ class ImageViewerActivity() : ImmersiveActivity(), View.OnClickListener {
     }
 
     override fun onClick(v: View) {
-        val image = scanRepo.images[viewPager.currentItem]
+        val image = scanRepo.viewerHolderImages!![viewPager.currentItem]
         when (v.id) {
             R.id.action_share -> {
                 shareImage(image)
@@ -168,28 +170,10 @@ class ImageViewerActivity() : ImmersiveActivity(), View.OnClickListener {
     }
 
     private fun loadData() {
-        adapter = ImageViewerPagerAdapter(supportFragmentManager, scanRepo.images.size)
+        adapter = ImageViewerPagerAdapter(supportFragmentManager, scanRepo.viewerHolderImages)
         viewPager.offscreenPageLimit = 2
         viewPager.adapter = adapter
         viewPager.currentItem = position
-        scanRepo.registerImageEvent()
-                .observeOn(AndroidSchedulers.mainThread())
-                .bindToLifecycle(this)
-                .subscribe { event ->
-                    when (event.type) {
-                        UPDATE_EVENT -> {
-                            adapter.notifyDataSetChanged();
-                            viewPager.currentItem = 0
-                            position = 0
-                        }
-                        REMOVE_EVENT -> {
-                            adapter.notifyDataSetChanged()
-                        }
-                        INSERT_EVENT -> {
-                            adapter.notifyDataSetChanged();
-                        }
-                    }
-                }
     }
 
     override fun onSaveInstanceState(outState: Bundle?, outPersistentState: PersistableBundle?) {
@@ -209,5 +193,10 @@ class ImageViewerActivity() : ImmersiveActivity(), View.OnClickListener {
 
     override fun shouldShowComponents() {
         actionsContainer.visibility = View.VISIBLE
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        scanRepo.viewerHolderImages = null
     }
 }
