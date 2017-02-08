@@ -1,14 +1,26 @@
 package com.linroid.viewit.data.model
 
-import com.linroid.viewit.App
 import com.linroid.viewit.utils.RootUtils
+import paperparcel.PaperParcel
+import paperparcel.PaperParcelable
 import java.io.File
 
 /**
  * @author linroid <linroid@gmail.com>
  * @since 08/01/2017
  */
-data class Image(val source: File, val size: Long, val lastModified: Long, val type: ImageType, var mountFile: File? = null) {
+@PaperParcel
+data class Image(
+        val source: File,
+        val size: Long,
+        val lastModified: Long,
+        val type: ImageType,
+        var mountFile: File? = null) : PaperParcelable {
+
+    companion object {
+        @JvmField val CREATOR = PaperParcelImage.CREATOR
+    }
+
     val path: String
         get() = source.absolutePath
 
@@ -24,4 +36,6 @@ data class Image(val source: File, val size: Long, val lastModified: Long, val t
     }
 
     fun postfix(): String = type.postfix
+
+
 }

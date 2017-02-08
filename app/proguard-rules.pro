@@ -69,6 +69,11 @@
 -keep interface android.support.design.widget.** { *; }
 -dontwarn android.support.design.**
 
+# Leancloud
+-dontwarn cn.leancloud.rx.**
+-dontwarn com.alibaba.fastjson.**
+-dontwarn com.avos.avoscloud.**
+
 ##---------------Begin: proguard configuration common for all Android apps ----------
 -optimizationpasses 5
 -dontusemixedcaseclassnames

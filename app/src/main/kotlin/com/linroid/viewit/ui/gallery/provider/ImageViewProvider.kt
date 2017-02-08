@@ -1,6 +1,5 @@
 package com.linroid.viewit.ui.gallery.provider
 
-import android.content.pm.ApplicationInfo
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -16,22 +15,20 @@ import com.linroid.viewit.R
 import com.linroid.viewit.data.ScanRepo
 import com.linroid.viewit.data.model.Image
 import com.linroid.viewit.ui.gallery.GalleryActivity
-import com.linroid.viewit.ui.viewer.ImageViewerActivity
 import com.linroid.viewit.utils.RootUtils
 import com.trello.rxlifecycle.kotlin.bindToLifecycle
 import me.drakeet.multitype.ItemViewProvider
 import rx.android.schedulers.AndroidSchedulers
 import timber.log.Timber
 import java.io.File
-import javax.inject.Inject
 
 /**
  * @author linroid <linroid@gmail.com>
  * @since 07/01/2017
  */
-class ImageViewProvider @Inject constructor(val activity: GalleryActivity,
-                                            val scanRepo: ScanRepo,
-                                            val info: ApplicationInfo)
+class ImageViewProvider(val activity: GalleryActivity,
+                        val scanRepo: ScanRepo,
+                        val listener: ImageListener)
     : ItemViewProvider<Image, ImageViewProvider.ViewHolder>() {
 
 
@@ -65,9 +62,7 @@ class ImageViewProvider @Inject constructor(val activity: GalleryActivity,
                         Timber.e(error)
                     })
         }
-        holder.itemView.setOnClickListener {
-            ImageViewerActivity.navTo(activity, info, holder.adapterPosition)
-        }
+        holder.itemView.setOnClickListener { listener.onViewImage(image) }
         holder.itemView.setOnLongClickListener {
             Toast.makeText(holder.itemView.context, image.path, Toast.LENGTH_SHORT).show()
             true
@@ -76,5 +71,9 @@ class ImageViewProvider @Inject constructor(val activity: GalleryActivity,
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val image: ImageView by bindView(R.id.image)
+    }
+
+    interface ImageListener {
+        fun onViewImage(image: Image)
     }
 }

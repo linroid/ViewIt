@@ -14,6 +14,7 @@ import com.linroid.viewit.data.model.Image
 import com.linroid.viewit.data.model.ImageTree
 import com.linroid.viewit.data.model.Recommendation
 import com.linroid.viewit.ui.gallery.provider.*
+import com.linroid.viewit.ui.viewer.ImageViewerActivity
 import com.linroid.viewit.utils.PathUtils
 import com.trello.rxlifecycle.kotlin.bindToLifecycle
 import me.drakeet.multitype.MultiTypeAdapter
@@ -33,10 +34,10 @@ class SummaryFragment : GalleryChildFragment() {
     private val items = ArrayList<Any>()
     private var adapter = MultiTypeAdapter(items)
 
-    private lateinit var recommendCategory: Category
-    private lateinit var favoriteCategory: Category
-    private lateinit var treeCategory: Category
-    private lateinit var imageCategory: Category
+    private lateinit var recommendCategory: Category<Recommendation>
+    private lateinit var favoriteCategory: Category<Favorite>
+    private lateinit var treeCategory: Category<ImageTree>
+    private lateinit var imageCategory: Category<Image>
 
     @Inject lateinit internal var netRepo: NetRepo
 
@@ -66,21 +67,28 @@ class SummaryFragment : GalleryChildFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        adapter.register(Image::class.java, ImageViewProvider(activity, scanRepo, appInfo))
+        adapter.register(Image::class.java, ImageViewProvider(activity, scanRepo, object : ImageViewProvider.ImageListener {
+            override fun onViewImage(image: Image) {
+                ImageViewerActivity.navTo(activity, appInfo,
+                        imageCategory.items!!,
+                        imageCategory.items!!.indexOf(image))
+
+            }
+        }))
         adapter.register(ImageTree::class.java, ImageTreeViewProvider(activity, File.separator, appInfo, scanRepo))
         adapter.register(Category::class.java, CategoryViewProvider())
         adapter.register(Favorite::class.java, FavoriteViewProvider(activity, appInfo, scanRepo))
         adapter.register(Recommendation::class.java, RecommendationViewProvider(activity, appInfo, scanRepo))
-        recommendCategory = Category(null, getString(R.string.label_category_recommend), items)
-        favoriteCategory = Category(recommendCategory, getString(R.string.label_category_favorite), items)
-        treeCategory = Category(favoriteCategory, getString(R.string.label_category_tree), items)
-        imageCategory = Category(treeCategory, getString(R.string.label_category_tree_images, 0), items)
+        recommendCategory = Category(null, adapter, items, getString(R.string.label_category_recommend))
+        favoriteCategory = Category(recommendCategory, adapter, items, getString(R.string.label_category_favorite))
+        treeCategory = Category(favoriteCategory, adapter, items, getString(R.string.label_category_tree))
+        imageCategory = Category(treeCategory, adapter, items, getString(R.string.label_category_tree_images, 0))
 
 
         val gridLayoutManager = GridLayoutManager(getActivity(), SPAN_COUNT)
         gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
-                return if (items[position] is Category) SPAN_COUNT else 1
+                return if (items[position] is Category<*>) SPAN_COUNT else 1
             }
         }
         recyclerView.layoutManager = gridLayoutManager

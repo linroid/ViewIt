@@ -13,8 +13,8 @@ import me.drakeet.multitype.ItemViewProvider
  * @author linroid <linroid@gmail.com>
  * @since 31/01/2017
  */
-class CategoryViewProvider : ItemViewProvider<Category, CategoryViewProvider.ViewHolder>() {
-    override fun onBindViewHolder(holder: ViewHolder, category: Category) {
+class CategoryViewProvider : ItemViewProvider<Category<*>, CategoryViewProvider.ViewHolder>() {
+    override fun onBindViewHolder(holder: ViewHolder, category: Category<*>) {
         holder.labelTV.text = category.label
         if (category.action.isNullOrEmpty()) {
             holder.actionBtn.visibility = View.GONE

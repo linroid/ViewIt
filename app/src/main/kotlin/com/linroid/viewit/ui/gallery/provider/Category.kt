@@ -1,7 +1,9 @@
 package com.linroid.viewit.ui.gallery.provider
 
 import android.view.View
+import me.drakeet.multitype.MultiTypeAdapter
 import timber.log.Timber
+import java.util.*
 import kotlin.properties.Delegates
 import kotlin.reflect.KProperty
 
@@ -9,10 +11,11 @@ import kotlin.reflect.KProperty
  * @author linroid <linroid@gmail.com>
  * @since 31/01/2017
  */
-class Category(
-        private val prev: Category?,
+class Category<T : Any>(
+        prev: Category<*>?,
+        private val adapter: MultiTypeAdapter,
+        private var listItems: ArrayList<Any>,
         var label: CharSequence,
-        private var listItems: MutableList<Any>,
         var action: CharSequence? = null,
         var actionClickListener: View.OnClickListener? = null) {
 
@@ -30,27 +33,28 @@ class Category(
         }
     }
 
-    fun displayedCount(_items: List<Any>?) = if (_items == null || _items.isEmpty()) 0 else _items.size + 1
+    fun displayedCount(_items: List<T>?) = if (_items == null || _items.isEmpty()) 0 else _items.size + 1
 
-
-    var items: List<Any>? by Delegates.observable(null) { prop: KProperty<*>, old: List<Any>?, new: List<Any>? ->
+    var items: List<T>? by Delegates.observable(null) { prop: KProperty<*>, oldVal: List<T>?, newVal: List<T>? ->
         val oldCount = itemCount
-        val newCount = new?.size ?: 0
-        val oldEnd = position + displayedCount(old)
+        val newCount = newVal?.size ?: 0
         if (oldCount > 0) {
+            val oldEnd = position + (oldCount + 1)
             Timber.w("remove items: ${position + 1}..$oldEnd, total:${listItems.size}")
             listItems.removeAll(listItems.subList(position + 1, oldEnd + 1))
+            adapter.notifyItemRangeRemoved(position, oldCount + 1)
         }
         if (newCount > 0) {
             Timber.w("add category[$label] at:${position + 1}")
             listItems.add(position + 1, this)
-            listItems.addAll(position + 2, new!!)
+            listItems.addAll(position + 2, newVal!!)
+            adapter.notifyItemRangeInserted(position + 1, newCount + 1)
         }
         itemCount = newCount
         updateNext()
     }
 
-    var next: Category? = null
+    var next: Category<*>? = null
 
     init {
         if (prev != null) {

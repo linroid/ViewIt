@@ -18,6 +18,7 @@ import com.linroid.viewit.ui.gallery.provider.Category
 import com.linroid.viewit.ui.gallery.provider.CategoryViewProvider
 import com.linroid.viewit.ui.gallery.provider.ImageTreeViewProvider
 import com.linroid.viewit.ui.gallery.provider.ImageViewProvider
+import com.linroid.viewit.ui.viewer.ImageViewerActivity
 import com.linroid.viewit.utils.ARG_IMAGE_TREE_PATH
 import com.linroid.viewit.utils.FormatUtils
 import com.trello.rxlifecycle.kotlin.bindToLifecycle
@@ -46,8 +47,8 @@ class TreeViewerFragment : GalleryViewerFragment() {
     private val items = ArrayList<Any>()
     private var adapter = MultiTypeAdapter(items)
 
-    private lateinit var treeCategory: Category
-    private lateinit var imageCategory: Category
+    private lateinit var treeCategory: Category<ImageTree>
+    private lateinit var imageCategory: Category<Image>
 
 
     val recyclerView: RecyclerView by bindView(R.id.recyclerView)
@@ -70,16 +71,23 @@ class TreeViewerFragment : GalleryViewerFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        adapter.register(Image::class.java, ImageViewProvider(activity, scanRepo, appInfo))
+        adapter.register(Image::class.java, ImageViewProvider(activity, scanRepo, object : ImageViewProvider.ImageListener {
+            override fun onViewImage(image: Image) {
+                ImageViewerActivity.navTo(activity, appInfo,
+                        imageCategory.items!!,
+                        imageCategory.items!!.indexOf(image))
+            }
+
+        }))
         adapter.register(ImageTree::class.java, ImageTreeViewProvider(activity, path, appInfo, scanRepo))
         adapter.register(Category::class.java, CategoryViewProvider())
-        treeCategory = Category(null, getString(R.string.label_category_tree), items)
-        imageCategory = Category(treeCategory, getString(R.string.label_category_tree_images, 0), items)
+        treeCategory = Category(null, adapter, items, getString(R.string.label_category_tree))
+        imageCategory = Category(treeCategory, adapter, items, getString(R.string.label_category_tree_images, 0))
 
         val gridLayoutManager = GridLayoutManager(getActivity(), SPAN_COUNT)
         gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
-                return if (items[position] is Category) SPAN_COUNT else 1
+                return if (items[position] is Category<*>) SPAN_COUNT else 1
             }
 
         }
