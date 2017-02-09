@@ -60,4 +60,5 @@
     <string name="title_dialog_create_favorite">收藏这个目录</string>
     <string name="label_favorite_name">起个名字</string>
     <string name="label_create_favorite_check_share">匿名收集</string>
+    <string name="action_launch_app">打开应用</string>
 </resources>

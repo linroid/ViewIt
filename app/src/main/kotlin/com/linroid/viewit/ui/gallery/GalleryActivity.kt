@@ -6,9 +6,7 @@ import android.animation.AnimatorListenerAdapter
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.ApplicationInfo
-import android.net.Uri
 import android.os.Bundle
-import android.provider.Settings
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentTransaction
 import android.view.Menu
@@ -29,6 +27,7 @@ import com.linroid.viewit.ioc.GalleryGraph
 import com.linroid.viewit.ioc.module.GalleryModule
 import com.linroid.viewit.ui.BaseActivity
 import com.linroid.viewit.utils.ARG_APP_INFO
+import com.linroid.viewit.utils.AndroidNavUtil
 import com.linroid.viewit.widget.AnimatedSetView
 import com.trello.rxlifecycle.kotlin.bindToLifecycle
 import permissions.dispatcher.*
@@ -93,9 +92,11 @@ class GalleryActivity : BaseActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_view_app_info -> {
-                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                intent.data = Uri.parse("package:" + appInfo.packageName)
-                startActivity(intent)
+                AndroidNavUtil.openAppDetail(this, appInfo)
+                return true
+            }
+            R.id.action_launch_app -> {
+                AndroidNavUtil.launchApp(this, appInfo)
                 return true
             }
         }
