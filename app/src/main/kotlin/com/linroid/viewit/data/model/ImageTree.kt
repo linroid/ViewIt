@@ -2,6 +2,8 @@ package com.linroid.viewit.data.model
 
 import com.linroid.viewit.utils.PathUtils
 import com.linroid.viewit.utils.THUMBNAIL_MAX_COUNT
+import com.linroid.viewit.utils.WildcardMatcher
+import timber.log.Timber
 import java.io.File
 import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
@@ -134,8 +136,25 @@ data class ImageTree(val dir: String, var parent: ImageTree? = null) {
         children.forEach { s, imageTree -> imageTree.allImagesCount(count) }
     }
 
-    fun match(path: String): ImageTree? {
-        return find(path)
+    fun match(pattern: String): ImageTree? {
+        if (WildcardMatcher.match(dir, pattern)) {
+            Timber.e("matched: $this")
+            return this
+        }
+//        var found: ImageTree? = null
+//        children.forEach { subDir, child ->
+//            found = child.match(pattern)
+//            if (found != null) {
+//                return@forEach
+//            }
+//        }
+        children.forEach { entry ->
+            val found = entry.value.match(pattern)
+            if (found != null) {
+                return found
+            }
+        }
+        return null
     }
 
     fun find(path: String): ImageTree? {

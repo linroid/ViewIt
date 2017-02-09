@@ -2,6 +2,7 @@ package com.linroid.viewit.ui.gallery
 
 import android.content.pm.ApplicationInfo
 import android.os.Bundle
+import com.linroid.viewit.data.model.ImageTree
 import com.linroid.viewit.data.model.Recommendation
 import com.linroid.viewit.utils.ARG_IMAGE_TREE_PATH
 import com.linroid.viewit.utils.PathUtils
@@ -19,5 +20,9 @@ class RecommendationViewerFragment : ImagesViewerFragment() {
             fragment.arguments = args
             return fragment
         }
+    }
+
+    override fun findImageTree(root: ImageTree, path: String): ImageTree? {
+        return root.match(path)
     }
 }

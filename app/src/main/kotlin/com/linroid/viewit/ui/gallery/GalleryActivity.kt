@@ -152,8 +152,9 @@ class GalleryActivity : BaseActivity() {
         addToStack(FavoriteViewerFragment.newInstance(favorite, appInfo), "favorite:${favorite.path}")
     }
 
-    fun visitRecommendation(data: Recommendation) {
-        Timber.d("viewRecommendation:$data")
+    fun visitRecommendation(recommendation: Recommendation) {
+        Timber.d("viewRecommendation:$recommendation")
+        addToStack(RecommendationViewerFragment.newInstance(recommendation, appInfo), "recommendation:${recommendation.pattern}")
     }
 
     private fun addToStack(fragment: Fragment, name: String) {

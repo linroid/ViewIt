@@ -229,9 +229,13 @@ open class ImagesViewerFragment : GalleryViewerFragment() {
                 })
     }
 
+    open protected fun findImageTree(root: ImageTree, path: String): ImageTree? {
+        return root.find(path)
+    }
+
     private fun updateImageTree(tree: ImageTree) {
         var filterCount = 0
-        Observable.just(tree).map { it.find(path)?.allImages() }
+        Observable.just(tree).map { findImageTree(it, path)?.allImages() }
                 .flatMap { Observable.from(it) }
                 .filter { image ->
                     val res = image.size >= filterSizePref.get() * 1024 //KB
@@ -253,7 +257,7 @@ open class ImagesViewerFragment : GalleryViewerFragment() {
                 .observeOn(AndroidSchedulers.mainThread())
                 .bindToLifecycle(this)
                 .subscribe { images ->
-//                    items.clear()
+                    //                    items.clear()
                     if (filterCount == 0) {
                         imageCategory.apply {
                             label = getString(R.string.label_category_tree_images, images.size)
