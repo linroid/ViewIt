@@ -132,6 +132,7 @@ class SummaryFragment : GalleryChildFragment() {
                 .bindToLifecycle(this)
                 .subscribe({ recommendations ->
                     recommendCategory.items = recommendations
+                    recyclerView.smoothScrollToPosition(0)
                 }, { error ->
                     Timber.e(error, "list recommendation")
                 })
@@ -148,13 +149,12 @@ class SummaryFragment : GalleryChildFragment() {
                 }
                 .subscribe({ favorites ->
                     favoriteCategory.items = favorites
-                    adapter.notifyDataSetChanged()
+                    recyclerView.smoothScrollToPosition(0)
                 }, { error ->
                     Timber.e(error, "list favorites")
                 }, {
 
                 })
-        adapter.notifyDataSetChanged()
     }
 
     private fun resetData() {
