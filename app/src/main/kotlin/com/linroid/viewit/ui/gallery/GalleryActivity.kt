@@ -126,8 +126,8 @@ class GalleryActivity : BaseActivity() {
                     Toast.makeText(this, getString(R.string.msg_scan_failed, error.message), Toast.LENGTH_SHORT).show()
                     hideLoading()
                 }, {
-                    val msg = if (count > 0) getString(R.string.msg_scan_completed_with_images, count, scanRepo.images.size - count) else getString(R.string.msg_scan_completed_without_image)
-                    Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+                    //                    val msg = if (count > 0) getString(R.string.msg_scan_completed_with_images, count, scanRepo.images.size - count) else getString(R.string.msg_scan_completed_without_image)
+//                    Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
                     hideLoading()
                 })
     }
