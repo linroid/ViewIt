@@ -57,4 +57,7 @@
     <string name="action_create_favorite">收藏这个目录</string>
     <string name="action_save_favorite">保存</string>
     <string name="alert_delete_favorite">确定要删除这个收藏吗?</string>
+    <string name="title_dialog_create_favorite">收藏这个目录</string>
+    <string name="label_favorite_name">起个名字</string>
+    <string name="label_create_favorite_check_share">匿名收集</string>
 </resources>

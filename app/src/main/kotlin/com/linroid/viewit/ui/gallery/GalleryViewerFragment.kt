@@ -9,7 +9,7 @@ import android.view.MenuItem
 import android.view.View
 import com.linroid.viewit.R
 import com.linroid.viewit.data.model.Favorite
-import com.linroid.viewit.ui.favorite.FavoriteCreateActivity
+import com.linroid.viewit.ui.favorite.CreateFavoriteFragment
 import com.linroid.viewit.utils.ARG_IMAGE_TREE_PATH
 import com.trello.rxlifecycle.kotlin.bindToLifecycle
 import rx.android.schedulers.AndroidSchedulers
@@ -51,7 +51,7 @@ abstract class GalleryViewerFragment : GalleryChildFragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_create_favorite -> {
-                FavoriteCreateActivity.navTo(activity, path, appInfo)
+                showCreateFavoriteDialog()
                 return true
             }
             R.id.action_delete_favorite -> {
@@ -60,6 +60,11 @@ abstract class GalleryViewerFragment : GalleryChildFragment() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun showCreateFavoriteDialog() {
+        CreateFavoriteFragment.newInstance(activity, path, appInfo)
+                .show(childFragmentManager, "create_favorite:" + path)
     }
 
     private fun alertDeleteFavorite() {
