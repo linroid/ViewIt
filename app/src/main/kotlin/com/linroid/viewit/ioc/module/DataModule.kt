@@ -1,22 +1,18 @@
 package com.linroid.viewit.ioc.module
 
 import android.content.Context
-import android.content.res.AssetManager
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.linroid.rxshell.RxShell
 import com.linroid.viewit.data.DBRepo
 import com.linroid.viewit.data.NetRepo
-import com.linroid.viewit.utils.BINARY_DIRECTORY
-import com.linroid.viewit.utils.BINARY_SEARCH_IMAGE
+import com.linroid.viewit.ioc.quailifer.Root
 import com.linroid.viewit.utils.DB_VERSION
-import com.linroid.viewit.utils.OSUtils
 import dagger.Module
 import dagger.Provides
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import timber.log.Timber
-import java.io.File
 import javax.inject.Singleton
 
 /**
@@ -66,24 +62,12 @@ class DataModule {
 
     @Singleton
     @Provides
-    fun provideRxShell(context: Context): RxShell {
-        val shell = RxShell(true)
-        val supportAbis = OSUtils.getSupportedAbis();
-        val assets: AssetManager = context.assets
-        val dir = assets.list(BINARY_DIRECTORY)
-        val preferABI = OSUtils.findPreferAbi(supportAbis, dir)
-        if (preferABI?.isNotEmpty() as Boolean) {
-            val stream = assets.open(BINARY_DIRECTORY + File.separator + preferABI + File.separator + BINARY_SEARCH_IMAGE);
-            shell.installBinary(context, stream, BINARY_SEARCH_IMAGE, 1.0F)
-                    .subscribe({ result ->
-                        Timber.i("install binary $BINARY_SEARCH_IMAGE result: $result")
-                    }, { error ->
-                        Timber.e(error)
-                    })
+    fun provideShell(context: Context): RxShell = RxShell(false)
 
-        }
-        return shell
-    }
+    @Root
+    @Singleton
+    @Provides
+    fun provideRootRxShell(context: Context): RxShell = RxShell(true)
 
     @Singleton
     @Provides

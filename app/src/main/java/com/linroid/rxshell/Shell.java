@@ -132,7 +132,7 @@ class Shell {
         }
         int commandId = ID.incrementAndGet();
         Command command = new Command(commandId, cmd, callback);
-        Log.v(TAG, "execute command[" + commandId + "]: " + command + "");
+        Log.v(TAG, "execute command[" + commandId + "]: " + command.cmd + "");
         try {
             queue.put(command);
             writer.writeString(command.cmd, UTF_8);

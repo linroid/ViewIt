@@ -2,6 +2,7 @@ package com.linroid.viewit
 
 import android.app.Application
 import com.avos.avoscloud.AVOSCloud
+import com.facebook.stetho.Stetho
 import com.github.piasy.biv.BigImageViewer
 import com.github.piasy.biv.loader.glide.GlideImageLoader
 import com.linroid.viewit.ioc.DaggerGlobalGraph
@@ -10,7 +11,11 @@ import com.linroid.viewit.ioc.module.AndroidModule
 import com.linroid.viewit.ioc.module.DataModule
 import com.linroid.viewit.ioc.module.PrefModule
 import com.linroid.viewit.ioc.module.RepoModule
+import com.linroid.viewit.utils.BINARY_DIRECTORY
+import com.linroid.viewit.utils.BINARY_SEARCH_IMAGE
+import com.linroid.viewit.utils.OSUtils
 import timber.log.Timber
+import java.io.File
 
 /**
  * @author linroid <linroid@gmail.com>
@@ -38,6 +43,23 @@ class App : Application() {
         BigImageViewer.initialize(GlideImageLoader.with(this));
         AVOSCloud.initialize(this, "08OVX4PAskiJf7j7G0l5ulGc-gzGzoHsz", "TwiiWxl2XWnTsU48wRfDbidq");
         setupDebug()
+        installBinary();
+    }
+
+    private fun installBinary() {
+        val supportAbis = OSUtils.getSupportedAbis();
+        val dir = assets.list(BINARY_DIRECTORY)
+        val preferABI = OSUtils.findPreferAbi(supportAbis, dir)
+        if (preferABI?.isNotEmpty() as Boolean) {
+            val stream = assets.open(BINARY_DIRECTORY + File.separator + preferABI + File.separator + BINARY_SEARCH_IMAGE);
+            graph.rxShell().installBinary(this, stream, BINARY_SEARCH_IMAGE, 1.0F)
+                    .subscribe({ result ->
+                        Timber.i("install binary $BINARY_SEARCH_IMAGE result: $result")
+                    }, { error ->
+                        Timber.e(error)
+                    })
+
+        }
     }
 
     private fun setupDebug() {
@@ -50,5 +72,6 @@ class App : Application() {
             }
         })
         AVOSCloud.setDebugLogEnabled(true);
+        Stetho.initializeWithDefaults(this);
     }
 }

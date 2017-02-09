@@ -12,7 +12,7 @@ import com.linroid.viewit.ioc.module.AndroidModule
 import com.linroid.viewit.ioc.module.DataModule
 import com.linroid.viewit.ioc.module.PrefModule
 import com.linroid.viewit.ioc.module.RepoModule
-import com.linroid.viewit.ui.favorite.FavoriteCreateActivity
+import com.linroid.viewit.ioc.quailifer.Root
 import com.linroid.viewit.ui.home.HomeActivity
 import com.linroid.viewit.utils.PREF_FILTER_SIZE
 import com.linroid.viewit.utils.PREF_SORT_TYPE
@@ -32,11 +32,11 @@ import javax.inject.Singleton
 interface GlobalGraph {
     fun inject(app: App)
     fun inject(activity: HomeActivity)
-    fun inject(activity: FavoriteCreateActivity)
     fun inject(scanRepo: ScanRepo)
     fun inject(rxOnce: RxOnce)
 
     fun context(): Context
+    @Root fun rootRxShell(): RxShell
     fun rxShell(): RxShell
     fun repoManager(): ScanRepoManager
     fun sharedPreferences(): SharedPreferences

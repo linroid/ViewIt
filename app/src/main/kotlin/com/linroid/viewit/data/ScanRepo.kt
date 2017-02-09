@@ -14,6 +14,7 @@ import com.linroid.viewit.data.model.Image
 import com.linroid.viewit.data.model.ImageTree
 import com.linroid.viewit.data.scanner.ExternalImageScanner
 import com.linroid.viewit.data.scanner.InternalImageScanner
+import com.linroid.viewit.ioc.quailifer.Root
 import com.linroid.viewit.utils.*
 import com.linroid.viewit.utils.pref.LongPreference
 import rx.Observable
@@ -52,7 +53,7 @@ class ScanRepo(val context: Context, val appInfo: ApplicationInfo) {
 
     @Inject
     lateinit var packageManager: PackageManager
-    @Inject
+    @Inject @Root
     lateinit var rxShell: RxShell
     @Inject
     lateinit var internalScanner: InternalImageScanner
@@ -81,7 +82,7 @@ class ScanRepo(val context: Context, val appInfo: ApplicationInfo) {
         val sortType = sortTypePref.get()
         Timber.d("scan images for ${appInfo.packageName}, sortTypePref:$sortType")
         val externalData: File = context.externalCacheDir.parentFile.parentFile
-        var observable = internalScanner.scan(appInfo.packageName, File(externalData, appInfo.packageName))
+        var observable = externalScanner.scan(appInfo.packageName, File(externalData, appInfo.packageName))
 
         if (RootUtils.isRootAvailable()) {
             val packInfo: PackageInfo = packageManager.getPackageInfo(appInfo.packageName, 0)
@@ -100,7 +101,7 @@ class ScanRepo(val context: Context, val appInfo: ApplicationInfo) {
                     dirs.add(File(sdcard, it))
                 }
             }
-            observable = observable.concatWith(internalScanner.scan(appInfo.packageName, dirs))
+            observable = observable.concatWith(externalScanner.scan(appInfo.packageName, dirs))
         }
 
         val scanned: MutableList<Image> = ArrayList()

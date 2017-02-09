@@ -21,7 +21,6 @@ import okio.Okio;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 
 /**
  * @author linroid <linroid@gmail.com>
@@ -95,11 +94,6 @@ public class RxShell {
                         subscriber.onError(error);
                     }
                 });
-            }
-        }).doOnNext(new Action1<String>() {
-            @Override
-            public void call(String s) {
-                Log.v(TAG, "read line: " + s);
             }
         });
     }
@@ -215,5 +209,11 @@ public class RxShell {
 
     public Observable<Boolean> deleteFile(@Nullable String path) {
         return execWithoutResult("rm -rf", path);
+    }
+
+    public boolean binaryExists(@NotNull Context context, @NotNull String binaryName) {
+        File binaryDir = new File(context.getFilesDir(), "exec");
+        File binaryFile = new File(binaryDir, binaryName);
+        return binaryFile.exists() && binaryFile.canExecute();
     }
 }

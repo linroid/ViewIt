@@ -35,6 +35,8 @@ class NetRepo {
         recommendation.name = favorite.name
         recommendation.pattern = PathUtils.formatToVariable(favorite.path, appInfo)
         recommendation.packageName = favorite.packageName
-        return RxLeanCloud.save(recommendation.toAVObject()).map { recommendation }.subscribeOn(Schedulers.io())
+        return RxLeanCloud.save(recommendation.toAVObject())
+                .map { recommendation }
+                .subscribeOn(Schedulers.io())
     }
 }
