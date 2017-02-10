@@ -21,7 +21,8 @@ import com.linroid.viewit.ui.gallery.provider.ImageViewProvider
 import com.linroid.viewit.ui.viewer.ImageViewerActivity
 import com.linroid.viewit.utils.ARG_IMAGE_TREE_PATH
 import com.linroid.viewit.utils.FormatUtils
-import com.trello.rxlifecycle.kotlin.bindToLifecycle
+import com.trello.rxlifecycle.android.FragmentEvent
+import com.trello.rxlifecycle.kotlin.bindUntilEvent
 import me.drakeet.multitype.MultiTypeAdapter
 import rx.android.schedulers.AndroidSchedulers
 import timber.log.Timber
@@ -98,7 +99,7 @@ class TreeViewerFragment : GalleryViewerFragment() {
 
         scanRepo.registerTreeBuilder()
                 .observeOn(AndroidSchedulers.mainThread())
-                .bindToLifecycle(this)
+                .bindUntilEvent(this, FragmentEvent.DESTROY_VIEW)
                 .subscribe {
                     refresh(it.find(path))
                 }

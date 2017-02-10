@@ -16,7 +16,9 @@ import com.linroid.viewit.data.model.Recommendation
 import com.linroid.viewit.ui.gallery.provider.*
 import com.linroid.viewit.ui.viewer.ImageViewerActivity
 import com.linroid.viewit.utils.PathUtils
+import com.trello.rxlifecycle.android.FragmentEvent
 import com.trello.rxlifecycle.kotlin.bindToLifecycle
+import com.trello.rxlifecycle.kotlin.bindUntilEvent
 import me.drakeet.multitype.MultiTypeAdapter
 import rx.android.schedulers.AndroidSchedulers
 import timber.log.Timber
@@ -129,7 +131,7 @@ class SummaryFragment : GalleryChildFragment() {
                     }
                 }
                 .observeOn(AndroidSchedulers.mainThread())
-                .bindToLifecycle(this)
+                .bindUntilEvent(this, FragmentEvent.DESTROY_VIEW)
                 .subscribe({ recommendations ->
                     recommendCategory.items = recommendations
                     recyclerView.smoothScrollToPosition(0)
@@ -140,7 +142,7 @@ class SummaryFragment : GalleryChildFragment() {
         // favorites
         dbRepo.listFavorites(appInfo)
                 .observeOn(AndroidSchedulers.mainThread())
-                .bindToLifecycle(this)
+                .bindUntilEvent(this, FragmentEvent.DESTROY_VIEW)
                 .doOnNext { favorites ->
                     favorites.forEachIndexed { i, favorite ->
                         val path = PathUtils.formatToDevice(favorite.path, appInfo);

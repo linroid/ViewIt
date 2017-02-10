@@ -29,7 +29,8 @@ import com.linroid.viewit.ui.BaseActivity
 import com.linroid.viewit.utils.ARG_APP_INFO
 import com.linroid.viewit.utils.AndroidNavUtil
 import com.linroid.viewit.widget.AnimatedSetView
-import com.trello.rxlifecycle.kotlin.bindToLifecycle
+import com.trello.rxlifecycle.android.ActivityEvent
+import com.trello.rxlifecycle.kotlin.bindUntilEvent
 import permissions.dispatcher.*
 import rx.android.schedulers.AndroidSchedulers
 import timber.log.Timber
@@ -112,9 +113,9 @@ class GalleryActivity : BaseActivity() {
     @NeedsPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
     fun scanImages() {
         showLoading()
-        var count = 0;
+        var count = 0
         scanRepo.scan()
-                .bindToLifecycle(this)
+                .bindUntilEvent(this, ActivityEvent.DESTROY)
                 .buffer(100, TimeUnit.MILLISECONDS)
                 .onBackpressureBuffer()
                 .observeOn(AndroidSchedulers.mainThread())

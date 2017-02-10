@@ -24,7 +24,8 @@ import com.linroid.viewit.utils.ARG_IMAGE_TREE_PATH
 import com.linroid.viewit.utils.PREF_FILTER_SIZE
 import com.linroid.viewit.utils.PREF_SORT_TYPE
 import com.linroid.viewit.utils.pref.LongPreference
-import com.trello.rxlifecycle.kotlin.bindToLifecycle
+import com.trello.rxlifecycle.android.FragmentEvent
+import com.trello.rxlifecycle.kotlin.bindUntilEvent
 import me.drakeet.multitype.MultiTypeAdapter
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
@@ -219,6 +220,7 @@ open class ImagesViewerFragment : GalleryViewerFragment() {
                                 .map { scanRepo.getImageTree() }
                                 .filterNotNull()
                 )
+                .bindUntilEvent(this, FragmentEvent.DESTROY_VIEW)
                 .subscribe({
                     Timber.i("image tree updated")
                     updateImageTree(it)
@@ -255,7 +257,7 @@ open class ImagesViewerFragment : GalleryViewerFragment() {
                 .subscribeOn(Schedulers.computation())
                 .toList()
                 .observeOn(AndroidSchedulers.mainThread())
-                .bindToLifecycle(this)
+                .bindUntilEvent(this, FragmentEvent.DESTROY_VIEW)
                 .subscribe { images ->
                     //                    items.clear()
                     if (filterCount == 0) {
