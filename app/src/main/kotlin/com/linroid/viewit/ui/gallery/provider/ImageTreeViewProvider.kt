@@ -2,8 +2,8 @@ package com.linroid.viewit.ui.gallery.provider
 
 import android.content.pm.ApplicationInfo
 import android.view.View
-import com.linroid.viewit.data.ScanRepo
 import com.linroid.viewit.data.model.ImageTree
+import com.linroid.viewit.data.repo.ScanRepo
 import com.linroid.viewit.ui.gallery.GalleryActivity
 import com.linroid.viewit.utils.FormatUtils
 import com.linroid.viewit.utils.PathUtils

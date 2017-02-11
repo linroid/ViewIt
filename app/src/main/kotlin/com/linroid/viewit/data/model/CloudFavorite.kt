@@ -2,23 +2,26 @@ package com.linroid.viewit.data.model
 
 import com.avos.avoscloud.AVObject
 import com.orm.dsl.Ignore
-import com.orm.dsl.MultiUnique
-import com.orm.dsl.Table
 
 /**
  * @author linroid <linroid@gmail.com>
  * @since 01/02/2017
  */
-@MultiUnique("path, packageName")
-@Table
-class Favorite {
-    var id: Long = 0
+class CloudFavorite {
     var name: String = ""
     var path: String = ""
     var packageName: String = ""
 
     @Ignore
     var tree: ImageTree? = null
+
+    constructor(avObj: AVObject) {
+        name = avObj.getString("name")
+        path = avObj.getString("path")
+        packageName = avObj.getString("packageName")
+    }
+
+    constructor()
 
     fun toAVObject(name: String): AVObject {
         val obj = AVObject(name)

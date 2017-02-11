@@ -30,7 +30,7 @@ abstract class GalleryViewerFragment : GalleryChildFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        dbRepo.findFavorite(path, appInfo)
+        favoriteRepo.find(path, appInfo)
                 .bindToLifecycle(this)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
@@ -44,8 +44,8 @@ abstract class GalleryViewerFragment : GalleryChildFragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.gallery_viewer, menu)
-        menu.findItem(R.id.action_create_favorite)?.isVisible = favorite == null || !favorite!!.isValid
-        menu.findItem(R.id.action_delete_favorite)?.isVisible = favorite != null && favorite!!.isValid
+        menu.findItem(R.id.action_create_favorite)?.isVisible = favorite == null
+        menu.findItem(R.id.action_delete_favorite)?.isVisible = favorite != null
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -78,6 +78,14 @@ abstract class GalleryViewerFragment : GalleryChildFragment() {
     }
 
     private fun performDeleteFavorite() {
-        dbRepo.deleteFavorite(path, appInfo)
+        if (favorite != null) {
+            favoriteRepo.delete(favorite!!, appInfo)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({
+                        if (it) {
+                            toastShort(R.string.msg_operate_success)
+                        }
+                    })
+        }
     }
 }

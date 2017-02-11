@@ -1,7 +1,7 @@
 package com.linroid.viewit.ioc.module
 
 import android.content.Context
-import com.linroid.viewit.data.ScanRepoManager
+import com.linroid.viewit.data.repo.ScanRepoManager
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton

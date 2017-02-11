@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools"
           package="com.linroid.viewit">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
@@ -44,13 +43,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.home.HomeActivity"/>
         </activity>
-        <activity
-            android:name=".ui.favorite.FavoriteCreateActivity"
-            android:parentActivityName=".ui.gallery.GalleryActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.gallery.GalleryActivity"/>
-        </activity>
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -61,6 +53,20 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths"/>
         </provider>
+
+        <!-- Sugar Database Configuration -->
+        <meta-data
+            android:name="DATABASE"
+            android:value="viewIt.db"/>
+        <meta-data
+            android:name="VERSION"
+            android:value="1"/>
+        <meta-data
+            android:name="QUERY_LOG"
+            android:value="true"/>
+        <meta-data
+            android:name="DOMAIN_PACKAGE_NAME"
+            android:value="com.linroid.viewit.data.model"/>
     </application>
 
 </manifest>

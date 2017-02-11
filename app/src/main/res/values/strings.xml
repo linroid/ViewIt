@@ -61,4 +61,5 @@
     <string name="label_favorite_name">起个名字</string>
     <string name="label_create_favorite_check_share">匿名收集</string>
     <string name="action_launch_app">打开应用</string>
+    <string name="msg_operate_success">操作成功</string>
 </resources>

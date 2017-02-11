@@ -112,7 +112,7 @@ if $cygwin ; then
     JAVACMD=`cygpath --unix "$JAVACMD"`
 
     # We build the path for arguments to be converted via cygpath
-    ROOTDIRSRAW=`findFavorite -L / -maxdepth 1 -mindepth 1 -type d 2>/dev/null`
+    ROOTDIRSRAW=`find -L / -maxdepth 1 -mindepth 1 -type d 2>/dev/null`
     SEP=""
     for file in $ROOTDIRSRAW ; do
         ROOTDIRS="$ROOTDIRS$SEP$file"

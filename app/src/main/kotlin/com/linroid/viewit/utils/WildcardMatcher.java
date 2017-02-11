@@ -172,7 +172,7 @@ public class WildcardMatcher {
      * This is a inner method called by charEqualsIgnoreCase, which gi
      * ves the type of the cha.
      *
-     * @param c The char to findFavorite type.
+     * @param c The char to find type.
      * @return LOWERCASE--if the char is in lowercase.
      * UPPERCASE--if the char is in uppercase.
      * NOT_A_LETTER--if the char is not a letter.

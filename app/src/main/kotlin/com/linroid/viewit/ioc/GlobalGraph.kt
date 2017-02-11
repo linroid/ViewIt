@@ -4,10 +4,10 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.linroid.rxshell.RxShell
 import com.linroid.viewit.App
-import com.linroid.viewit.data.DBRepo
-import com.linroid.viewit.data.NetRepo
-import com.linroid.viewit.data.ScanRepo
-import com.linroid.viewit.data.ScanRepoManager
+import com.linroid.viewit.data.repo.ScanRepo
+import com.linroid.viewit.data.repo.ScanRepoManager
+import com.linroid.viewit.data.repo.cloud.CloudFavoriteRepo
+import com.linroid.viewit.data.repo.local.FavoriteRepo
 import com.linroid.viewit.ioc.module.AndroidModule
 import com.linroid.viewit.ioc.module.DataModule
 import com.linroid.viewit.ioc.module.PrefModule
@@ -19,7 +19,6 @@ import com.linroid.viewit.utils.PREF_SORT_TYPE
 import com.linroid.viewit.utils.RxOnce
 import com.linroid.viewit.utils.pref.LongPreference
 import dagger.Component
-import io.realm.Realm
 import javax.inject.Named
 import javax.inject.Singleton
 
@@ -40,9 +39,10 @@ interface GlobalGraph {
     fun rxShell(): RxShell
     fun repoManager(): ScanRepoManager
     fun sharedPreferences(): SharedPreferences
-    fun realm(): Realm
-    fun dbRepo(): DBRepo
-    fun netRepo(): NetRepo
+    //    fun realm(): Realm
+    fun dbRepo(): FavoriteRepo
+
+    fun netRepo(): CloudFavoriteRepo
 
     @Named(PREF_FILTER_SIZE)
     fun filterSizePref(): LongPreference

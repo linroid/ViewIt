@@ -12,13 +12,13 @@ import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.Toast
 import com.linroid.viewit.R
-import com.linroid.viewit.data.DBRepo
-import com.linroid.viewit.data.NetRepo
-import com.linroid.viewit.data.model.Favorite
+import com.linroid.viewit.data.repo.cloud.CloudFavoriteRepo
+import com.linroid.viewit.data.repo.local.FavoriteRepo
 import com.linroid.viewit.ui.BaseDialogFragment
 import com.linroid.viewit.ui.gallery.GalleryActivity
 import com.linroid.viewit.utils.ARG_APP_INFO
 import com.linroid.viewit.utils.ARG_IMAGE_TREE_PATH
+import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import timber.log.Timber
 import javax.inject.Inject
@@ -31,9 +31,9 @@ import javax.inject.Inject
 class CreateFavoriteFragment : BaseDialogFragment() {
 
     @Inject
-    lateinit var dbRepo: DBRepo
+    lateinit var favoriteRepo: FavoriteRepo
     @Inject
-    lateinit var netRepo: NetRepo
+    lateinit var cloudFavoriteRepo: CloudFavoriteRepo
 
     private lateinit var path: String
     private lateinit var appInfo: ApplicationInfo
@@ -65,10 +65,8 @@ class CreateFavoriteFragment : BaseDialogFragment() {
         return AlertDialog.Builder(context)
                 .setNegativeButton(android.R.string.cancel, null)
                 .setPositiveButton(R.string.action_save_favorite, { dialog: DialogInterface, i: Int ->
-                    if (checkInputs()) {
-                        performSave()
-                    }
                 })
+                .setCancelable(false)
                 .setTitle(R.string.title_dialog_create_favorite)
                 .setView(view)
                 .create()
@@ -84,11 +82,14 @@ class CreateFavoriteFragment : BaseDialogFragment() {
                 val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.showSoftInput(nameField, InputMethodManager.SHOW_IMPLICIT)
             }, 300)
+            if (dialog is AlertDialog) {
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                    if (checkInputs()) {
+                        performSave()
+                    }
+                }
+            }
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
     }
 
     private fun checkInputs(): Boolean {
@@ -107,17 +108,20 @@ class CreateFavoriteFragment : BaseDialogFragment() {
 
     private fun performSave() {
         val name = nameField.text.toString()
-        val favorite = dbRepo.createFavorite(appInfo, path, name)
-        Toast.makeText(context, R.string.msg_create_favorite_success, Toast.LENGTH_SHORT).show()
-        Timber.i("save favorite success!${favorite.toString()}")
-        if (shareCheckbox.isChecked) {
-            uploadFavorite(favorite)
-        }
-        dismiss()
-    }
-
-    private fun uploadFavorite(favorite: Favorite) {
-        netRepo.uploadFavorite(favorite, appInfo)
+        favoriteRepo.create(appInfo, path, name)
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext {
+                    Timber.i("save favorite success!${it.toString()}")
+                    dismiss()
+                    Toast.makeText(context, R.string.msg_create_favorite_success, Toast.LENGTH_SHORT).show()
+                }
+                .flatMap {
+                    if (shareCheckbox.isChecked) {
+                        return@flatMap cloudFavoriteRepo.upload(it, appInfo)
+                    } else {
+                        return@flatMap Observable.just(it)
+                    }
+                }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     Timber.i("upload favorite success!${it.toString()}")
@@ -127,4 +131,5 @@ class CreateFavoriteFragment : BaseDialogFragment() {
                     Timber.i("upload favorite success!")
                 })
     }
+
 }

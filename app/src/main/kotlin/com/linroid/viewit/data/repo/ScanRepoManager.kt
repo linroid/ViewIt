@@ -1,4 +1,4 @@
-package com.linroid.viewit.data
+package com.linroid.viewit.data.repo
 
 import android.content.Context
 import android.content.pm.ApplicationInfo

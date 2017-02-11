@@ -14,6 +14,7 @@ import com.linroid.viewit.ioc.module.RepoModule
 import com.linroid.viewit.utils.BINARY_DIRECTORY
 import com.linroid.viewit.utils.BINARY_SEARCH_IMAGE
 import com.linroid.viewit.utils.OSUtils
+import com.orm.SugarContext
 import timber.log.Timber
 import java.io.File
 
@@ -43,7 +44,13 @@ class App : Application() {
         BigImageViewer.initialize(GlideImageLoader.with(this));
         AVOSCloud.initialize(this, "08OVX4PAskiJf7j7G0l5ulGc-gzGzoHsz", "TwiiWxl2XWnTsU48wRfDbidq");
         setupDebug()
-        installBinary();
+        installBinary()
+        SugarContext.init(this)
+    }
+
+    override fun onTerminate() {
+        super.onTerminate()
+        SugarContext.terminate()
     }
 
     private fun installBinary() {
@@ -67,11 +74,12 @@ class App : Application() {
             return
         }
         Timber.plant(object : Timber.DebugTree() {
-            override fun formatMessage(message: String?, args: Array<out Any>?): String {
-                return "[${Thread.currentThread().name}]${super.formatMessage(message, args)}"
+
+            override fun log(priority: Int, t: Throwable?, message: String?, vararg args: Any?) {
+                super.log(priority, t, "[${Thread.currentThread().name}]$message", *args)
             }
         })
-        AVOSCloud.setDebugLogEnabled(true);
-        Stetho.initializeWithDefaults(this);
+        AVOSCloud.setDebugLogEnabled(true)
+        Stetho.initializeWithDefaults(this)
     }
 }

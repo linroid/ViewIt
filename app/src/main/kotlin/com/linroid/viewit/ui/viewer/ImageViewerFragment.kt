@@ -10,9 +10,9 @@ import butterknife.bindView
 import com.bumptech.glide.Glide
 import com.github.piasy.biv.view.BigImageView
 import com.linroid.viewit.R
-import com.linroid.viewit.data.ScanRepo
 import com.linroid.viewit.data.model.Image
 import com.linroid.viewit.data.model.ImageType
+import com.linroid.viewit.data.repo.ScanRepo
 import com.linroid.viewit.ui.BaseFragment
 import com.linroid.viewit.ui.ImmersiveActivity
 import com.linroid.viewit.utils.ARG_IMAGE

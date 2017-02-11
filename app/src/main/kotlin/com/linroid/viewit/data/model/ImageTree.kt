@@ -82,9 +82,9 @@ data class ImageTree(val dir: String, var parent: ImageTree? = null) {
     }
 
     //    val allImages: List<Image> by lazy {
-//        val listFavorites = ArrayList<Image>()
-//        allImages(listFavorites)
-//        return@lazy listFavorites
+//        val list = ArrayList<Image>()
+//        allImages(list)
+//        return@lazy list
 //    }
     fun allImages(): List<Image> {
         val list = ArrayList<Image>()
@@ -108,9 +108,9 @@ data class ImageTree(val dir: String, var parent: ImageTree? = null) {
     }
 
 //    fun thumbnailImages(): List<Image> {
-//        val listFavorites = ArrayList<Image>()
-//        thumbnailImages(listFavorites)
-//        return listFavorites
+//        val list = ArrayList<Image>()
+//        thumbnailImages(list)
+//        return list
 //    }
 
     private fun thumbnailImages(list: ArrayList<Image>) {
@@ -136,18 +136,11 @@ data class ImageTree(val dir: String, var parent: ImageTree? = null) {
         children.forEach { s, imageTree -> imageTree.allImagesCount(count) }
     }
 
-    fun match(pattern: String): ImageTree? {
+    private fun match(pattern: String): ImageTree? {
         if (WildcardMatcher.match(dir, pattern)) {
             Timber.e("matched: $this")
             return this
         }
-//        var found: ImageTree? = null
-//        children.forEach { subDir, child ->
-//            found = child.match(pattern)
-//            if (found != null) {
-//                return@forEach
-//            }
-//        }
         children.forEach { entry ->
             val found = entry.value.match(pattern)
             if (found != null) {
@@ -158,6 +151,9 @@ data class ImageTree(val dir: String, var parent: ImageTree? = null) {
     }
 
     fun find(path: String): ImageTree? {
+        if (path.contains("*")) {
+            return match(path)
+        }
         if (dir == path) {
             return this
         }

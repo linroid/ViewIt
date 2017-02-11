@@ -7,10 +7,9 @@ import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.Menu
 import android.view.MenuItem
-import butterknife.bindView
 import com.linroid.viewit.R
 import com.linroid.viewit.data.scanner.AppScanner
-import com.linroid.viewit.ui.BaseActivity
+import com.linroid.viewit.ui.BaseListActivity
 import com.linroid.viewit.ui.about.AboutActivity
 import com.trello.rxlifecycle.kotlin.bindToLifecycle
 import me.drakeet.multitype.MultiTypeAdapter
@@ -22,18 +21,12 @@ import java.util.*
  * @author linroid <linroid@gmail.com>
  * @since 07/01/2017
  */
-class HomeActivity : BaseActivity() {
-    val appListView: RecyclerView by bindView(R.id.recycler)
+class HomeActivity : BaseListActivity() {
     val apps: MutableList<Any> = ArrayList();
     val adapter: MultiTypeAdapter = MultiTypeAdapter(apps)
 
-    override fun provideContentLayoutId(): Int {
-        return R.layout.activity_home;
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        initView();
         loadApps();
     }
 
@@ -51,13 +44,13 @@ class HomeActivity : BaseActivity() {
                 })
     }
 
-    private fun initView() {
+    override fun setupRecyclerView(recyclerView: RecyclerView) {
         adapter.register(ApplicationInfo::class.java, AppViewProvider(this))
         val gridLayoutManager = GridLayoutManager(this, 4);
-        appListView.layoutManager = gridLayoutManager
-        appListView.adapter = adapter
-        appListView.itemAnimator = DefaultItemAnimator()
-        appListView.setHasFixedSize(true)
+        recyclerView.layoutManager = gridLayoutManager
+        recyclerView.adapter = adapter
+        recyclerView.itemAnimator = DefaultItemAnimator()
+        recyclerView.setHasFixedSize(true)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

@@ -17,11 +17,11 @@ import android.widget.Toast
 import butterknife.bindView
 import com.linroid.viewit.App
 import com.linroid.viewit.R
-import com.linroid.viewit.data.ScanRepo
-import com.linroid.viewit.data.ScanRepoManager
+import com.linroid.viewit.data.model.CloudFavorite
 import com.linroid.viewit.data.model.Favorite
 import com.linroid.viewit.data.model.ImageTree
-import com.linroid.viewit.data.model.Recommendation
+import com.linroid.viewit.data.repo.ScanRepo
+import com.linroid.viewit.data.repo.ScanRepoManager
 import com.linroid.viewit.ioc.DaggerGalleryGraph
 import com.linroid.viewit.ioc.GalleryGraph
 import com.linroid.viewit.ioc.module.GalleryModule
@@ -154,9 +154,9 @@ class GalleryActivity : BaseActivity() {
         addToStack(FavoriteViewerFragment.newInstance(favorite, appInfo), "favorite:${favorite.path}")
     }
 
-    fun visitRecommendation(recommendation: Recommendation) {
-        Timber.d("viewRecommendation:$recommendation")
-        addToStack(RecommendationViewerFragment.newInstance(recommendation, appInfo), "recommendation:${recommendation.pattern}")
+    fun visitCloudFavorite(cloudFavorite: CloudFavorite) {
+        Timber.d("viewCloudFavorite:$cloudFavorite")
+        addToStack(CloudFavoriteViewerFragment.newInstance(cloudFavorite, appInfo), "cloudFavorite:${cloudFavorite.path}")
     }
 
     private fun addToStack(fragment: Fragment, name: String) {

@@ -9,8 +9,8 @@ import android.widget.TextView
 import android.widget.Toast
 import butterknife.bindView
 import com.linroid.viewit.R
-import com.linroid.viewit.data.ScanRepo
 import com.linroid.viewit.data.model.ImageTree
+import com.linroid.viewit.data.repo.ScanRepo
 import com.linroid.viewit.ui.gallery.GalleryActivity
 import com.linroid.viewit.utils.unsubscribeIfNotNull
 import com.linroid.viewit.widget.ThumbnailView

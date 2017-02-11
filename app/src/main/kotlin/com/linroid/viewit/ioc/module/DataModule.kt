@@ -4,15 +4,11 @@ import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.linroid.rxshell.RxShell
-import com.linroid.viewit.data.DBRepo
-import com.linroid.viewit.data.NetRepo
+import com.linroid.viewit.data.repo.cloud.CloudFavoriteRepo
+import com.linroid.viewit.data.repo.local.FavoriteRepo
 import com.linroid.viewit.ioc.quailifer.Root
-import com.linroid.viewit.utils.DB_VERSION
 import dagger.Module
 import dagger.Provides
-import io.realm.Realm
-import io.realm.RealmConfiguration
-import timber.log.Timber
 import javax.inject.Singleton
 
 /**
@@ -71,24 +67,13 @@ class DataModule {
 
     @Singleton
     @Provides
-    fun provideRealm(context: Context): Realm {
-        Realm.init(context)
-        Timber.d("provideRealm")
-        return Realm.getInstance(RealmConfiguration.Builder()
-                .schemaVersion(DB_VERSION)
-                .deleteRealmIfMigrationNeeded()
-                .build())
+    fun provideDBRepo(): FavoriteRepo {
+        return FavoriteRepo()
     }
 
     @Singleton
     @Provides
-    fun provideDBRepo(realm: Realm): DBRepo {
-        return DBRepo(realm)
-    }
-
-    @Singleton
-    @Provides
-    fun provideNetRepo(): NetRepo {
-        return NetRepo()
+    fun provideNetRepo(): CloudFavoriteRepo {
+        return CloudFavoriteRepo()
     }
 }

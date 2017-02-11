@@ -21,11 +21,8 @@ import android.widget.Toast
 import butterknife.bindView
 import com.linroid.viewit.App
 import com.linroid.viewit.R
-import com.linroid.viewit.data.ScanRepo
-import com.linroid.viewit.data.ScanRepo.Companion.INSERT_EVENT
-import com.linroid.viewit.data.ScanRepo.Companion.REMOVE_EVENT
-import com.linroid.viewit.data.ScanRepo.Companion.UPDATE_EVENT
 import com.linroid.viewit.data.model.Image
+import com.linroid.viewit.data.repo.ScanRepo
 import com.linroid.viewit.ioc.DaggerViewerGraph
 import com.linroid.viewit.ioc.ViewerGraph
 import com.linroid.viewit.ioc.module.ViewerModule
@@ -34,7 +31,6 @@ import com.linroid.viewit.ui.ImmersiveActivity
 import com.linroid.viewit.utils.ARG_APP_INFO
 import com.linroid.viewit.utils.ARG_POSITION
 import com.linroid.viewit.utils.FILE_PROVIDER
-import com.trello.rxlifecycle.kotlin.bindToLifecycle
 import rx.android.schedulers.AndroidSchedulers
 import javax.inject.Inject
 

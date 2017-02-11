@@ -12,8 +12,8 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.linroid.viewit.R
-import com.linroid.viewit.data.ScanRepo
 import com.linroid.viewit.data.model.Image
+import com.linroid.viewit.data.repo.ScanRepo
 import com.linroid.viewit.ui.gallery.GalleryActivity
 import com.linroid.viewit.utils.RootUtils
 import com.trello.rxlifecycle.kotlin.bindToLifecycle

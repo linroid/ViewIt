@@ -1,6 +1,8 @@
 package com.linroid.viewit.utils
 
+import rx.Observable
 import rx.Subscription
+import rx.android.schedulers.AndroidSchedulers
 
 /**
  * @author linroid <linroid@gmail.com>
@@ -8,4 +10,8 @@ import rx.Subscription
  */
 fun Subscription?.unsubscribeIfNotNull() {
     this?.unsubscribe()
+}
+
+fun <T> Observable<T>.onMain(): Observable<T>? {
+    return this.observeOn(AndroidSchedulers.mainThread())
 }

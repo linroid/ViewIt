@@ -8,11 +8,11 @@ import android.support.v7.widget.RecyclerView
 import android.view.View
 import butterknife.bindView
 import com.linroid.viewit.R
-import com.linroid.viewit.data.NetRepo
+import com.linroid.viewit.data.model.CloudFavorite
 import com.linroid.viewit.data.model.Favorite
 import com.linroid.viewit.data.model.Image
 import com.linroid.viewit.data.model.ImageTree
-import com.linroid.viewit.data.model.Recommendation
+import com.linroid.viewit.data.repo.cloud.CloudFavoriteRepo
 import com.linroid.viewit.ui.gallery.provider.*
 import com.linroid.viewit.ui.viewer.ImageViewerActivity
 import com.linroid.viewit.utils.PathUtils
@@ -36,12 +36,12 @@ class SummaryFragment : GalleryChildFragment() {
     private val items = ArrayList<Any>()
     private var adapter = MultiTypeAdapter(items)
 
-    private lateinit var recommendCategory: Category<Recommendation>
+    private lateinit var cloudFavoriteCategory: Category<CloudFavorite>
     private lateinit var favoriteCategory: Category<Favorite>
     private lateinit var treeCategory: Category<ImageTree>
     private lateinit var imageCategory: Category<Image>
 
-    @Inject lateinit internal var netRepo: NetRepo
+    @Inject lateinit internal var cloudFavoriteRepo: CloudFavoriteRepo
 
     private val recyclerView: RecyclerView by bindView(R.id.recyclerView)
 
@@ -80,9 +80,9 @@ class SummaryFragment : GalleryChildFragment() {
         adapter.register(ImageTree::class.java, ImageTreeViewProvider(activity, File.separator, appInfo, scanRepo))
         adapter.register(Category::class.java, CategoryViewProvider())
         adapter.register(Favorite::class.java, FavoriteViewProvider(activity, appInfo, scanRepo))
-        adapter.register(Recommendation::class.java, RecommendationViewProvider(activity, appInfo, scanRepo))
-        recommendCategory = Category(null, adapter, items, getString(R.string.label_category_recommend))
-        favoriteCategory = Category(recommendCategory, adapter, items, getString(R.string.label_category_favorite))
+        adapter.register(CloudFavorite::class.java, CloudFavoriteViewProvider(activity, appInfo, scanRepo))
+        cloudFavoriteCategory = Category(null, adapter, items, getString(R.string.label_category_recommend))
+        favoriteCategory = Category(cloudFavoriteCategory, adapter, items, getString(R.string.label_category_favorite))
         treeCategory = Category(favoriteCategory, adapter, items, getString(R.string.label_category_tree))
         imageCategory = Category(treeCategory, adapter, items, getString(R.string.label_category_tree_images, 0))
 
@@ -123,24 +123,24 @@ class SummaryFragment : GalleryChildFragment() {
         imageCategory.label = getString(R.string.label_category_action_all_images, tree.images.size)
         imageCategory.items = tree.images
 
-        // recommendation
-        netRepo.listRecommendations(appInfo)
-                .doOnNext { recommendations ->
-                    recommendations.forEach {
-                        it.tree = tree.match(PathUtils.formatToDevice(it.pattern, appInfo))
+        // cloudFavorites
+        cloudFavoriteRepo.list(appInfo)
+                .doOnNext { cloudFavorites ->
+                    cloudFavorites.forEach {
+                        it.tree = tree.find(PathUtils.formatToDevice(it.path, appInfo))
                     }
                 }
                 .observeOn(AndroidSchedulers.mainThread())
                 .bindUntilEvent(this, FragmentEvent.DESTROY_VIEW)
                 .subscribe({ recommendations ->
-                    recommendCategory.items = recommendations
+                    cloudFavoriteCategory.items = recommendations
                     recyclerView.smoothScrollToPosition(0)
                 }, { error ->
-                    Timber.e(error, "list recommendation")
+                    Timber.e(error, "list cloudFavorites")
                 })
 
         // favorites
-        dbRepo.listFavorites(appInfo)
+        favoriteRepo.list(appInfo)
                 .observeOn(AndroidSchedulers.mainThread())
                 .bindUntilEvent(this, FragmentEvent.DESTROY_VIEW)
                 .doOnNext { favorites ->
@@ -161,7 +161,7 @@ class SummaryFragment : GalleryChildFragment() {
 
     private fun resetData() {
         favoriteCategory.items = null
-        recommendCategory.items = null
+        cloudFavoriteCategory.items = null
     }
 
 }

@@ -1,8 +1,8 @@
 package com.linroid.viewit.ioc.module
 
 import android.content.pm.ApplicationInfo
-import com.linroid.viewit.data.ScanRepo
-import com.linroid.viewit.data.ScanRepoManager
+import com.linroid.viewit.data.repo.ScanRepo
+import com.linroid.viewit.data.repo.ScanRepoManager
 import com.linroid.viewit.ioc.quailifer.ActivityScope
 import com.linroid.viewit.ui.gallery.GalleryActivity
 import dagger.Module

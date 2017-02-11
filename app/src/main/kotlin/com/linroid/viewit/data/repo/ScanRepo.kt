@@ -1,4 +1,4 @@
-package com.linroid.viewit.data
+package com.linroid.viewit.data.repo
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -148,7 +148,7 @@ class ScanRepo(val context: Context, val appInfo: ApplicationInfo) {
         return Observable.just(image)
                 .flatMap { if (it.file() == null) mountImage(image) else Observable.just(image) }
                 .flatMap {
-                    if (Environment.getExternalStorageState() != android.os.Environment.MEDIA_MOUNTED) {
+                    if (Environment.getExternalStorageState() != Environment.MEDIA_MOUNTED) {
                         throw IllegalStateException(context.getString(R.string.msg_save_image_failed_without_sdcard));
                     }
                     val targetName = "${packageManager.getApplicationLabel(appInfo)}_${System.currentTimeMillis()}.${image.postfix()}"
