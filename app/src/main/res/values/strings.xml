@@ -68,4 +68,6 @@
     <string name="category_local_path">保存的</string>
     <string name="category_cloud_path">推荐</string>
     <string name="action_delete_path">删除</string>
+    <string name="action_add_path">添加扫描路径</string>
+    <string name="msg_save_picked_path_successed">保存成功</string>
 </resources>

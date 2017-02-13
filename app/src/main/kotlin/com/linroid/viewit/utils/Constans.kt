@@ -9,7 +9,7 @@ import com.linroid.viewit.BuildConfig
  */
 const val BINARY_SEARCH_IMAGE = "search_image"
 const val BINARY_DIRECTORY = "exec"
-const val FILE_PROVIDER = "${BuildConfig.APPLICATION_ID}.fileProvider"
+const val FILE_PROVIDER = "${BuildConfig.APPLICATION_ID}.provider"
 
 const val PREF_SORT_TYPE = "sort_type"
 const val PREF_FILTER_SIZE = "filter_size"

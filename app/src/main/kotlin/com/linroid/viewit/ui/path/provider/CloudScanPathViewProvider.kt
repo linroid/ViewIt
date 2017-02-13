@@ -1,5 +1,6 @@
 package com.linroid.viewit.ui.path.provider
 
+import android.content.pm.ApplicationInfo
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +10,7 @@ import butterknife.bindView
 
 import com.linroid.viewit.R
 import com.linroid.viewit.data.model.CloudScanPath
+import com.linroid.viewit.utils.PathUtils
 
 import me.drakeet.multitype.ItemViewProvider
 
@@ -16,7 +18,7 @@ import me.drakeet.multitype.ItemViewProvider
  * @author linroid <linroid@gmail.com>
  * @since 12/02/2017
  */
-class CloudScanPathViewProvider : ItemViewProvider<CloudScanPath, CloudScanPathViewProvider.ViewHolder>() {
+class CloudScanPathViewProvider(val appInfo: ApplicationInfo) : ItemViewProvider<CloudScanPath, CloudScanPathViewProvider.ViewHolder>() {
 
     override fun onCreateViewHolder(
             inflater: LayoutInflater, parent: ViewGroup): ViewHolder {
@@ -25,7 +27,7 @@ class CloudScanPathViewProvider : ItemViewProvider<CloudScanPath, CloudScanPathV
     }
 
     override fun onBindViewHolder(holder: ViewHolder, cloudScanPath: CloudScanPath) {
-        holder.nameTV.text = cloudScanPath.path
+        holder.nameTV.text = PathUtils.formatToDevice(cloudScanPath.path, appInfo)
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

@@ -1,5 +1,6 @@
 package com.linroid.viewit.ui.path.provider
 
+import android.content.pm.ApplicationInfo
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +10,7 @@ import butterknife.bindView
 
 import com.linroid.viewit.R
 import com.linroid.viewit.data.model.ScanPath
+import com.linroid.viewit.utils.PathUtils
 
 import me.drakeet.multitype.ItemViewProvider
 
@@ -16,7 +18,7 @@ import me.drakeet.multitype.ItemViewProvider
  * @author linroid <linroid@gmail.com>
  * @since 12/02/2017
  */
-class ScanPathViewProvider : ItemViewProvider<ScanPath, ScanPathViewProvider.ViewHolder>() {
+class ScanPathViewProvider(val appInfo: ApplicationInfo) : ItemViewProvider<ScanPath, ScanPathViewProvider.ViewHolder>() {
 
     override fun onCreateViewHolder(
             inflater: LayoutInflater, parent: ViewGroup): ViewHolder {
@@ -25,7 +27,7 @@ class ScanPathViewProvider : ItemViewProvider<ScanPath, ScanPathViewProvider.Vie
     }
 
     override fun onBindViewHolder(holder: ViewHolder, scanPath: ScanPath) {
-        holder.nameTV.text = scanPath.path
+        holder.nameTV.text = PathUtils.formatToDevice(scanPath.path, appInfo)
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

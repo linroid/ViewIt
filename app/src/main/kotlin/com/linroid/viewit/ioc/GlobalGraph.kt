@@ -14,6 +14,7 @@ import com.linroid.viewit.ioc.module.PrefModule
 import com.linroid.viewit.ioc.module.RepoModule
 import com.linroid.viewit.ioc.quailifer.Root
 import com.linroid.viewit.ui.home.HomeActivity
+import com.linroid.viewit.ui.path.PathManagerActivity
 import com.linroid.viewit.utils.PREF_FILTER_SIZE
 import com.linroid.viewit.utils.PREF_SORT_TYPE
 import com.linroid.viewit.utils.RxOnce
@@ -33,6 +34,7 @@ interface GlobalGraph {
     fun inject(activity: HomeActivity)
     fun inject(scanRepo: ScanRepo)
     fun inject(rxOnce: RxOnce)
+    fun inject(activity: PathManagerActivity)
 
     fun context(): Context
     @Root fun rootRxShell(): RxShell

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_add_path"
+        android:icon="@drawable/ic_create_new_folder"
+        android:orderInCategory="100"
+        android:title="@string/action_add_path"
+        app:showAsAction="always"/>
+</menu>

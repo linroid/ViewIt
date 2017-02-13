@@ -4,8 +4,6 @@ import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.linroid.rxshell.RxShell
-import com.linroid.viewit.data.repo.cloud.CloudFavoriteRepo
-import com.linroid.viewit.data.repo.local.FavoriteRepo
 import com.linroid.viewit.ioc.quailifer.Root
 import dagger.Module
 import dagger.Provides
@@ -64,16 +62,4 @@ class DataModule {
     @Singleton
     @Provides
     fun provideRootRxShell(context: Context): RxShell = RxShell(true)
-
-    @Singleton
-    @Provides
-    fun provideDBRepo(): FavoriteRepo {
-        return FavoriteRepo()
-    }
-
-    @Singleton
-    @Provides
-    fun provideNetRepo(): CloudFavoriteRepo {
-        return CloudFavoriteRepo()
-    }
 }

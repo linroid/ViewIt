@@ -12,6 +12,6 @@ fun Subscription?.unsubscribeIfNotNull() {
     this?.unsubscribe()
 }
 
-fun <T> Observable<T>.onMain(): Observable<T>? {
+fun <T> Observable<T>.onMain(): Observable<T> {
     return this.observeOn(AndroidSchedulers.mainThread())
 }

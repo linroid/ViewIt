@@ -65,16 +65,16 @@ class GalleryActivity : BaseActivity() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         val arguments = intent.extras
         appInfo = arguments.getParcelable(ARG_APP_INFO)
         appName = packageManager.getApplicationLabel(appInfo);
-        supportActionBar?.title = appName
         graph = DaggerGalleryGraph.builder()
                 .globalGraph(App.get().graph())
                 .galleryModule(GalleryModule(this, appInfo))
                 .build()
         graph.inject(this)
+        super.onCreate(savedInstanceState)
+        supportActionBar?.title = appName
         initView()
         GalleryActivityPermissionsDispatcher.scanImagesWithCheck(this);
         showSummary()
