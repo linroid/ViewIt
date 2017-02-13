@@ -159,7 +159,7 @@ dependencies {
 
     compile 'com.github.satyan:sugar:1.5'
 
-    debugCompile 'com.facebook.stetho:stetho:1.4.2'
+    compile 'com.facebook.stetho:stetho:1.4.2'
 }
 
 File signPropFile = file('signing.properties');

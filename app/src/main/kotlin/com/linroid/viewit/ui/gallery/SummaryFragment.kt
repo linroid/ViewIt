@@ -5,6 +5,9 @@ import android.os.Bundle
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import butterknife.bindView
 import com.linroid.viewit.R
@@ -14,8 +17,10 @@ import com.linroid.viewit.data.model.Image
 import com.linroid.viewit.data.model.ImageTree
 import com.linroid.viewit.data.repo.cloud.CloudFavoriteRepo
 import com.linroid.viewit.ui.gallery.provider.*
+import com.linroid.viewit.ui.path.PathManagerActivity
 import com.linroid.viewit.ui.viewer.ImageViewerActivity
 import com.linroid.viewit.utils.PathUtils
+import com.linroid.viewit.widget.divider.CategoryItemDecoration
 import com.trello.rxlifecycle.android.FragmentEvent
 import com.trello.rxlifecycle.kotlin.bindToLifecycle
 import com.trello.rxlifecycle.kotlin.bindUntilEvent
@@ -97,6 +102,7 @@ class SummaryFragment : GalleryChildFragment() {
         recyclerView.adapter = adapter
         recyclerView.itemAnimator = DefaultItemAnimator()
         recyclerView.setHasFixedSize(true)
+        recyclerView.addItemDecoration(CategoryItemDecoration(recyclerView))
 
         scanRepo.registerTreeBuilder()
                 .observeOn(AndroidSchedulers.mainThread())
@@ -164,4 +170,22 @@ class SummaryFragment : GalleryChildFragment() {
         cloudFavoriteCategory.items = null
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.gallery_summary, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.action_gallery_setting -> {
+                openPathManager()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun openPathManager() {
+        PathManagerActivity.navTo(activity, appInfo)
+    }
 }

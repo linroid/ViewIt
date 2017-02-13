@@ -62,4 +62,10 @@
     <string name="label_create_favorite_check_share">匿名收集</string>
     <string name="action_launch_app">打开应用</string>
     <string name="msg_operate_success">操作成功</string>
+    <string name="action_gallery_setting">设置扫描目录</string>
+    <string name="title_activity_path_manager">管理扫描路径</string>
+    <string name="category_built_in_path">预置</string>
+    <string name="category_local_path">保存的</string>
+    <string name="category_cloud_path">推荐</string>
+    <string name="action_delete_path">删除</string>
 </resources>

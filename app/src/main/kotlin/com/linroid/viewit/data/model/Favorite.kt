@@ -12,7 +12,7 @@ import com.orm.dsl.Table
 @MultiUnique("path, packageName")
 @Table
 class Favorite {
-    var id: Long = 0
+    var id: Long? = null
     var name: String = ""
     var path: String = ""
     var packageName: String = ""
@@ -20,8 +20,8 @@ class Favorite {
     @Ignore
     var tree: ImageTree? = null
 
-    fun toAVObject(name: String): AVObject {
-        val obj = AVObject(name)
+    fun toAVObject(className: String): AVObject {
+        val obj = AVObject(className)
         obj.put("name", name)
         obj.put("path", path)
         obj.put("packageName", packageName)

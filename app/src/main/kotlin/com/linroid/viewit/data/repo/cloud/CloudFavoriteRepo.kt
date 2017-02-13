@@ -21,11 +21,11 @@ class CloudFavoriteRepo {
                 .whereEqualTo("packageName", appInfo.packageName)
         return RxLeanCloud.find(query)
                 .map { objs ->
-                    val recommends = ArrayList<CloudFavorite>()
+                    val favorites = ArrayList<CloudFavorite>()
                     objs.forEach {
-                        recommends.add(CloudFavorite(it))
+                        favorites.add(CloudFavorite(it))
                     }
-                    return@map recommends.toList()
+                    return@map favorites.toList()
                 }.subscribeOn(Schedulers.io())
     }
 

@@ -10,13 +10,6 @@ class ScanPath {
     var path: String = ""
     var packageName: String = ""
 
-    constructor(avObj: AVObject) {
-        path = avObj.getString("path")
-        packageName = avObj.getString("packageName")
-    }
-
-    constructor()
-
     fun toAVObject(name: String): AVObject {
         val obj = AVObject(name)
         obj.put("path", path)

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/name"
+        style="@style/PathItemStyle"
+        tools:text="/sdcard/Tencent/MicroMsg"/>
+
+    <TextView
+        android:id="@+id/button"
+        android:layout_width="48dp"
+        android:layout_height="32dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/bg_btn_delete_path"
+        android:clickable="true"
+        android:gravity="center"
+        android:text="@string/action_delete_path"
+        android:textColor="#FFFFFF"/>
+</LinearLayout>

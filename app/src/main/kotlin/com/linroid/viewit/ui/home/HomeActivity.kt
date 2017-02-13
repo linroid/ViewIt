@@ -11,6 +11,7 @@ import com.linroid.viewit.R
 import com.linroid.viewit.data.scanner.AppScanner
 import com.linroid.viewit.ui.BaseListActivity
 import com.linroid.viewit.ui.about.AboutActivity
+import com.linroid.viewit.widget.divider.CategoryItemDecoration
 import com.trello.rxlifecycle.kotlin.bindToLifecycle
 import me.drakeet.multitype.MultiTypeAdapter
 import rx.android.schedulers.AndroidSchedulers
@@ -51,6 +52,7 @@ class HomeActivity : BaseListActivity() {
         recyclerView.adapter = adapter
         recyclerView.itemAnimator = DefaultItemAnimator()
         recyclerView.setHasFixedSize(true)
+        recyclerView.addItemDecoration(CategoryItemDecoration(recyclerView))
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

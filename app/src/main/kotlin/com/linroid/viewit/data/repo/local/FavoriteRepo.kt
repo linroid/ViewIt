@@ -2,6 +2,7 @@ package com.linroid.viewit.data.repo.local
 
 import android.content.pm.ApplicationInfo
 import com.linroid.viewit.data.model.Favorite
+import com.linroid.viewit.utils.PathUtils
 import com.orm.SugarRecord
 import rx.Observable
 import rx.schedulers.Schedulers
@@ -41,7 +42,7 @@ class FavoriteRepo() {
                     val favorite = Favorite()
                     favorite.name = name
                     favorite.packageName = appInfo.packageName
-                    favorite.path = path
+                    favorite.path = PathUtils.formatToVariable(path, appInfo)
                     SugarRecord.save(favorite)
                     it.onNext(favorite)
                     it.onCompleted()

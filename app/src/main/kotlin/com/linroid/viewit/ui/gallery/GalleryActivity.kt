@@ -15,6 +15,7 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.Toast
 import butterknife.bindView
+import com.bumptech.glide.manager.SupportRequestManagerFragment
 import com.linroid.viewit.App
 import com.linroid.viewit.R
 import com.linroid.viewit.data.model.CloudFavorite
@@ -163,7 +164,7 @@ class GalleryActivity : BaseActivity() {
         val count = supportFragmentManager.backStackEntryCount;
         val action = supportFragmentManager.beginTransaction()
         action.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        val topFragment = supportFragmentManager.fragments?.findLast { it != null }
+        val topFragment = supportFragmentManager.fragments?.findLast { it != null && it !is SupportRequestManagerFragment } // 跳过 Glide 的 Fragment
         action.setCustomAnimations(R.anim.fragment_none, R.anim.fragment_none, R.anim.fragment_none, R.anim.fragment_none)
         if (topFragment != null && topFragment is GalleryChildFragment) {
             action.hide(topFragment)

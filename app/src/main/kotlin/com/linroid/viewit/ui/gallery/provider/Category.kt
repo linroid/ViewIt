@@ -36,16 +36,17 @@ class Category<T : Any>(
     fun displayedCount(_items: List<T>?) = if (_items == null || _items.isEmpty()) 0 else _items.size + 1
 
     var items: List<T>? by Delegates.observable(null) { prop: KProperty<*>, oldVal: List<T>?, newVal: List<T>? ->
+        Timber.d("update category[$label] items(size=${newVal?.size ?: 0})")
         val oldCount = itemCount
         val newCount = newVal?.size ?: 0
         if (oldCount > 0) {
             val oldEnd = position + (oldCount + 1)
             Timber.w("remove items: ${position + 1}..$oldEnd, total:${listItems.size}")
-            listItems.removeAll(listItems.subList(position + 1, oldEnd + 1))
-            adapter.notifyItemRangeRemoved(position, oldCount + 1)
+            listItems.subList(position + 1, oldEnd + 1).clear()
+            adapter.notifyItemRangeRemoved(position + 1, oldCount + 1)
         }
         if (newCount > 0) {
-            Timber.w("add category[$label] at:${position + 1}")
+            Timber.w("add category[$label] at:${position + 1} with $newCount items")
             listItems.add(position + 1, this)
             listItems.addAll(position + 2, newVal!!)
             adapter.notifyItemRangeInserted(position + 1, newCount + 1)

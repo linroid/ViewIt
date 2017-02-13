@@ -21,6 +21,7 @@ import com.linroid.viewit.ui.gallery.provider.ImageViewProvider
 import com.linroid.viewit.ui.viewer.ImageViewerActivity
 import com.linroid.viewit.utils.ARG_IMAGE_TREE_PATH
 import com.linroid.viewit.utils.FormatUtils
+import com.linroid.viewit.widget.divider.CategoryItemDecoration
 import com.trello.rxlifecycle.android.FragmentEvent
 import com.trello.rxlifecycle.kotlin.bindUntilEvent
 import me.drakeet.multitype.MultiTypeAdapter
@@ -96,6 +97,7 @@ class TreeViewerFragment : GalleryViewerFragment() {
         recyclerView.adapter = adapter
         recyclerView.itemAnimator = DefaultItemAnimator()
         recyclerView.setHasFixedSize(true)
+        recyclerView.addItemDecoration(CategoryItemDecoration(recyclerView))
 
         scanRepo.registerTreeBuilder()
                 .observeOn(AndroidSchedulers.mainThread())

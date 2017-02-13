@@ -24,6 +24,7 @@ import com.linroid.viewit.utils.ARG_IMAGE_TREE_PATH
 import com.linroid.viewit.utils.PREF_FILTER_SIZE
 import com.linroid.viewit.utils.PREF_SORT_TYPE
 import com.linroid.viewit.utils.pref.LongPreference
+import com.linroid.viewit.widget.divider.CategoryItemDecoration
 import com.trello.rxlifecycle.android.FragmentEvent
 import com.trello.rxlifecycle.kotlin.bindUntilEvent
 import me.drakeet.multitype.MultiTypeAdapter
@@ -184,6 +185,7 @@ open class ImagesViewerFragment : GalleryViewerFragment() {
         recyclerView.layoutManager = gridLayoutManager
         recyclerView.adapter = adapter
         recyclerView.itemAnimator = DefaultItemAnimator()
+        recyclerView.addItemDecoration(CategoryItemDecoration(recyclerView))
         recyclerView.setHasFixedSize(true)
 
         registerComponents(view)

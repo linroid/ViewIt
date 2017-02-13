@@ -38,10 +38,19 @@
         </activity>
         <activity
             android:name=".ui.about.AboutActivity"
+            android:label="@string/action_about"
             android:parentActivityName=".ui.home.HomeActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.home.HomeActivity"/>
+        </activity>
+        <activity
+            android:name=".ui.path.PathManagerActivity"
+            android:label="@string/title_activity_path_manager"
+            android:parentActivityName=".ui.gallery.GalleryActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.gallery.GalleryActivity"/>
         </activity>
 
         <provider

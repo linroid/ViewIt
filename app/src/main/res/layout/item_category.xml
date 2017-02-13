@@ -2,25 +2,15 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/category_view"
     android:layout_width="match_parent"
-    android:layout_height="32dp">
-
-    <TextView
-        android:id="@+id/label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="start|center_vertical"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
-        android:ellipsize="middle"
-        android:singleLine="true"
-        android:textColor="@color/text_highlight"
-        tools:text="目录"/>
+    android:layout_height="48dp"
+    tools:background="@android:color/holo_orange_light">
 
     <TextView
         android:id="@+id/action"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_height="32dp"
         android:layout_gravity="end|center_vertical"
         android:background="?selectableItemBackground"
         android:gravity="center_vertical"
@@ -29,11 +19,27 @@
         android:textSize="12sp"
         tools:text="操作 >"/>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:layout_gravity="bottom"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:background="#F0F0F0"/>
+    <TextView
+        android:id="@+id/label"
+        android:layout_width="wrap_content"
+        android:layout_height="32dp"
+        android:layout_gravity="start|center_vertical"
+        android:ellipsize="middle"
+        android:gravity="bottom"
+        android:paddingBottom="4dp"
+        android:paddingLeft="16dp"
+        android:paddingStart="16dp"
+        android:singleLine="true"
+        android:textColor="@color/text_highlight"
+        android:textSize="16sp"
+        tools:text="目录"/>
+    <!--<View-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="0.5dp"-->
+    <!--android:layout_gravity="bottom"-->
+    <!--android:layout_marginLeft="16dp"-->
+    <!--android:layout_marginRight="16dp"-->
+    <!--android:background="#F0F0F0"/>-->
+
+
 </FrameLayout>
