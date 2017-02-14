@@ -18,7 +18,8 @@ import me.drakeet.multitype.ItemViewProvider
  * @author linroid <linroid@gmail.com>
  * @since 12/02/2017
  */
-class ScanPathViewProvider(val appInfo: ApplicationInfo) : ItemViewProvider<ScanPath, ScanPathViewProvider.ViewHolder>() {
+class ScanPathViewProvider(val appInfo: ApplicationInfo, val listener: OnDeleteScanPathListener) : ItemViewProvider<ScanPath, ScanPathViewProvider.ViewHolder>() {
+    var deleteMode = false
 
     override fun onCreateViewHolder(
             inflater: LayoutInflater, parent: ViewGroup): ViewHolder {
@@ -28,9 +29,18 @@ class ScanPathViewProvider(val appInfo: ApplicationInfo) : ItemViewProvider<Scan
 
     override fun onBindViewHolder(holder: ViewHolder, scanPath: ScanPath) {
         holder.nameTV.text = PathUtils.formatToDevice(scanPath.path, appInfo)
+        holder.deleteBtn.visibility = if (deleteMode) View.VISIBLE else View.GONE
+        holder.deleteBtn.setOnClickListener {
+            listener.onDeleteScanPath(scanPath)
+        }
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val nameTV: TextView by bindView(R.id.name)
+        val deleteBtn: TextView by bindView(R.id.btn_delete)
+    }
+
+    interface OnDeleteScanPathListener {
+        fun onDeleteScanPath(scanPath: ScanPath)
     }
 }

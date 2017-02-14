@@ -1,15 +1,18 @@
 package com.linroid.viewit.ui.path
 
 import android.app.Activity
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
+import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import com.linroid.viewit.App
 import com.linroid.viewit.R
 import com.linroid.viewit.data.model.CloudScanPath
@@ -25,6 +28,7 @@ import com.linroid.viewit.ui.path.provider.BuildInPathViewProvider
 import com.linroid.viewit.ui.path.provider.CloudScanPathViewProvider
 import com.linroid.viewit.ui.path.provider.ScanPathViewProvider
 import com.linroid.viewit.utils.ARG_APP_INFO
+import com.linroid.viewit.utils.PathUtils
 import com.linroid.viewit.utils.onMain
 import com.linroid.viewit.widget.divider.CategoryItemDecoration
 import com.linroid.viewit.widget.divider.DividerDecoration
@@ -51,10 +55,11 @@ class PathManagerActivity : BaseListActivity() {
 
     val items = Items()
     val adapter = MultiTypeAdapter(items)
-    val buildInCategory = Category<BuildInPath>(null, adapter, items, App.get().getString(R.string.category_built_in_path))
-    val cloudCategory = Category<CloudScanPath>(buildInCategory, adapter, items, App.get().getString(R.string.category_cloud_path))
-    val localCategory = Category<ScanPath>(cloudCategory, adapter, items, App.get().getString(R.string.category_local_path))
+
     private lateinit var appInfo: ApplicationInfo
+    private lateinit var buildInCategory: Category<BuildInPath>
+    private lateinit var cloudCategory: Category<CloudScanPath>
+    private lateinit var localCategory: Category<ScanPath>
 
     companion object {
         private val REQ_PICK_DIRECTORY = 0x1
@@ -77,11 +82,56 @@ class PathManagerActivity : BaseListActivity() {
         adapter.register(Category::class.java, CategoryViewProvider())
         adapter.register(BuildInPath::class.java, BuildInPathViewProvider())
         adapter.register(CloudScanPath::class.java, CloudScanPathViewProvider(appInfo))
-        adapter.register(ScanPath::class.java, ScanPathViewProvider(appInfo))
+        adapter.register(ScanPath::class.java, ScanPathViewProvider(appInfo, object : ScanPathViewProvider.OnDeleteScanPathListener {
+            override fun onDeleteScanPath(scanPath: ScanPath) {
+                confirmDelete(scanPath)
+            }
+        }))
         recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         recyclerView.adapter = adapter
         recyclerView.addItemDecoration(CategoryItemDecoration(recyclerView))
         recyclerView.addItemDecoration(DividerDecoration(recyclerView.context, DividerDecoration.VERTICAL_LIST))
+        initCategories()
+    }
+
+    private fun confirmDelete(scanPath: ScanPath) {
+        AlertDialog.Builder(this)
+                .setTitle(R.string.title_dialog_confirm_delete_path)
+                .setMessage(PathUtils.formatToDevice(scanPath.path, appInfo))
+                .setPositiveButton(android.R.string.ok, { dialog: DialogInterface, position: Int ->
+                    performDelete(scanPath)
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show()
+    }
+
+    private fun performDelete(scanPath: ScanPath) {
+        localPathRepo.delete(scanPath)
+                .onMain()
+                .subscribe({
+                    if (it) {
+                        toastShort(R.string.msg_operation_succeed)
+                    } else {
+                        toastShort(R.string.msg_operation_failed)
+                    }
+                })
+    }
+
+    private fun initCategories() {
+        buildInCategory = Category<BuildInPath>(null, adapter, items, getString(R.string.category_built_in_path))
+        cloudCategory = Category<CloudScanPath>(buildInCategory, adapter, items, getString(R.string.category_cloud_path))
+        localCategory = Category<ScanPath>(cloudCategory, adapter, items, getString(R.string.category_local_path),
+                getString(R.string.action_edit_path), View.OnClickListener {
+            val provider: ScanPathViewProvider = adapter.getProviderByClass<ScanPathViewProvider>(ScanPath::class.java)
+            if (provider.deleteMode) {
+                provider.deleteMode = false
+                localCategory.action = getString(R.string.action_edit_path)
+            } else {
+                provider.deleteMode = true
+                localCategory.action = getString(R.string.action_finish)
+            }
+            localCategory.invalidate()
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -155,7 +205,7 @@ class PathManagerActivity : BaseListActivity() {
                 .onMain()
                 .subscribe({ result ->
                     Timber.i("performSavePickedPath succeed $result")
-                    toastLong(R.string.msg_save_picked_path_successed)
+                    toastLong(R.string.msg_save_picked_path_succeed)
                 }, { error ->
                     Timber.e(error, "save picked paths:$pickedPaths")
                 })

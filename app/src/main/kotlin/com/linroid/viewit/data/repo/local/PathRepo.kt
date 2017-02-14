@@ -48,7 +48,7 @@ class PathRepo {
                 .subscribeOn(Schedulers.io())
     }
 
-    fun delete(scanPath: ScanPath, appInfo: ApplicationInfo): Observable<Boolean> {
+    fun delete(scanPath: ScanPath): Observable<Boolean> {
         return Observable
                 .create<Boolean> {
                     val result = SugarRecord.delete(scanPath)

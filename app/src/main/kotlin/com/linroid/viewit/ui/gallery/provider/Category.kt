@@ -33,7 +33,11 @@ class Category<T : Any>(
         }
     }
 
-    fun displayedCount(_items: List<T>?) = if (_items == null || _items.isEmpty()) 0 else _items.size + 1
+    fun invalidate() {
+        adapter.notifyItemRangeChanged(position + 1, displayedCount(items))
+    }
+
+    private fun displayedCount(_items: List<T>?) = if (_items == null || _items.isEmpty()) 0 else _items.size + 1
 
     var items: List<T>? by Delegates.observable(null) { prop: KProperty<*>, oldVal: List<T>?, newVal: List<T>? ->
         Timber.d("update category[$label] items(size=${newVal?.size ?: 0})")

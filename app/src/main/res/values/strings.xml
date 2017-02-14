@@ -69,5 +69,10 @@
     <string name="category_cloud_path">推荐</string>
     <string name="action_delete_path">删除</string>
     <string name="action_add_path">添加扫描路径</string>
-    <string name="msg_save_picked_path_successed">保存成功</string>
+    <string name="msg_save_picked_path_succeed">保存成功</string>
+    <string name="action_edit_path">编辑</string>
+    <string name="title_dialog_confirm_delete_path">确定要删除这个路径吗?</string>
+    <string name="msg_operation_succeed">操作成功</string>
+    <string name="msg_operation_failed">操作失败:(</string>
+    <string name="action_finish">完成</string>
 </resources>

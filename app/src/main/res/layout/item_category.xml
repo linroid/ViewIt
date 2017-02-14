@@ -7,17 +7,6 @@
     android:layout_height="48dp"
     tools:background="@android:color/holo_orange_light">
 
-    <TextView
-        android:id="@+id/action"
-        android:layout_width="wrap_content"
-        android:layout_height="32dp"
-        android:layout_gravity="end|center_vertical"
-        android:background="?selectableItemBackground"
-        android:gravity="center_vertical"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp"
-        android:textSize="12sp"
-        tools:text="操作 >"/>
 
     <TextView
         android:id="@+id/label"
@@ -33,13 +22,19 @@
         android:textColor="@color/text_highlight"
         android:textSize="16sp"
         tools:text="目录"/>
-    <!--<View-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="0.5dp"-->
-    <!--android:layout_gravity="bottom"-->
-    <!--android:layout_marginLeft="16dp"-->
-    <!--android:layout_marginRight="16dp"-->
-    <!--android:background="#F0F0F0"/>-->
 
+    <TextView
+        android:id="@+id/action"
+        android:layout_width="wrap_content"
+        android:layout_height="32dp"
+        android:layout_gravity="end|center_vertical"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:background="?selectableItemBackground"
+        android:gravity="center_vertical"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:textSize="12sp"
+        tools:text="操作 >"/>
 
 </FrameLayout>

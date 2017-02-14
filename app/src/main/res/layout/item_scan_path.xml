@@ -12,7 +12,7 @@
         tools:text="/sdcard/Tencent/MicroMsg"/>
 
     <TextView
-        android:id="@+id/button"
+        android:id="@+id/btn_delete"
         android:layout_width="48dp"
         android:layout_height="32dp"
         android:layout_gravity="center_vertical"
