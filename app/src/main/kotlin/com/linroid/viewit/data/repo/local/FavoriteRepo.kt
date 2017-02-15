@@ -6,32 +6,31 @@ import com.linroid.viewit.utils.PathUtils
 import com.orm.SugarRecord
 import rx.Observable
 import rx.schedulers.Schedulers
+import rx.subjects.BehaviorSubject
 
 /**
  * @author linroid <linroid@gmail.com>
  * @since 01/02/2017
  */
 class FavoriteRepo() {
+    private val eventBus: BehaviorSubject<DBEvent> = BehaviorSubject.create(DBEvent.DEFAULT)
 
     fun find(path: String, appInfo: ApplicationInfo): Observable<Favorite> {
-        return Observable
-                .create<List<Favorite>> {
-                    val result = SugarRecord.find(Favorite::class.java,
+        return eventBus
+                .map {
+                    SugarRecord.find(Favorite::class.java,
                             "path = ? and package_name = ? ", path, appInfo.packageName)
-                    it.onNext(result)
-                    it.onCompleted()
-                }.flatMap { Observable.from(it) }
+                }
+                .flatMap { Observable.from(it) }
                 .take(1)
                 .subscribeOn(Schedulers.io())
     }
 
     fun list(appInfo: ApplicationInfo): Observable<List<Favorite>> {
-        return Observable
-                .create<List<Favorite>> {
-                    val result = SugarRecord.find(Favorite::class.java,
+        return eventBus
+                .map {
+                    SugarRecord.find(Favorite::class.java,
                             "package_name = ?", appInfo.packageName)
-                    it.onNext(result)
-                    it.onCompleted()
                 }
                 .subscribeOn(Schedulers.io())
     }
@@ -45,6 +44,7 @@ class FavoriteRepo() {
                     favorite.path = PathUtils.formatToVariable(path, appInfo)
                     SugarRecord.save(favorite)
                     it.onNext(favorite)
+                    eventBus.onNext(DBEvent.INSERT)
                     it.onCompleted()
                 }
                 .subscribeOn(Schedulers.io())
@@ -54,6 +54,9 @@ class FavoriteRepo() {
         return Observable
                 .create<Boolean> {
                     val result = SugarRecord.delete(favorite)
+                    if (result) {
+                        eventBus.onNext(DBEvent.DELETE)
+                    }
                     it.onNext(result)
                     it.onCompleted()
                 }
