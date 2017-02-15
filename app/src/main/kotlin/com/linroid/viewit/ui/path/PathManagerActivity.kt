@@ -201,11 +201,18 @@ class PathManagerActivity : BaseListActivity() {
         Observable.from(pickedPaths)
                 .flatMap { path -> localPathRepo.create(appInfo, path) }
                 .toList()
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext {
+                    toastLong(R.string.msg_save_picked_path_succeed)
+                    Timber.d("save picked path to local success, now, upload them to cloud")
+                }
+                .observeOn(Schedulers.io())
+                .flatMap { Observable.from(it) }
+                .flatMap { cloudPathRepo.upload(it, appInfo) }
                 .subscribeOn(Schedulers.io())
                 .onMain()
                 .subscribe({ result ->
                     Timber.i("performSavePickedPath succeed $result")
-                    toastLong(R.string.msg_save_picked_path_succeed)
                 }, { error ->
                     Timber.e(error, "save picked paths:$pickedPaths")
                 })
