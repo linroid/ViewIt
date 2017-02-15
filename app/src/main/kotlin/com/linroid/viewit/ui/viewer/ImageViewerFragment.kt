@@ -16,8 +16,9 @@ import com.linroid.viewit.data.repo.ImageRepo
 import com.linroid.viewit.ui.BaseFragment
 import com.linroid.viewit.ui.ImmersiveActivity
 import com.linroid.viewit.utils.ARG_IMAGE
+import com.linroid.viewit.utils.onMain
+import com.trello.rxlifecycle.kotlin.bindToLifecycle
 import rx.Observable
-import rx.android.schedulers.AndroidSchedulers
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -81,7 +82,7 @@ class ImageViewerFragment : BaseFragment() {
     }
 
     private fun loadImage(act: ImageViewerActivity) {
-        Timber.i("p")
+        Timber.i("loadImage: ${image.path}")
         var isGif = false;
         Observable.just(image)
                 .flatMap { image ->
@@ -92,7 +93,8 @@ class ImageViewerFragment : BaseFragment() {
                     return@flatMap Observable.just(image)
                 }
                 .map(Image::file)
-                .observeOn(AndroidSchedulers.mainThread())
+                .onMain()
+                .bindToLifecycle(this)
                 .subscribe({ file ->
                     if (isGif) {
                         Glide.with(act).load(file).asGif().into(gifImageViewer)

@@ -51,8 +51,8 @@ class ImageRepo(val context: Context, val appInfo: ApplicationInfo) {
 
     @Inject
     lateinit var packageManager: PackageManager
-    @Inject @Root
-    lateinit var rxShell: RxShell
+    @field:[Inject Root]
+    lateinit var rootShell: RxShell
     @Inject
     lateinit var imageScanner: ImageScanner
     @Inject
@@ -140,7 +140,7 @@ class ImageRepo(val context: Context, val appInfo: ApplicationInfo) {
         if (!cacheFile.exists()) {
             cacheFile.createNewFile()
         }
-        return rxShell.copyFile(image.path, cacheFile.absolutePath)
+        return rootShell.copyFile(image.path, cacheFile.absolutePath)
 //                .flatMap { RxShell.instance().chown(cacheFile.absolutePath, uid, uid) }
                 .map { image }
     }
@@ -172,7 +172,7 @@ class ImageRepo(val context: Context, val appInfo: ApplicationInfo) {
         return Observable.just(image.path)
                 .flatMap { path ->
                     if (RootUtils.isRootFile(path)) {
-                        return@flatMap rxShell.deleteFile(path)
+                        return@flatMap rootShell.deleteFile(path)
                     } else {
                         File(image.path).delete()
                         return@flatMap Observable.just(true)
