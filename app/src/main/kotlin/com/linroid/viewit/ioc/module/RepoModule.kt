@@ -1,7 +1,7 @@
 package com.linroid.viewit.ioc.module
 
 import android.content.Context
-import com.linroid.viewit.data.repo.ScanRepoManager
+import com.linroid.viewit.data.repo.ImageRepoManager
 import com.linroid.viewit.data.repo.cloud.CloudFavoriteRepo
 import com.linroid.viewit.data.repo.cloud.CloudPathRepo
 import com.linroid.viewit.data.repo.local.FavoriteRepo
@@ -17,8 +17,8 @@ import javax.inject.Singleton
 @Module
 class RepoModule {
     @Singleton @Provides
-    fun provideImageRepoManager(context: Context): ScanRepoManager {
-        return ScanRepoManager(context)
+    fun provideImageRepoManager(context: Context): ImageRepoManager {
+        return ImageRepoManager(context)
     }
 
     @Singleton

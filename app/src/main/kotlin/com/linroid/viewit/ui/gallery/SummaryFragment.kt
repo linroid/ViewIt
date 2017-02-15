@@ -2,6 +2,7 @@ package com.linroid.viewit.ui.gallery
 
 import android.content.Context
 import android.os.Bundle
+import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -35,7 +36,7 @@ import javax.inject.Inject
  * @author linroid <linroid@gmail.com>
  * @since 31/01/2017
  */
-class SummaryFragment : GalleryChildFragment() {
+class SummaryFragment : GalleryChildFragment(), SwipeRefreshLayout.OnRefreshListener {
     val SPAN_COUNT = 3
 
     private val items = ArrayList<Any>()
@@ -49,6 +50,7 @@ class SummaryFragment : GalleryChildFragment() {
     @Inject lateinit internal var cloudFavoriteRepo: CloudFavoriteRepo
 
     private val recyclerView: RecyclerView by bindView(R.id.recyclerView)
+    private val refresher: SwipeRefreshLayout by bindView(R.id.refresher)
 
     companion object {
         fun newInstance(): SummaryFragment {
@@ -72,20 +74,25 @@ class SummaryFragment : GalleryChildFragment() {
         }
     }
 
+    override fun onRefresh() {
+        activity.refresh()
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        adapter.register(Image::class.java, ImageViewProvider(activity, scanRepo, object : ImageViewProvider.ImageListener {
+        refresher.setOnRefreshListener(this)
+        adapter.register(Image::class.java, ImageViewProvider(activity, imageRepo, object : ImageViewProvider.ImageListener {
             override fun onViewImage(image: Image) {
-                ImageViewerActivity.navTo(activity, scanRepo,
+                ImageViewerActivity.navTo(activity, imageRepo,
                         imageCategory.items!!,
                         imageCategory.items!!.indexOf(image))
 
             }
         }))
-        adapter.register(ImageTree::class.java, ImageTreeViewProvider(activity, File.separator, appInfo, scanRepo))
+        adapter.register(ImageTree::class.java, ImageTreeViewProvider(activity, File.separator, appInfo, imageRepo))
         adapter.register(Category::class.java, CategoryViewProvider())
-        adapter.register(Favorite::class.java, FavoriteViewProvider(activity, appInfo, scanRepo))
-        adapter.register(CloudFavorite::class.java, CloudFavoriteViewProvider(activity, appInfo, scanRepo))
+        adapter.register(Favorite::class.java, FavoriteViewProvider(activity, appInfo, imageRepo))
+        adapter.register(CloudFavorite::class.java, CloudFavoriteViewProvider(activity, appInfo, imageRepo))
         cloudFavoriteCategory = Category(null, adapter, items, getString(R.string.label_category_recommend))
         favoriteCategory = Category(cloudFavoriteCategory, adapter, items, getString(R.string.label_category_favorite))
         treeCategory = Category(favoriteCategory, adapter, items, getString(R.string.label_category_tree))
@@ -104,11 +111,12 @@ class SummaryFragment : GalleryChildFragment() {
         recyclerView.setHasFixedSize(true)
         recyclerView.addItemDecoration(CategoryItemDecoration(recyclerView))
 
-        scanRepo.registerTreeBuilder()
+        imageRepo.registerTreeBuilder()
                 .observeOn(AndroidSchedulers.mainThread())
                 .bindToLifecycle(view)
                 .subscribe {
                     refresh(it)
+                    refresher.isRefreshing = false
                 }
     }
 
@@ -142,11 +150,11 @@ class SummaryFragment : GalleryChildFragment() {
                     cloudFavoriteCategory.items = recommendations
                     recyclerView.smoothScrollToPosition(0)
                 }, { error ->
-                    Timber.e(error, "list cloudFavorites")
+                    Timber.e(error, "listWithChangObserver cloudFavorites")
                 })
 
         // favorites
-        favoriteRepo.list(appInfo)
+        favoriteRepo.listWithChangeObserver(appInfo)
                 .observeOn(AndroidSchedulers.mainThread())
                 .bindUntilEvent(this, FragmentEvent.DESTROY_VIEW)
                 .doOnNext { favorites ->
@@ -159,7 +167,7 @@ class SummaryFragment : GalleryChildFragment() {
                     favoriteCategory.items = favorites
                     recyclerView.smoothScrollToPosition(0)
                 }, { error ->
-                    Timber.e(error, "list favorites")
+                    Timber.e(error, "listWithChangObserver favorites")
                 }, {
 
                 })

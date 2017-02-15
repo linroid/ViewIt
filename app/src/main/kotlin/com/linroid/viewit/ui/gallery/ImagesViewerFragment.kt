@@ -13,9 +13,9 @@ import butterknife.bindView
 import com.linroid.viewit.R
 import com.linroid.viewit.data.model.Image
 import com.linroid.viewit.data.model.ImageTree
-import com.linroid.viewit.data.repo.ScanRepo.Companion.SORT_BY_PATH
-import com.linroid.viewit.data.repo.ScanRepo.Companion.SORT_BY_SIZE
-import com.linroid.viewit.data.repo.ScanRepo.Companion.SORT_BY_TIME
+import com.linroid.viewit.data.repo.ImageRepo.Companion.SORT_BY_PATH
+import com.linroid.viewit.data.repo.ImageRepo.Companion.SORT_BY_SIZE
+import com.linroid.viewit.data.repo.ImageRepo.Companion.SORT_BY_TIME
 import com.linroid.viewit.ui.gallery.provider.Category
 import com.linroid.viewit.ui.gallery.provider.CategoryViewProvider
 import com.linroid.viewit.ui.gallery.provider.ImageViewProvider
@@ -167,9 +167,9 @@ open class ImagesViewerFragment : GalleryViewerFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        adapter.register(Image::class.java, ImageViewProvider(activity, scanRepo, object : ImageViewProvider.ImageListener {
+        adapter.register(Image::class.java, ImageViewProvider(activity, imageRepo, object : ImageViewProvider.ImageListener {
             override fun onViewImage(image: Image) {
-                ImageViewerActivity.navTo(activity, scanRepo,
+                ImageViewerActivity.navTo(activity, imageRepo,
                         imageCategory.items!!, imageCategory.items!!.indexOf(image))
             }
         }))
@@ -192,7 +192,7 @@ open class ImagesViewerFragment : GalleryViewerFragment() {
     }
 
     private fun registerComponents(view: View) {
-//        scanRepo.registerImageEvent()
+//        imageRepo.registerImageEvent()
 //                .bindToLifecycle(view)
 //                .observeOn(AndroidSchedulers.mainThread())
 //                .subscribe({ event ->
@@ -215,11 +215,11 @@ open class ImagesViewerFragment : GalleryViewerFragment() {
 //                    }
 //                    updateImageCount()
 //                })
-        scanRepo.registerTreeBuilder()
+        imageRepo.registerTreeBuilder()
                 .mergeWith(
                         filterSizePref.listen()
                                 .mergeWith(sortTypePref.listen())
-                                .map { scanRepo.getImageTree() }
+                                .map { imageRepo.getImageTree() }
                                 .filterNotNull()
                 )
                 .bindUntilEvent(this, FragmentEvent.DESTROY_VIEW)
@@ -285,8 +285,8 @@ open class ImagesViewerFragment : GalleryViewerFragment() {
     }
 
     private fun updateImageCount() {
-        if (scanRepo.images.size > 0) {
-            getSupportActionBar()?.subtitle = getString(R.string.subtitle_displayed_images, scanRepo.images.size, scanRepo.images.size)
+        if (imageRepo.images.size > 0) {
+            getSupportActionBar()?.subtitle = getString(R.string.subtitle_displayed_images, imageRepo.images.size, imageRepo.images.size)
         } else {
             getSupportActionBar()?.subtitle = getString(R.string.image_not_found)
         }

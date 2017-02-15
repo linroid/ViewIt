@@ -15,11 +15,11 @@ const val PREF_SORT_TYPE = "sort_type"
 const val PREF_FILTER_SIZE = "filter_size"
 
 const val THUMBNAIL_MAX_COUNT = 4;
-
-val APP_EXTERNAL_PATHS = mapOf(
-        "com.tencent.mm" to arrayListOf("Tencent/MicroMsg"),
-        "com.tencent.mobileqq" to arrayListOf("Tencent/QQ_Favorite", "Tencent/MobileQQ", "Tencent/QQ_Images", "Tencent/QQfile_recv")
-)
+//
+//val APP_EXTERNAL_PATHS = mapOf(
+//        "com.tencent.mm" to arrayListOf("Tencent/MicroMsg"),
+//        "com.tencent.mobileqq" to arrayListOf("Tencent/QQ_Favorite", "Tencent/MobileQQ", "Tencent/QQ_Images", "Tencent/QQfile_recv")
+//)
 
 const val EXTERNAL_DATA_DIR = "\$EXTERNAL"
 const val INTERNAL_DATA_DIR = "\$INTERNAL"

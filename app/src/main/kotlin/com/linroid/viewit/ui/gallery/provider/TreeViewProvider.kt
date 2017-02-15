@@ -10,7 +10,7 @@ import android.widget.Toast
 import butterknife.bindView
 import com.linroid.viewit.R
 import com.linroid.viewit.data.model.ImageTree
-import com.linroid.viewit.data.repo.ScanRepo
+import com.linroid.viewit.data.repo.ImageRepo
 import com.linroid.viewit.ui.gallery.GalleryActivity
 import com.linroid.viewit.utils.unsubscribeIfNotNull
 import com.linroid.viewit.widget.ThumbnailView
@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit
  * @author linroid <linroid@gmail.com>
  * @since 30/01/2017
  */
-abstract class TreeViewProvider<T>(val activity: GalleryActivity, val appInfo: ApplicationInfo, val scanRepo: ScanRepo)
+abstract class TreeViewProvider<T>(val activity: GalleryActivity, val appInfo: ApplicationInfo, val imageRepo: ImageRepo)
     : ItemViewProvider<T, TreeViewProvider.TreeViewHolder>() {
 
 
@@ -38,7 +38,7 @@ abstract class TreeViewProvider<T>(val activity: GalleryActivity, val appInfo: A
                 activity.visitTree(tree)
             }
         })
-        holder.loadImages(scanRepo, tree)
+        holder.loadImages(imageRepo, tree)
         holder.itemView.setOnClickListener {
             onClick(it, data)
         }
@@ -69,7 +69,7 @@ abstract class TreeViewProvider<T>(val activity: GalleryActivity, val appInfo: A
 
         var subscription: Subscription? = null
 
-        fun loadImages(scanRepo: ScanRepo, tree: ImageTree?) {
+        fun loadImages(imageRepo: ImageRepo, tree: ImageTree?) {
             subscription.unsubscribeIfNotNull()
             thumbnailView.clear()
             if (tree == null) {
@@ -79,7 +79,7 @@ abstract class TreeViewProvider<T>(val activity: GalleryActivity, val appInfo: A
                     .delaySubscription(1, TimeUnit.SECONDS)
                     .flatMap {
                         if (it.file() == null) {
-                            return@flatMap scanRepo.mountImage(it)
+                            return@flatMap imageRepo.mountImage(it)
                         } else {
                             return@flatMap Observable.just(it)
                         }

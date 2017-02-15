@@ -4,8 +4,8 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.linroid.rxshell.RxShell
 import com.linroid.viewit.App
-import com.linroid.viewit.data.repo.ScanRepo
-import com.linroid.viewit.data.repo.ScanRepoManager
+import com.linroid.viewit.data.repo.ImageRepo
+import com.linroid.viewit.data.repo.ImageRepoManager
 import com.linroid.viewit.data.repo.cloud.CloudFavoriteRepo
 import com.linroid.viewit.data.repo.local.FavoriteRepo
 import com.linroid.viewit.ioc.module.AndroidModule
@@ -32,14 +32,14 @@ import javax.inject.Singleton
 interface GlobalGraph {
     fun inject(app: App)
     fun inject(activity: HomeActivity)
-    fun inject(scanRepo: ScanRepo)
+    fun inject(imageRepo: ImageRepo)
     fun inject(rxOnce: RxOnce)
     fun inject(activity: PathManagerActivity)
 
     fun context(): Context
     @Root fun rootRxShell(): RxShell
     fun rxShell(): RxShell
-    fun repoManager(): ScanRepoManager
+    fun repoManager(): ImageRepoManager
     fun sharedPreferences(): SharedPreferences
     //    fun realm(): Realm
     fun dbRepo(): FavoriteRepo

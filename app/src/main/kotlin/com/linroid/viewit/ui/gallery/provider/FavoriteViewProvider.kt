@@ -11,7 +11,7 @@ import butterknife.bindView
 import com.linroid.viewit.R
 import com.linroid.viewit.data.model.Favorite
 import com.linroid.viewit.data.model.ImageTree
-import com.linroid.viewit.data.repo.ScanRepo
+import com.linroid.viewit.data.repo.ImageRepo
 import com.linroid.viewit.ui.gallery.GalleryActivity
 import com.linroid.viewit.utils.unsubscribeIfNotNull
 import com.linroid.viewit.widget.ThumbnailView
@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit
  * @author linroid <linroid@gmail.com>
  * @since 30/01/2017
  */
-class FavoriteViewProvider(val activity: GalleryActivity, val appInfo: ApplicationInfo, val scanRepo: ScanRepo)
+class FavoriteViewProvider(val activity: GalleryActivity, val appInfo: ApplicationInfo, val imageRepo: ImageRepo)
     : ItemViewProvider<Favorite, FavoriteViewProvider.ViewHolder>() {
 
 
@@ -38,7 +38,7 @@ class FavoriteViewProvider(val activity: GalleryActivity, val appInfo: Applicati
                 activity.visitTree(favorite.tree!!)
             }
         })
-        holder.loadImages(scanRepo, favorite.tree)
+        holder.loadImages(imageRepo, favorite.tree)
         holder.itemView.setOnClickListener {
             activity.viewFavorite(favorite)
         }
@@ -64,7 +64,7 @@ class FavoriteViewProvider(val activity: GalleryActivity, val appInfo: Applicati
 
         var subscription: Subscription? = null
 
-        fun loadImages(scanRepo: ScanRepo, tree: ImageTree?) {
+        fun loadImages(imageRepo: ImageRepo, tree: ImageTree?) {
             subscription.unsubscribeIfNotNull()
             thumbnailView.clear()
             if (tree == null) {
@@ -74,7 +74,7 @@ class FavoriteViewProvider(val activity: GalleryActivity, val appInfo: Applicati
                     .delaySubscription(1, TimeUnit.SECONDS)
                     .flatMap {
                         if (it.file() == null) {
-                            return@flatMap scanRepo.mountImage(it)
+                            return@flatMap imageRepo.mountImage(it)
                         } else {
                             return@flatMap Observable.just(it)
                         }

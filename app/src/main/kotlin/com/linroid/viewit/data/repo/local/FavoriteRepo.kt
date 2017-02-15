@@ -26,8 +26,17 @@ class FavoriteRepo() {
                 .subscribeOn(Schedulers.io())
     }
 
-    fun list(appInfo: ApplicationInfo): Observable<List<Favorite>> {
+    fun listWithChangeObserver(appInfo: ApplicationInfo): Observable<List<Favorite>> {
         return eventBus
+                .map {
+                    SugarRecord.find(Favorite::class.java,
+                            "package_name = ?", appInfo.packageName)
+                }
+                .subscribeOn(Schedulers.io())
+    }
+
+    fun list(appInfo: ApplicationInfo): Observable<List<Favorite>> {
+        return Observable.just(appInfo)
                 .map {
                     SugarRecord.find(Favorite::class.java,
                             "package_name = ?", appInfo.packageName)

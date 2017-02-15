@@ -160,15 +160,15 @@ class PathManagerActivity : BaseListActivity() {
                 .subscribe({ cloudPaths ->
                     cloudCategory.items = cloudPaths
                 }, { error ->
-                    Timber.e(error, "list cloud path")
+                    Timber.e(error, "listWithChangObserver cloud path")
                 })
-        localPathRepo.list(appInfo)
+        localPathRepo.listWithChangObserver(appInfo)
                 .observeOn(AndroidSchedulers.mainThread())
                 .bindToLifecycle(this)
                 .subscribe({ localPaths ->
                     localCategory.items = localPaths
                 }, { error ->
-                    Timber.e(error, "list local path")
+                    Timber.e(error, "listWithChangObserver local path")
                 })
     }
 

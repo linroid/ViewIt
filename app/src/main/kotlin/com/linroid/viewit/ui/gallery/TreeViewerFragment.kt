@@ -73,15 +73,15 @@ class TreeViewerFragment : GalleryViewerFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        adapter.register(Image::class.java, ImageViewProvider(activity, scanRepo, object : ImageViewProvider.ImageListener {
+        adapter.register(Image::class.java, ImageViewProvider(activity, imageRepo, object : ImageViewProvider.ImageListener {
             override fun onViewImage(image: Image) {
-                ImageViewerActivity.navTo(activity, scanRepo,
+                ImageViewerActivity.navTo(activity, imageRepo,
                         imageCategory.items!!,
                         imageCategory.items!!.indexOf(image))
             }
 
         }))
-        adapter.register(ImageTree::class.java, ImageTreeViewProvider(activity, path, appInfo, scanRepo))
+        adapter.register(ImageTree::class.java, ImageTreeViewProvider(activity, path, appInfo, imageRepo))
         adapter.register(Category::class.java, CategoryViewProvider())
         treeCategory = Category(null, adapter, items, getString(R.string.label_category_tree))
         imageCategory = Category(treeCategory, adapter, items, getString(R.string.label_category_tree_images, 0))
@@ -99,7 +99,7 @@ class TreeViewerFragment : GalleryViewerFragment() {
         recyclerView.setHasFixedSize(true)
         recyclerView.addItemDecoration(CategoryItemDecoration(recyclerView))
 
-        scanRepo.registerTreeBuilder()
+        imageRepo.registerTreeBuilder()
                 .observeOn(AndroidSchedulers.mainThread())
                 .bindUntilEvent(this, FragmentEvent.DESTROY_VIEW)
                 .subscribe {

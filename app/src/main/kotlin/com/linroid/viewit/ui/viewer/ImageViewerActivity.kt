@@ -5,7 +5,6 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.os.Bundle
-import android.os.Environment
 import android.os.PersistableBundle
 import android.provider.MediaStore
 import android.support.design.widget.Snackbar
@@ -22,7 +21,7 @@ import butterknife.bindView
 import com.linroid.viewit.App
 import com.linroid.viewit.R
 import com.linroid.viewit.data.model.Image
-import com.linroid.viewit.data.repo.ScanRepo
+import com.linroid.viewit.data.repo.ImageRepo
 import com.linroid.viewit.ioc.DaggerViewerGraph
 import com.linroid.viewit.ioc.ViewerGraph
 import com.linroid.viewit.ioc.module.ViewerModule
@@ -31,6 +30,7 @@ import com.linroid.viewit.ui.ImmersiveActivity
 import com.linroid.viewit.utils.ARG_APP_INFO
 import com.linroid.viewit.utils.ARG_POSITION
 import com.linroid.viewit.utils.FILE_PROVIDER
+import com.linroid.viewit.utils.FormatUtils
 import rx.android.schedulers.AndroidSchedulers
 import javax.inject.Inject
 
@@ -40,7 +40,7 @@ import javax.inject.Inject
  */
 class ImageViewerActivity() : ImmersiveActivity(), View.OnClickListener {
 
-    @Inject lateinit var scanRepo: ScanRepo
+    @Inject lateinit var imageRepo: ImageRepo
 
     private val actionSave: ImageButton by bindView(R.id.action_save)
     private val actionDelete: ImageButton by bindView(R.id.action_delete)
@@ -55,10 +55,10 @@ class ImageViewerActivity() : ImmersiveActivity(), View.OnClickListener {
     private val viewPager: ViewPager by bindView(R.id.view_pager)
 
     companion object {
-        fun navTo(source: BaseActivity, scanRepo: ScanRepo, images: List<Image>, position: Int) {
-            scanRepo.viewerHolderImages = images
+        fun navTo(source: BaseActivity, imageRepo: ImageRepo, images: List<Image>, position: Int) {
+            imageRepo.viewerHolderImages = images
             val intent = Intent(source, ImageViewerActivity::class.java);
-            intent.putExtra(ARG_APP_INFO, scanRepo.appInfo)
+            intent.putExtra(ARG_APP_INFO, imageRepo.appInfo)
             intent.putExtra(ARG_POSITION, position)
             source.startActivity(intent)
         }
@@ -100,7 +100,7 @@ class ImageViewerActivity() : ImmersiveActivity(), View.OnClickListener {
     }
 
     override fun onClick(v: View) {
-        val image = scanRepo.viewerHolderImages!![viewPager.currentItem]
+        val image = imageRepo.viewerHolderImages!![viewPager.currentItem]
         when (v.id) {
             R.id.action_share -> {
                 shareImage(image)
@@ -123,7 +123,7 @@ class ImageViewerActivity() : ImmersiveActivity(), View.OnClickListener {
                 })
                 .setPositiveButton(R.string.delete_anyway, { dialog: DialogInterface, i: Int ->
                     dialog.dismiss()
-                    scanRepo.deleteImage(image, appInfo)
+                    imageRepo.deleteImage(image, appInfo)
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe({
                                 toastShort(getString(R.string.msg_delete_image_success))
@@ -136,13 +136,13 @@ class ImageViewerActivity() : ImmersiveActivity(), View.OnClickListener {
     }
 
     private fun saveImage(image: Image) {
-        scanRepo.saveImage(image, appInfo).subscribe({ savedFile ->
+        imageRepo.saveImage(image, appInfo).subscribe({ savedFile ->
             val values: ContentValues = ContentValues();
             values.put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis());
             values.put(MediaStore.Images.Media.MIME_TYPE, image.mimeType());
             values.put(MediaStore.MediaColumns.DATA, savedFile.absolutePath);
             val uri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-            val relativePath = "/sdcard" + savedFile.absolutePath.substringAfter(Environment.getExternalStorageDirectory().absolutePath);
+            val relativePath = FormatUtils.formatPath(savedFile.absolutePath, appInfo)
             Snackbar.make(viewPager, getString(R.string.toast_save_image_success, relativePath), Snackbar.LENGTH_SHORT)
                     .setAction(R.string.snack_action_open_saved_image, {
                         val intent: Intent = Intent();
@@ -166,7 +166,7 @@ class ImageViewerActivity() : ImmersiveActivity(), View.OnClickListener {
     }
 
     private fun loadData() {
-        adapter = ImageViewerPagerAdapter(supportFragmentManager, scanRepo.viewerHolderImages)
+        adapter = ImageViewerPagerAdapter(supportFragmentManager, imageRepo.viewerHolderImages)
         viewPager.offscreenPageLimit = 2
         viewPager.adapter = adapter
         viewPager.currentItem = position
@@ -193,6 +193,6 @@ class ImageViewerActivity() : ImmersiveActivity(), View.OnClickListener {
 
     override fun onDestroy() {
         super.onDestroy()
-        scanRepo.viewerHolderImages = null
+        imageRepo.viewerHolderImages = null
     }
 }

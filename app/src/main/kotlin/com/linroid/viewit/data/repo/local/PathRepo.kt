@@ -26,11 +26,20 @@ class PathRepo {
                 .subscribeOn(Schedulers.io())
     }
 
-    fun list(appInfo: ApplicationInfo): Observable<List<ScanPath>> {
+    fun listWithChangObserver(appInfo: ApplicationInfo): Observable<List<ScanPath>> {
         return eventBus
                 .map {
                     SugarRecord.find(ScanPath::class.java,
                             "package_name = ?", appInfo.packageName)
+                }
+                .subscribeOn(Schedulers.io())
+    }
+
+    fun list(appInfo: ApplicationInfo): Observable<List<ScanPath>> {
+        return Observable.just(appInfo)
+                .map {
+                    SugarRecord.find(ScanPath::class.java,
+                            "package_name = ?", it.packageName)
                 }
                 .subscribeOn(Schedulers.io())
     }

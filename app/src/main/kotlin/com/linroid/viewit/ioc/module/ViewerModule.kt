@@ -1,8 +1,8 @@
 package com.linroid.viewit.ioc.module
 
 import android.content.pm.ApplicationInfo
-import com.linroid.viewit.data.repo.ScanRepo
-import com.linroid.viewit.data.repo.ScanRepoManager
+import com.linroid.viewit.data.repo.ImageRepo
+import com.linroid.viewit.data.repo.ImageRepoManager
 import com.linroid.viewit.ioc.quailifer.ActivityScope
 import com.linroid.viewit.ui.viewer.ImageViewerActivity
 import dagger.Module
@@ -25,11 +25,11 @@ class ViewerModule(val activity: ImageViewerActivity, val appInfo: ApplicationIn
 
     @Provides
     @ActivityScope
-    fun provideObservable(scanRepo: ScanRepo): Observable<ScanRepo.ImageEvent> = scanRepo.registerImageEvent()
+    fun provideObservable(imageRepo: ImageRepo): Observable<ImageRepo.ImageEvent> = imageRepo.registerImageEvent()
 
     @Provides
     @ActivityScope
-    fun provideRepo(repoManager: ScanRepoManager): ScanRepo {
+    fun provideRepo(repoManager: ImageRepoManager): ImageRepo {
         return repoManager.getRepo(appInfo)
     }
 }

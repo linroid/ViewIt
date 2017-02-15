@@ -1,6 +1,5 @@
 package com.linroid.viewit.data.repo
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
@@ -12,16 +11,15 @@ import com.linroid.viewit.App
 import com.linroid.viewit.R
 import com.linroid.viewit.data.model.Image
 import com.linroid.viewit.data.model.ImageTree
-import com.linroid.viewit.data.scanner.ExternalImageScanner
-import com.linroid.viewit.data.scanner.InternalImageScanner
+import com.linroid.viewit.data.repo.cloud.CloudPathRepo
+import com.linroid.viewit.data.repo.local.PathRepo
+import com.linroid.viewit.data.scanner.ImageScanner
 import com.linroid.viewit.ioc.quailifer.Root
 import com.linroid.viewit.utils.*
 import com.linroid.viewit.utils.pref.LongPreference
 import rx.Observable
 import rx.lang.kotlin.BehaviorSubject
 import rx.lang.kotlin.PublishSubject
-import rx.lang.kotlin.filterNotNull
-import rx.lang.kotlin.onErrorReturnNull
 import rx.schedulers.Schedulers
 import rx.subjects.PublishSubject
 import timber.log.Timber
@@ -34,7 +32,7 @@ import javax.inject.Named
  * @author linroid <linroid@gmail.com>
  * @since 08/01/2017
  */
-class ScanRepo(val context: Context, val appInfo: ApplicationInfo) {
+class ImageRepo(val context: Context, val appInfo: ApplicationInfo) {
     companion object {
         const val UPDATE_EVENT = 0x1L
         const val REMOVE_EVENT = 0x2L
@@ -56,9 +54,11 @@ class ScanRepo(val context: Context, val appInfo: ApplicationInfo) {
     @Inject @Root
     lateinit var rxShell: RxShell
     @Inject
-    lateinit var internalScanner: InternalImageScanner
+    lateinit var imageScanner: ImageScanner
     @Inject
-    lateinit var externalScanner: ExternalImageScanner
+    lateinit var localPathRepo: PathRepo
+    @Inject
+    lateinit var cloudPathRepo: CloudPathRepo
 
     @field:[Inject Named(PREF_SORT_TYPE)]
     lateinit var sortTypePref: LongPreference
@@ -79,36 +79,37 @@ class ScanRepo(val context: Context, val appInfo: ApplicationInfo) {
     }
 
     fun scan(): Observable<Image> {
-        val sortType = sortTypePref.get()
-        Timber.d("scan images for ${appInfo.packageName}, sortTypePref:$sortType")
+        // 扫描外部数据
+        Timber.d("scan images for ${appInfo.packageName}")
         val externalData: File = context.externalCacheDir.parentFile.parentFile
-        var observable = externalScanner.scan(appInfo.packageName, File(externalData, appInfo.packageName))
+        var observable: Observable<Image> = imageScanner.scan(appInfo.packageName, File(externalData, appInfo.packageName))
 
+        // 扫描内部数据
         if (RootUtils.isRootAvailable()) {
             val packInfo: PackageInfo = packageManager.getPackageInfo(appInfo.packageName, 0)
             val dataDir = packInfo.applicationInfo.dataDir
-            val internal = internalScanner.scan(appInfo.packageName, File(dataDir))
-                    .doOnError { error -> Timber.e(error, "scan internal image failed") }
-                    .onErrorReturnNull().filterNotNull()
-            observable = observable.concatWith(internal)
+            observable = observable.concatWith(imageScanner.scan(appInfo.packageName, File(dataDir)))
         }
 
-        if (APP_EXTERNAL_PATHS.containsKey(appInfo.packageName)) {
-            val sdcard = Environment.getExternalStorageDirectory()
-            val dirs = ArrayList<File>()
-            APP_EXTERNAL_PATHS[appInfo.packageName]?.forEach {
-                if (it.isEmpty().not()) {
-                    dirs.add(File(sdcard, it))
-                }
-            }
-            observable = observable.concatWith(externalScanner.scan(appInfo.packageName, dirs))
-        }
+        // 扫描本地保存的路径
+        val localPathScanner = localPathRepo.list(appInfo)
+                .map { list -> list.map { item -> File(PathUtils.formatToDevice(item.path, appInfo)) } }
+                .onErrorReturn { emptyList() }
+                .flatMap { list -> imageScanner.scan(appInfo.packageName, list) }
 
+        // 扫描云端的路径
+        val cloudPathScanner = cloudPathRepo.list(appInfo)
+                .map { list -> list.map { item -> File(PathUtils.formatToDevice(item.path, appInfo)) } }
+                .onErrorReturn { emptyList() }
+                .flatMap { list -> imageScanner.scan(appInfo.packageName, list) }
+
+        observable = observable.concatWith(localPathScanner).concatWith(cloudPathScanner)
         val scanned: MutableList<Image> = ArrayList()
         return observable
                 .doOnNext {
                     scanned.add(it)
                 }
+                .distinct()
                 .doOnCompleted {
                     Timber.d("doOnCompleted")
                     images.clear()
@@ -152,8 +153,7 @@ class ScanRepo(val context: Context, val appInfo: ApplicationInfo) {
                         throw IllegalStateException(context.getString(R.string.msg_save_image_failed_without_sdcard));
                     }
                     val targetName = "${packageManager.getApplicationLabel(appInfo)}_${System.currentTimeMillis()}.${image.postfix()}"
-                    @SuppressLint("SdCardPath")
-                    val pictureDirectory = "/sdcard${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)}";
+                    val pictureDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
                     val saveDirectory = File(pictureDirectory, context.getString(R.string.app_name));
                     val desFile: File;
                     if (!saveDirectory.exists()) {

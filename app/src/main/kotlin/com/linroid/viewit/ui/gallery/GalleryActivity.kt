@@ -21,18 +21,20 @@ import com.linroid.viewit.R
 import com.linroid.viewit.data.model.CloudFavorite
 import com.linroid.viewit.data.model.Favorite
 import com.linroid.viewit.data.model.ImageTree
-import com.linroid.viewit.data.repo.ScanRepo
-import com.linroid.viewit.data.repo.ScanRepoManager
+import com.linroid.viewit.data.repo.ImageRepo
+import com.linroid.viewit.data.repo.ImageRepoManager
 import com.linroid.viewit.ioc.DaggerGalleryGraph
 import com.linroid.viewit.ioc.GalleryGraph
 import com.linroid.viewit.ioc.module.GalleryModule
 import com.linroid.viewit.ui.BaseActivity
 import com.linroid.viewit.utils.ARG_APP_INFO
 import com.linroid.viewit.utils.AndroidNavUtil
+import com.linroid.viewit.utils.unsubscribeIfNotNull
 import com.linroid.viewit.widget.AnimatedSetView
 import com.trello.rxlifecycle.android.ActivityEvent
 import com.trello.rxlifecycle.kotlin.bindUntilEvent
 import permissions.dispatcher.*
+import rx.Subscription
 import rx.android.schedulers.AndroidSchedulers
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
@@ -45,13 +47,15 @@ import javax.inject.Inject
 @RuntimePermissions
 class GalleryActivity : BaseActivity() {
     private val STACK_NAME = "gallery-stack"
-    @Inject lateinit var scanRepo: ScanRepo
-    @Inject lateinit var repoManager: ScanRepoManager
+    @Inject lateinit var imageRepo: ImageRepo
+    @Inject lateinit var repoManager: ImageRepoManager
     lateinit var appInfo: ApplicationInfo
     lateinit var appName: CharSequence
 
     val animView: AnimatedSetView by  bindView(R.id.loading_anim)
     private lateinit var graph: GalleryGraph
+
+    private var scanSubscription: Subscription? = null
 
     companion object {
         fun navTo(source: BaseActivity, info: ApplicationInfo) {
@@ -76,8 +80,12 @@ class GalleryActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         supportActionBar?.title = appName
         initView()
-        GalleryActivityPermissionsDispatcher.scanImagesWithCheck(this);
         showSummary()
+        refresh();
+    }
+
+    internal fun refresh() {
+        GalleryActivityPermissionsDispatcher.scanImagesWithCheck(this);
     }
 
     fun graph(): GalleryGraph = graph
@@ -115,7 +123,8 @@ class GalleryActivity : BaseActivity() {
     fun scanImages() {
         showLoading()
         var count = 0
-        scanRepo.scan()
+        scanSubscription.unsubscribeIfNotNull()
+        scanSubscription = imageRepo.scan()
                 .bindUntilEvent(this, ActivityEvent.DESTROY)
                 .buffer(100, TimeUnit.MILLISECONDS)
                 .onBackpressureBuffer()
@@ -128,7 +137,7 @@ class GalleryActivity : BaseActivity() {
                     Toast.makeText(this, getString(R.string.msg_scan_failed, error.message), Toast.LENGTH_SHORT).show()
                     hideLoading()
                 }, {
-                    //                    val msg = if (count > 0) getString(R.string.msg_scan_completed_with_images, count, scanRepo.images.size - count) else getString(R.string.msg_scan_completed_without_image)
+                    //                    val msg = if (count > 0) getString(R.string.msg_scan_completed_with_images, count, imageRepo.images.size - count) else getString(R.string.msg_scan_completed_without_image)
 //                    Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
                     hideLoading()
                 })

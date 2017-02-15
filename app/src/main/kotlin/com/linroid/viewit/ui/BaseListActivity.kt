@@ -10,7 +10,7 @@ import com.linroid.viewit.R
  * @since 10/02/2017
  */
 abstract class BaseListActivity : BaseActivity() {
-    val recyclerView: RecyclerView by bindView(R.id.recycler)
+    val recyclerView: RecyclerView by bindView(R.id.recyclerView)
 
     final override fun provideContentLayoutId(): Int = R.layout.activity_base_list
 

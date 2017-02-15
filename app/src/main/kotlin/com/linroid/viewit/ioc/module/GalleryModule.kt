@@ -1,8 +1,8 @@
 package com.linroid.viewit.ioc.module
 
 import android.content.pm.ApplicationInfo
-import com.linroid.viewit.data.repo.ScanRepo
-import com.linroid.viewit.data.repo.ScanRepoManager
+import com.linroid.viewit.data.repo.ImageRepo
+import com.linroid.viewit.data.repo.ImageRepoManager
 import com.linroid.viewit.ioc.quailifer.ActivityScope
 import com.linroid.viewit.ui.gallery.GalleryActivity
 import dagger.Module
@@ -29,7 +29,7 @@ class GalleryModule(val activity: GalleryActivity, val info: ApplicationInfo) {
 
     @Provides
     @ActivityScope
-    fun provideRepo(repoManager: ScanRepoManager): ScanRepo {
+    fun provideRepo(repoManager: ImageRepoManager): ImageRepo {
         return repoManager.getRepo(info)
     }
 }

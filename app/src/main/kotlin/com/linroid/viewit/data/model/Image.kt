@@ -37,5 +37,13 @@ data class Image(
 
     fun postfix(): String = type.postfix
 
-
+    override fun equals(other: Any?): Boolean {
+        if (other == null) {
+            return false
+        }
+        if (other !is Image) {
+            return false
+        }
+        return source == other.source
+    }
 }

@@ -12,7 +12,7 @@ import com.github.piasy.biv.view.BigImageView
 import com.linroid.viewit.R
 import com.linroid.viewit.data.model.Image
 import com.linroid.viewit.data.model.ImageType
-import com.linroid.viewit.data.repo.ScanRepo
+import com.linroid.viewit.data.repo.ImageRepo
 import com.linroid.viewit.ui.BaseFragment
 import com.linroid.viewit.ui.ImmersiveActivity
 import com.linroid.viewit.utils.ARG_IMAGE
@@ -26,7 +26,7 @@ import javax.inject.Inject
  * @since 11/01/2017
  */
 class ImageViewerFragment : BaseFragment() {
-    @Inject lateinit var scanRepo: ScanRepo
+    @Inject lateinit var imageRepo: ImageRepo
     @Inject lateinit var appInfo: ApplicationInfo
 
     val bigImageViewer: BigImageView by bindView(R.id.big_image_viewer)
@@ -87,7 +87,7 @@ class ImageViewerFragment : BaseFragment() {
                 .flatMap { image ->
                     isGif = image.type == ImageType.GIF
                     if (image.file() == null) {
-                        return@flatMap scanRepo.mountImage(image);
+                        return@flatMap imageRepo.mountImage(image);
                     }
                     return@flatMap Observable.just(image)
                 }

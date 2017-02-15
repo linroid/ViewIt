@@ -9,7 +9,9 @@ import rx.android.schedulers.AndroidSchedulers
  * @since 07/01/2017
  */
 fun Subscription?.unsubscribeIfNotNull() {
-    this?.unsubscribe()
+    if (this != null && !this.isUnsubscribed) {
+        this.unsubscribe()
+    }
 }
 
 fun <T> Observable<T>.onMain(): Observable<T> {
