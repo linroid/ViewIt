@@ -121,7 +121,6 @@ class SummaryFragment : GalleryChildFragment(), SwipeRefreshLayout.OnRefreshList
     }
 
     private fun refresh(tree: ImageTree) {
-        resetData()
         // tree
         val treeItems = ArrayList<ImageTree>()
         tree.children.forEach { subPath, imageTree ->
@@ -171,11 +170,6 @@ class SummaryFragment : GalleryChildFragment(), SwipeRefreshLayout.OnRefreshList
                 }, {
 
                 })
-    }
-
-    private fun resetData() {
-        favoriteCategory.items = null
-        cloudFavoriteCategory.items = null
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

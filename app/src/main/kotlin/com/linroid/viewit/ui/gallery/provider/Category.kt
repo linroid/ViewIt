@@ -45,7 +45,7 @@ class Category<T : Any>(
         val newCount = newVal?.size ?: 0
         if (oldCount > 0) {
             val oldEnd = position + (oldCount + 1)
-            Timber.w("remove items: ${position + 1}..$oldEnd, total:${listItems.size}")
+            Timber.w("remove items: ${position + 1}..${oldEnd + 1}, total:${listItems.size}")
             listItems.subList(position + 1, oldEnd + 1).clear()
             adapter.notifyItemRangeRemoved(position + 1, oldCount + 1)
         }

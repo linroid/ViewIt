@@ -27,7 +27,7 @@
 
         <com.linroid.viewit.widget.AnimatedSetView
             android:id="@+id/loading_anim"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="64dp"
             android:layout_gravity="center"
             tools:ignore="ContentDescription">
@@ -56,5 +56,4 @@
                 tools:ignore="RtlHardcoded"/>
         </com.linroid.viewit.widget.AnimatedSetView>
     </FrameLayout>
-
 </android.support.design.widget.CoordinatorLayout>

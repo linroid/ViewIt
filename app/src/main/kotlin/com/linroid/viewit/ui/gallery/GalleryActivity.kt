@@ -81,6 +81,7 @@ class GalleryActivity : BaseActivity() {
         supportActionBar?.title = appName
         initView()
         showSummary()
+        showLoading()
         refresh();
     }
 
@@ -121,7 +122,6 @@ class GalleryActivity : BaseActivity() {
     @SuppressLint("StringFormatMatches")
     @NeedsPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
     fun scanImages() {
-        showLoading()
         var count = 0
         scanSubscription.unsubscribeIfNotNull()
         scanSubscription = imageRepo.scan()

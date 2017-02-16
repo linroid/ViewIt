@@ -88,7 +88,8 @@ class ImageRepo(val context: Context, val appInfo: ApplicationInfo) {
         if (RootUtils.isRootAvailable()) {
             val packInfo: PackageInfo = packageManager.getPackageInfo(appInfo.packageName, 0)
             val dataDir = packInfo.applicationInfo.dataDir
-            observable = observable.concatWith(imageScanner.scan(appInfo.packageName, File(dataDir)))
+            observable = imageScanner.scan(appInfo.packageName, File(dataDir))
+                    .concatWith(observable)
         }
 
         // 扫描本地保存的路径
@@ -142,7 +143,7 @@ class ImageRepo(val context: Context, val appInfo: ApplicationInfo) {
         }
         return rootShell.copyFile(image.path, cacheFile.absolutePath)
 //                .flatMap { RxShell.instance().chown(cacheFile.absolutePath, uid, uid) }
-                .map { image }
+                .map { image }.doOnError { cacheFile }
     }
 
     fun saveImage(image: Image, appInfo: ApplicationInfo): Observable<File> {
