@@ -1,21 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?selectableItemBackground"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingTop="16dp"
+    android:paddingBottom="16dp"
+    tools:background="@android:color/holo_blue_light">
 
     <ImageView
         android:id="@+id/icon"
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="8dp"
         android:scaleType="centerInside"
         tools:ignore="ContentDescription"
-        tools:src="@mipmap/ic_launcher" />
+        tools:src="@mipmap/ic_launcher"/>
 
     <TextView
         android:id="@+id/name"
@@ -25,5 +28,5 @@
         android:layout_marginTop="4dp"
         android:maxLines="1"
         android:textSize="12sp"
-        tools:text="@string/app_name" />
+        tools:text="@string/app_name"/>
 </LinearLayout>

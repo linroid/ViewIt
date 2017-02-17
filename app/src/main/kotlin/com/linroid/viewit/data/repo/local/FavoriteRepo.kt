@@ -15,14 +15,13 @@ import rx.subjects.BehaviorSubject
 class FavoriteRepo() {
     private val eventBus: BehaviorSubject<DBEvent> = BehaviorSubject.create(DBEvent.DEFAULT)
 
-    fun find(path: String, appInfo: ApplicationInfo): Observable<Favorite> {
+    fun find(path: String, appInfo: ApplicationInfo): Observable<Favorite?> {
         return eventBus
                 .map {
-                    SugarRecord.find(Favorite::class.java,
+                    val result = SugarRecord.find(Favorite::class.java,
                             "path = ? and package_name = ? ", path, appInfo.packageName)
+                    return@map result.firstOrNull()
                 }
-                .flatMap { Observable.from(it) }
-                .take(1)
                 .subscribeOn(Schedulers.io())
     }
 

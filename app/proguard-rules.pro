@@ -74,6 +74,10 @@
 -dontwarn com.alibaba.fastjson.**
 -dontwarn com.avos.avoscloud.**
 
+# Sugar
+# Ensures entities remain un-obfuscated so table and columns are named correctly
+-keep class com.linroid.viewit.data.model.** { *; }
+
 ##---------------Begin: proguard configuration common for all Android apps ----------
 -optimizationpasses 5
 -dontusemixedcaseclassnames

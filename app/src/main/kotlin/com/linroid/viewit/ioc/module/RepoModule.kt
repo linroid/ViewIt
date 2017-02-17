@@ -4,6 +4,7 @@ import android.content.Context
 import com.linroid.viewit.data.repo.ImageRepoManager
 import com.linroid.viewit.data.repo.cloud.CloudFavoriteRepo
 import com.linroid.viewit.data.repo.cloud.CloudPathRepo
+import com.linroid.viewit.data.repo.local.AppUsageRepo
 import com.linroid.viewit.data.repo.local.FavoriteRepo
 import com.linroid.viewit.data.repo.local.PathRepo
 import dagger.Module
@@ -43,5 +44,11 @@ class RepoModule {
     @Provides
     fun provideCloudPathRepo(): CloudPathRepo {
         return CloudPathRepo()
+    }
+
+    @Singleton
+    @Provides
+    fun provideAppUsageRepo(): AppUsageRepo {
+        return AppUsageRepo()
     }
 }

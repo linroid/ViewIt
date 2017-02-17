@@ -11,6 +11,7 @@ import android.widget.TextView
 import android.widget.Toast
 import butterknife.bindView
 import com.linroid.viewit.R
+import com.linroid.viewit.data.repo.local.AppUsageRepo
 import com.linroid.viewit.ui.BaseActivity
 import com.linroid.viewit.ui.gallery.GalleryActivity
 import com.trello.rxlifecycle.kotlin.bindToLifecycle
@@ -18,12 +19,13 @@ import me.drakeet.multitype.ItemViewProvider
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
+import timber.log.Timber
 
 /**
  * @author linroid <linroid@gmail.com>
  * @since 07/01/2017
  */
-internal class AppViewProvider(val activity: BaseActivity) : ItemViewProvider<ApplicationInfo, AppViewProvider.ViewHolder>() {
+internal class AppViewProvider(val activity: BaseActivity, val usageRepo: AppUsageRepo) : ItemViewProvider<ApplicationInfo, AppViewProvider.ViewHolder>() {
 
     val packageManager: PackageManager = activity.packageManager
 
@@ -36,6 +38,9 @@ internal class AppViewProvider(val activity: BaseActivity) : ItemViewProvider<Ap
         val label = packageManager.getApplicationLabel(info)
         holder.name.text = label
         holder.root.setOnClickListener { view ->
+            usageRepo.visitApp(info).subscribe {
+                Timber.i("visitApp: $it")
+            }
             GalleryActivity.navTo(activity, info)
         }
         holder.root.setOnLongClickListener {

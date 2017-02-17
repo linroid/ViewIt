@@ -15,14 +15,13 @@ import rx.subjects.BehaviorSubject
 class PathRepo {
     private val eventBus: BehaviorSubject<DBEvent> = BehaviorSubject.create(DBEvent.DEFAULT)
 
-    fun find(path: String, appInfo: ApplicationInfo): Observable<ScanPath> {
+    fun find(path: String, appInfo: ApplicationInfo): Observable<ScanPath?> {
         return eventBus
                 .map {
-                    SugarRecord.find(ScanPath::class.java,
+                    val result = SugarRecord.find(ScanPath::class.java,
                             "path = ? and package_name = ? ", path, appInfo.packageName)
+                    return@map result.firstOrNull()
                 }
-                .flatMap { Observable.from(it) }
-                .take(1)
                 .subscribeOn(Schedulers.io())
     }
 

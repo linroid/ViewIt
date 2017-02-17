@@ -75,4 +75,6 @@
     <string name="msg_operation_succeed">操作成功</string>
     <string name="msg_operation_failed">操作失败:(</string>
     <string name="action_finish">完成</string>
+    <string name="category_top_usage_app">常用</string>
+    <string name="category_other_app">其他</string>
 </resources>
