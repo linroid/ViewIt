@@ -39,13 +39,9 @@ import javax.inject.Inject
 class SummaryFragment : GalleryChildFragment(), SwipeRefreshLayout.OnRefreshListener {
     val SPAN_COUNT = 3
 
-    private val items = ArrayList<Any>()
-    private var adapter = MultiTypeAdapter(items)
-
     private lateinit var cloudFavoriteCategory: Category<CloudFavorite>
     private lateinit var favoriteCategory: Category<Favorite>
     private lateinit var treeCategory: Category<ImageTree>
-    private lateinit var imageCategory: Category<Image>
 
     @Inject lateinit internal var cloudFavoriteRepo: CloudFavoriteRepo
 
@@ -81,18 +77,12 @@ class SummaryFragment : GalleryChildFragment(), SwipeRefreshLayout.OnRefreshList
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         refresher.setOnRefreshListener(this)
-        adapter.register(Image::class.java, ImageViewProvider(activity, imageRepo, object : ImageViewProvider.ImageListener {
-            override fun onViewImage(image: Image) {
-                ImageViewerActivity.navTo(activity, imageRepo,
-                        imageCategory.items!!,
-                        imageCategory.items!!.indexOf(image))
 
-            }
-        }))
         adapter.register(ImageTree::class.java, ImageTreeViewProvider(activity, File.separator, appInfo, imageRepo))
         adapter.register(Category::class.java, CategoryViewProvider())
         adapter.register(Favorite::class.java, FavoriteViewProvider(activity, appInfo, imageRepo))
         adapter.register(CloudFavorite::class.java, CloudFavoriteViewProvider(activity, appInfo, imageRepo))
+
         cloudFavoriteCategory = Category(null, adapter, items, getString(R.string.label_category_recommend))
         favoriteCategory = Category(cloudFavoriteCategory, adapter, items, getString(R.string.label_category_favorite))
         treeCategory = Category(favoriteCategory, adapter, items, getString(R.string.label_category_tree))
@@ -121,20 +111,6 @@ class SummaryFragment : GalleryChildFragment(), SwipeRefreshLayout.OnRefreshList
     }
 
     private fun refresh(tree: ImageTree) {
-        // tree
-        val treeItems = ArrayList<ImageTree>()
-        tree.children.forEach { subPath, imageTree ->
-            treeItems.add(imageTree.nonEmptyChild())
-        }
-        treeCategory.apply {
-            items = treeItems
-            actionClickListener = View.OnClickListener { activity.viewImages(tree) }
-            action = getString(R.string.label_category_action_all_images, tree.allImagesCount())
-        }
-
-        // images
-        imageCategory.label = getString(R.string.label_category_action_all_images, tree.images.size)
-        imageCategory.items = tree.images
 
         // cloudFavorites
         cloudFavoriteRepo.list(appInfo)
@@ -149,7 +125,7 @@ class SummaryFragment : GalleryChildFragment(), SwipeRefreshLayout.OnRefreshList
                     cloudFavoriteCategory.items = recommendations
                     recyclerView.smoothScrollToPosition(0)
                 }, { error ->
-                    Timber.e(error, "listWithChangObserver cloudFavorites")
+                    Timber.e(error, "list cloudFavorites")
                 })
 
         // favorites
@@ -166,10 +142,24 @@ class SummaryFragment : GalleryChildFragment(), SwipeRefreshLayout.OnRefreshList
                     favoriteCategory.items = favorites
                     recyclerView.smoothScrollToPosition(0)
                 }, { error ->
-                    Timber.e(error, "listWithChangObserver favorites")
+                    Timber.e(error, "list favorites")
                 }, {
 
                 })
+
+        // tree
+        val treeItems = ArrayList<ImageTree>()
+        tree.children.forEach { subPath, imageTree ->
+            treeItems.add(imageTree.nonEmptyChild())
+        }
+        treeCategory.apply {
+            items = treeItems
+            actionClickListener = View.OnClickListener { recyclerView.smoothScrollToPosition(imageCategory.position + 2) }
+            action = getString(R.string.label_category_action_all_images, tree.allImagesCount())
+        }
+
+        // images
+        updateImageTree(tree)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

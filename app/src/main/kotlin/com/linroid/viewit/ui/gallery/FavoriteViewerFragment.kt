@@ -10,7 +10,7 @@ import com.linroid.viewit.utils.PathUtils
  * @author linroid <linroid@gmail.com>
  * @since 05/02/2017
  */
-class FavoriteViewerFragment : ImagesViewerFragment() {
+class FavoriteViewerFragment : TreeViewerFragment() {
     companion object {
         fun newInstance(favorite: Favorite, appInfo: ApplicationInfo): FavoriteViewerFragment {
             val args = Bundle()

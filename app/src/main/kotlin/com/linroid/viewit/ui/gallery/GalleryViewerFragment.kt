@@ -20,8 +20,9 @@ import timber.log.Timber
  * @since 05/02/2017
  */
 abstract class GalleryViewerFragment : GalleryChildFragment() {
-    protected lateinit var path: String
     private var favorite: Favorite? = null
+    protected lateinit var path: String
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,6 +31,7 @@ abstract class GalleryViewerFragment : GalleryChildFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         favoriteRepo.find(path, appInfo)
                 .bindToLifecycle(this)
                 .observeOn(AndroidSchedulers.mainThread())

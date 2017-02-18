@@ -4,7 +4,6 @@ import com.linroid.viewit.ioc.module.GalleryModule
 import com.linroid.viewit.ioc.quailifer.ActivityScope
 import com.linroid.viewit.ui.favorite.CreateFavoriteFragment
 import com.linroid.viewit.ui.gallery.GalleryActivity
-import com.linroid.viewit.ui.gallery.ImagesViewerFragment
 import com.linroid.viewit.ui.gallery.SummaryFragment
 import com.linroid.viewit.ui.gallery.TreeViewerFragment
 import dagger.Component
@@ -21,7 +20,6 @@ import dagger.Component
 interface GalleryGraph {
     fun inject(activity: GalleryActivity)
     fun inject(fragment: TreeViewerFragment)
-    fun inject(fragment: ImagesViewerFragment)
     fun inject(fragment: SummaryFragment)
     fun inject(fragment: CreateFavoriteFragment)
 }

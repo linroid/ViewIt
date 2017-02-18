@@ -33,7 +33,7 @@ import java.util.*
  * @author linroid <linroid@gmail.com>
  * @since 30/01/2017
  */
-class TreeViewerFragment : GalleryViewerFragment() {
+open class TreeViewerFragment : GalleryViewerFragment() {
     val SPAN_COUNT = 4
 
     companion object {
@@ -46,12 +46,7 @@ class TreeViewerFragment : GalleryViewerFragment() {
         }
     }
 
-    private val items = ArrayList<Any>()
-    private var adapter = MultiTypeAdapter(items)
-
     private lateinit var treeCategory: Category<ImageTree>
-    private lateinit var imageCategory: Category<Image>
-
 
     val recyclerView: RecyclerView by bindView(R.id.recyclerView)
     val dirView: TextView by bindView(R.id.dir)
@@ -73,14 +68,6 @@ class TreeViewerFragment : GalleryViewerFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        adapter.register(Image::class.java, ImageViewProvider(activity, imageRepo, object : ImageViewProvider.ImageListener {
-            override fun onViewImage(image: Image) {
-                ImageViewerActivity.navTo(activity, imageRepo,
-                        imageCategory.items!!,
-                        imageCategory.items!!.indexOf(image))
-            }
-
-        }))
         adapter.register(ImageTree::class.java, ImageTreeViewProvider(activity, path, appInfo, imageRepo))
         adapter.register(Category::class.java, CategoryViewProvider())
         treeCategory = Category(null, adapter, items, getString(R.string.label_category_tree))
@@ -109,7 +96,6 @@ class TreeViewerFragment : GalleryViewerFragment() {
 
     private fun refresh(tree: ImageTree?) {
         dirView.text = FormatUtils.formatPath(tree?.dir, appInfo)
-        items.clear()
         if (tree != null) {
             val treeItems = ArrayList<ImageTree>()
             tree.children.forEach { subPath, imageTree ->
@@ -117,13 +103,10 @@ class TreeViewerFragment : GalleryViewerFragment() {
             }
             treeCategory.apply {
                 action = getString(R.string.label_category_action_all_images, tree.allImagesCount())
-                actionClickListener = View.OnClickListener { activity.viewImages(tree) }
+                actionClickListener = View.OnClickListener { recyclerView.smoothScrollToPosition(imageCategory.position+2) }
                 items = treeItems
             }
-            imageCategory.apply {
-                label = getString(R.string.label_category_tree_images, tree.images.size)
-                items = tree.images
-            }
+            updateImageTree(tree)
         }
         adapter.notifyDataSetChanged()
     }
