@@ -14,10 +14,7 @@ import butterknife.bindView
 import com.linroid.viewit.R
 import com.linroid.viewit.data.model.Image
 import com.linroid.viewit.data.model.ImageTree
-import com.linroid.viewit.ui.gallery.provider.Category
-import com.linroid.viewit.ui.gallery.provider.CategoryViewProvider
-import com.linroid.viewit.ui.gallery.provider.ImageTreeViewProvider
-import com.linroid.viewit.ui.gallery.provider.ImageViewProvider
+import com.linroid.viewit.ui.gallery.provider.*
 import com.linroid.viewit.ui.viewer.ImageViewerActivity
 import com.linroid.viewit.utils.ARG_IMAGE_TREE_PATH
 import com.linroid.viewit.utils.FormatUtils
@@ -71,7 +68,7 @@ open class TreeViewerFragment : GalleryViewerFragment() {
         adapter.register(ImageTree::class.java, ImageTreeViewProvider(activity, path, appInfo, imageRepo))
         adapter.register(Category::class.java, CategoryViewProvider())
         treeCategory = Category(null, adapter, items, getString(R.string.label_category_tree))
-        imageCategory = Category(treeCategory, adapter, items, getString(R.string.label_category_tree_images, 0))
+        imageCategory = ImageCategory(treeCategory, adapter, items, getString(R.string.label_category_tree_images, 0))
 
         val gridLayoutManager = GridLayoutManager(getActivity(), SPAN_COUNT)
         gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
@@ -102,9 +99,14 @@ open class TreeViewerFragment : GalleryViewerFragment() {
                 treeItems.add(imageTree.nonEmptyChild())
             }
             treeCategory.apply {
-                action = getString(R.string.label_category_action_all_images, tree.allImagesCount())
-                actionClickListener = View.OnClickListener { recyclerView.smoothScrollToPosition(imageCategory.position+2) }
                 items = treeItems
+                if (treeItems.size > 5 * SPAN_COUNT) {
+                    actionClickListener = View.OnClickListener { recyclerView.smoothScrollToPosition(imageCategory.position + 2) }
+                    action = getString(R.string.label_category_action_scroll_to_images)
+                } else {
+                    action = null
+                    actionClickListener = null
+                }
             }
             updateImageTree(tree)
         }

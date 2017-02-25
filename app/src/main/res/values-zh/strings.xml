@@ -20,7 +20,7 @@
     <string name="action_sort">排序</string>
     <string name="snack_action_open_saved_image">查看</string>
     <string name="title_warning_delete_image">警告⚠</string>
-    <string name="action_sort_by_default">默认排序</string>
+    <string name="action_sort_by_default">按路径</string>
     <string name="action_sort_by_size">按文件大小</string>
     <string name="action_sort_by_time">按时间</string>
     <string name="viewer_action_error">:( 发生了一个错误: %1$s</string>

@@ -197,6 +197,7 @@ class GalleryActivity : BaseActivity() {
                 animView.stop()
             }
         }).start()
+        supportActionBar?.subtitle = null
     }
 
     @OnShowRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:android="http://schemas.android.com/apk/res/android">
+    <group
+        android:id="@+id/action_filter"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/action_filter_none"
+            android:title="@string/action_filter_none">
+        </item>
+        <item
+            android:id="@+id/action_filter_30K"
+            android:title="@string/action_filter_30K">
+        </item>
+        <item
+            android:id="@+id/action_filter_100K"
+            android:title="@string/action_filter_100K"/>
+        <item
+            android:id="@+id/action_filter_300K"
+            android:title="@string/action_filter_300K"/>
+    </group>
+</menu>

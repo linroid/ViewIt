@@ -24,7 +24,8 @@ import rx.schedulers.Schedulers
 import rx.subjects.PublishSubject
 import timber.log.Timber
 import java.io.File
-import java.util.*
+import java.util.ArrayList
+import java.util.HashMap
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -188,7 +189,7 @@ class ImageRepo(val context: Context, val appInfo: ApplicationInfo) {
     }
 
     fun registerTreeBuilder(): Observable<ImageTree> {
-        return treeBuilder
+        return treeBuilder.asObservable()
     }
 
     fun getImageTree(): ImageTree? = treeBuilder.value

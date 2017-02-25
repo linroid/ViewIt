@@ -86,7 +86,7 @@ class SummaryFragment : GalleryChildFragment(), SwipeRefreshLayout.OnRefreshList
         cloudFavoriteCategory = Category(null, adapter, items, getString(R.string.label_category_recommend))
         favoriteCategory = Category(cloudFavoriteCategory, adapter, items, getString(R.string.label_category_favorite))
         treeCategory = Category(favoriteCategory, adapter, items, getString(R.string.label_category_tree))
-        imageCategory = Category(treeCategory, adapter, items, getString(R.string.label_category_tree_images, 0))
+        imageCategory = ImageCategory(treeCategory, adapter, items, getString(R.string.label_category_tree_images, 0))
 
 
         val gridLayoutManager = GridLayoutManager(getActivity(), SPAN_COUNT)
@@ -154,8 +154,13 @@ class SummaryFragment : GalleryChildFragment(), SwipeRefreshLayout.OnRefreshList
         }
         treeCategory.apply {
             items = treeItems
-            actionClickListener = View.OnClickListener { recyclerView.smoothScrollToPosition(imageCategory.position + 2) }
-            action = getString(R.string.label_category_action_all_images, tree.allImagesCount())
+            if (treeItems.size > 5 * SPAN_COUNT) {
+                actionClickListener = View.OnClickListener { recyclerView.smoothScrollToPosition(imageCategory.position + 2) }
+                action = getString(R.string.label_category_action_scroll_to_images)
+            } else {
+                action = null
+                actionClickListener = null
+            }
         }
 
         // images

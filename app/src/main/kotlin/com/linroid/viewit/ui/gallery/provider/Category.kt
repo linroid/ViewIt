@@ -11,7 +11,7 @@ import kotlin.reflect.KProperty
  * @author linroid <linroid@gmail.com>
  * @since 31/01/2017
  */
-class Category<T : Any>(
+open class Category<T : Any>(
         prev: Category<*>?,
         private val adapter: MultiTypeAdapter,
         private var listItems: ArrayList<Any>,

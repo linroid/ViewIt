@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/category_view"
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    tools:background="@android:color/holo_orange_light">
+
+
+    <TextView
+        android:id="@+id/label"
+        android:layout_width="wrap_content"
+        android:layout_height="32dp"
+        android:layout_gravity="start|center_vertical"
+        android:ellipsize="middle"
+        android:gravity="bottom"
+        android:paddingBottom="4dp"
+        android:paddingLeft="16dp"
+        android:paddingStart="16dp"
+        android:singleLine="true"
+        android:textColor="@color/text_highlight"
+        android:textSize="16sp"
+        tools:text="目录"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|center_vertical"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp">
+
+        <ImageButton
+            android:id="@+id/action_sort"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?selectableItemBackground"
+            android:gravity="center_vertical"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:src="@drawable/ic_sort"
+            android:textSize="12sp"
+            android:tint="#8e8e8e"
+            android:contentDescription="@string/action_sort"/>
+
+        <ImageButton
+            android:id="@+id/action_filter"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?selectableItemBackground"
+            android:gravity="center_vertical"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:src="@drawable/ic_filter"
+            android:textSize="12sp"
+            android:tint="#8e8e8e"
+            android:contentDescription="@string/action_filter_size"/>
+    </LinearLayout>
+
+</FrameLayout>
