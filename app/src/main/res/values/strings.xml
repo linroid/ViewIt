@@ -79,4 +79,5 @@
     <string name="action_finish">完成</string>
     <string name="category_top_usage_app">常用</string>
     <string name="category_other_app">其他</string>
+    <string name="title_dialog_image_detail">图片详情</string>
 </resources>

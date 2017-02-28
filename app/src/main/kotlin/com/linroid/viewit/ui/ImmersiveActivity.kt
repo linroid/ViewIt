@@ -46,7 +46,6 @@ abstract class ImmersiveActivity : BaseActivity() {
         uiOptions = uiOptions or SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
 //        uiOptions = uiOptions or SYSTEM_UI_FLAG_LOW_PROFILE
         decorView.systemUiVisibility = uiOptions
-        delayHide()
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -77,6 +76,10 @@ abstract class ImmersiveActivity : BaseActivity() {
         decorView.postDelayed(delayHideCallback, AUTO_HIDE_DELAY_MILLIS)
     }
 
+    fun pauseHide() {
+        decorView.removeCallbacks(delayHideCallback)
+    }
+
     protected fun componentsHidden(): Boolean {
         return supportActionBar?.isShowing?.not() ?: true
     }
@@ -98,6 +101,16 @@ abstract class ImmersiveActivity : BaseActivity() {
         supportActionBar?.show()
         decorView.removeCallbacks(delayHideActionBarCallback)
         shouldShowComponents()
+        delayHide()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        pauseHide()
+    }
+
+    override fun onResume() {
+        super.onResume()
         delayHide()
     }
 

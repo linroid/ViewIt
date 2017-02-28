@@ -13,6 +13,7 @@ import android.support.v4.content.FileProvider
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AlertDialog
 import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.ImageButton
 import android.widget.LinearLayout
@@ -99,8 +100,10 @@ class ImageViewerActivity() : ImmersiveActivity(), View.OnClickListener {
         supportActionBar?.setDisplayShowTitleEnabled(false)
     }
 
+    private fun currentImage() = imageRepo.viewerHolderImages!![viewPager.currentItem]
+
     override fun onClick(v: View) {
-        val image = imageRepo.viewerHolderImages!![viewPager.currentItem]
+        val image = currentImage()
         when (v.id) {
             R.id.action_share -> {
                 shareImage(image)
@@ -112,6 +115,10 @@ class ImageViewerActivity() : ImmersiveActivity(), View.OnClickListener {
                 deleteImage(image)
             }
         }
+    }
+
+    private fun detailImage(image: Image) {
+        ImageDetailDialog.show(image, supportFragmentManager)
     }
 
     private fun deleteImage(image: Image) {
@@ -165,6 +172,7 @@ class ImageViewerActivity() : ImmersiveActivity(), View.OnClickListener {
         startActivity(Intent.createChooser(shareIntent, resources.getText(R.string.title_share_image)))
     }
 
+
     private fun loadData() {
         adapter = ImageViewerPagerAdapter(supportFragmentManager, imageRepo.viewerHolderImages)
         viewPager.offscreenPageLimit = 2
@@ -181,6 +189,13 @@ class ImageViewerActivity() : ImmersiveActivity(), View.OnClickListener {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.image_viewer, menu)
         return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.action_detail) {
+            detailImage(currentImage())
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun shouldHideComponents() {
