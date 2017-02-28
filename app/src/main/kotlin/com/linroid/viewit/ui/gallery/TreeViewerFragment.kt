@@ -100,7 +100,7 @@ open class TreeViewerFragment : GalleryViewerFragment() {
             }
             treeCategory.apply {
                 items = treeItems
-                if (treeItems.size > 5 * SPAN_COUNT) {
+                if (treeItems.size > 4 * SPAN_COUNT) {
                     actionClickListener = View.OnClickListener { recyclerView.smoothScrollToPosition(imageCategory.position + 2) }
                     action = getString(R.string.label_category_action_scroll_to_images)
                 } else {
