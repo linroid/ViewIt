@@ -12,16 +12,16 @@ import android.view.View
 import android.widget.TextView
 import butterknife.bindView
 import com.linroid.viewit.R
-import com.linroid.viewit.data.model.Image
 import com.linroid.viewit.data.model.ImageTree
-import com.linroid.viewit.ui.gallery.provider.*
-import com.linroid.viewit.ui.viewer.ImageViewerActivity
+import com.linroid.viewit.ui.gallery.provider.Category
+import com.linroid.viewit.ui.gallery.provider.CategoryViewProvider
+import com.linroid.viewit.ui.gallery.provider.ImageCategory
+import com.linroid.viewit.ui.gallery.provider.ImageTreeViewProvider
 import com.linroid.viewit.utils.ARG_IMAGE_TREE_PATH
 import com.linroid.viewit.utils.FormatUtils
 import com.linroid.viewit.widget.divider.CategoryItemDecoration
 import com.trello.rxlifecycle.android.FragmentEvent
 import com.trello.rxlifecycle.kotlin.bindUntilEvent
-import me.drakeet.multitype.MultiTypeAdapter
 import rx.android.schedulers.AndroidSchedulers
 import timber.log.Timber
 import java.util.*
@@ -65,6 +65,8 @@ open class TreeViewerFragment : GalleryViewerFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        dirView.text = FormatUtils.formatPath(path, appInfo)
+
         adapter.register(ImageTree::class.java, ImageTreeViewProvider(activity, path, appInfo, imageRepo))
         adapter.register(Category::class.java, CategoryViewProvider())
         treeCategory = Category(null, adapter, items, getString(R.string.label_category_tree))
@@ -92,11 +94,10 @@ open class TreeViewerFragment : GalleryViewerFragment() {
     }
 
     private fun refresh(tree: ImageTree?) {
-        dirView.text = FormatUtils.formatPath(tree?.dir, appInfo)
         if (tree != null) {
             val treeItems = ArrayList<ImageTree>()
-            tree.children.forEach { subPath, imageTree ->
-                treeItems.add(imageTree.nonEmptyChild())
+            for ((subPath, child) in tree.children) {
+                treeItems.add(child.nonEmptyChild())
             }
             treeCategory.apply {
                 items = treeItems
@@ -109,6 +110,8 @@ open class TreeViewerFragment : GalleryViewerFragment() {
                 }
             }
             updateImageTree(tree)
+        } else {
+            updateImageTree(null)
         }
         adapter.notifyDataSetChanged()
     }

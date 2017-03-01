@@ -14,18 +14,15 @@ import butterknife.bindView
 import com.linroid.viewit.R
 import com.linroid.viewit.data.model.CloudFavorite
 import com.linroid.viewit.data.model.Favorite
-import com.linroid.viewit.data.model.Image
 import com.linroid.viewit.data.model.ImageTree
 import com.linroid.viewit.data.repo.cloud.CloudFavoriteRepo
 import com.linroid.viewit.ui.gallery.provider.*
 import com.linroid.viewit.ui.path.PathManagerActivity
-import com.linroid.viewit.ui.viewer.ImageViewerActivity
 import com.linroid.viewit.utils.PathUtils
 import com.linroid.viewit.widget.divider.CategoryItemDecoration
 import com.trello.rxlifecycle.android.FragmentEvent
 import com.trello.rxlifecycle.kotlin.bindToLifecycle
 import com.trello.rxlifecycle.kotlin.bindUntilEvent
-import me.drakeet.multitype.MultiTypeAdapter
 import rx.android.schedulers.AndroidSchedulers
 import timber.log.Timber
 import java.io.File
@@ -149,7 +146,7 @@ class SummaryFragment : GalleryChildFragment(), SwipeRefreshLayout.OnRefreshList
 
         // tree
         val treeItems = ArrayList<ImageTree>()
-        tree.children.forEach { subPath, imageTree ->
+        for ((subPath, imageTree) in tree.children) {
             treeItems.add(imageTree.nonEmptyChild())
         }
         treeCategory.apply {

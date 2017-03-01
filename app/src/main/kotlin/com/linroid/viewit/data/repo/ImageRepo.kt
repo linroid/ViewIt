@@ -24,8 +24,7 @@ import rx.schedulers.Schedulers
 import rx.subjects.PublishSubject
 import timber.log.Timber
 import java.io.File
-import java.util.ArrayList
-import java.util.HashMap
+import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -210,7 +209,7 @@ class ImageRepo(val context: Context, val appInfo: ApplicationInfo) {
                         }
                         tree.images.add(it)
                     }
-                    map.forEach { key, imageTree ->
+                    for ((key, imageTree) in map) {
                         rootTree.add(imageTree)
                     }
                     treeBuilder.onNext(rootTree)

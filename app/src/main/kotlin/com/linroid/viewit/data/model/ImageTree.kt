@@ -97,7 +97,9 @@ data class ImageTree(val dir: String, var parent: ImageTree? = null) {
             list.addAll(images)
         }
         if (children.size > 0) {
-            children.forEach { s, child -> child.allImages(list) }
+            for ((s, child) in children) {
+                child.allImages(list)
+            }
         }
     }
 
@@ -116,10 +118,10 @@ data class ImageTree(val dir: String, var parent: ImageTree? = null) {
     private fun thumbnailImages(list: ArrayList<Image>) {
         list.addAll(images.take(THUMBNAIL_MAX_COUNT - list.size))
         if (list.size < THUMBNAIL_MAX_COUNT) {
-            children.forEach { s, tree ->
+            for ((s, tree) in children) {
                 tree.thumbnailImages(list)
                 if (list.size >= THUMBNAIL_MAX_COUNT) {
-                    return@forEach
+                    break
                 }
             }
         }
@@ -133,7 +135,9 @@ data class ImageTree(val dir: String, var parent: ImageTree? = null) {
 
     private fun allImagesCount(count: AtomicInteger) {
         count.addAndGet(images.size)
-        children.forEach { s, imageTree -> imageTree.allImagesCount(count) }
+        for ((s, imageTree) in children) {
+            imageTree.allImagesCount(count)
+        }
     }
 
     private fun match(pattern: String): ImageTree? {
@@ -141,8 +145,8 @@ data class ImageTree(val dir: String, var parent: ImageTree? = null) {
             Timber.e("matched: $this")
             return this
         }
-        children.forEach { entry ->
-            val found = entry.value.match(pattern)
+        for ((s, tree) in children) {
+            val found = tree.match(pattern)
             if (found != null) {
                 return found
             }

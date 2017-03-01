@@ -76,6 +76,7 @@ public class RxShell {
                 shell.exec(binary, arguments, new CommandCallback() {
                     @Override
                     public void onOutput(String line) {
+                        Log.d(TAG, "onOutput() called with: line = [" + line + "]");
                         subscriber.onNext(line);
                     }
 

@@ -77,8 +77,8 @@ abstract class GalleryChildFragment : BaseFragment() {
         adapter.register(ImageCategory::class.java, ImageCategoryViewProvider(sortTypePref, filterSizePref))
     }
 
-    protected fun updateImageTree(tree: ImageTree) {
-        Timber.i("updateImageTree: ${tree.toString()}")
+    protected fun updateImageTree(tree: ImageTree?) {
+        Timber.i("updateImageTree: ${tree?.toString()}")
         var filterCount = 0
         subscription.unsubscribeIfNotNull()
         subscription = Observable.just(tree)
@@ -93,7 +93,7 @@ abstract class GalleryChildFragment : BaseFragment() {
                                 .filterNotNull()
                 )
                 .observeOn(Schedulers.computation())
-                .map { tree.allImages() }
+                .map { tree?.allImages() ?: emptyList() }
                 .flatMap {
                     filterCount = 0
                     Observable.from(it)
@@ -127,6 +127,7 @@ abstract class GalleryChildFragment : BaseFragment() {
                             label = getString(R.string.label_category_tree_images_with_filter, images.size, images.size + filterCount)
                         }
                     }
+                    imageCategory.totalCount = images.size + filterCount
                     imageCategory.items = images
                 }
 

@@ -23,6 +23,13 @@ class ImageCategoryViewProvider(val sortTypePref: LongPreference, val filterSize
         holder.labelTV.text = category.label
         holder.actionSortBtn.setOnClickListener { showActionPopupMenu(it, R.menu.image_sort) }
         holder.actionFilterBtn.setOnClickListener { showActionPopupMenu(it, R.menu.image_filter) }
+        if (category.totalCount > 0) {
+            holder.actionSortBtn.visibility     = View.VISIBLE
+            holder.actionFilterBtn.visibility   = View.VISIBLE
+        } else {
+            holder.actionSortBtn.visibility     = View.GONE
+            holder.actionFilterBtn.visibility   = View.GONE
+        }
     }
 
     private fun showActionPopupMenu(view: View, @MenuRes menuId: Int) {

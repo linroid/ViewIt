@@ -55,9 +55,9 @@ class ImageScanner @Inject constructor(private @Root val rootShell: RxShell,
     }
 
     private fun scanExternalDir(packageName: String, dir: File): Observable<Image> {
-        if (shell.binaryExists(context, BINARY_SEARCH_IMAGE)) {
-            return scanByBinary(shell, packageName, dir)
-        }
+//        if (shell.binaryExists(context, BINARY_SEARCH_IMAGE)) {
+//            return scanByBinary(shell, packageName, dir)
+//        }
         return scanByJava(packageName, dir)
     }
 
