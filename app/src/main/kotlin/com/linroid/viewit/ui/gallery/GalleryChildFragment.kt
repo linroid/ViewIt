@@ -2,20 +2,13 @@ package com.linroid.viewit.ui.gallery
 
 import android.content.pm.ApplicationInfo
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import com.linroid.viewit.R
 import com.linroid.viewit.data.model.Image
 import com.linroid.viewit.data.model.ImageTree
 import com.linroid.viewit.data.repo.ImageRepo
-import com.linroid.viewit.data.repo.ImageRepo.Companion.SORT_BY_PATH
-import com.linroid.viewit.data.repo.ImageRepo.Companion.SORT_BY_SIZE
-import com.linroid.viewit.data.repo.ImageRepo.Companion.SORT_BY_TIME
 import com.linroid.viewit.data.repo.local.FavoriteRepo
 import com.linroid.viewit.ui.BaseFragment
-import com.linroid.viewit.ui.gallery.provider.Category
 import com.linroid.viewit.ui.gallery.provider.ImageCategory
 import com.linroid.viewit.ui.gallery.provider.ImageCategoryViewProvider
 import com.linroid.viewit.ui.gallery.provider.ImageViewProvider
@@ -82,21 +75,7 @@ abstract class GalleryChildFragment : BaseFragment() {
 
         }))
         adapter.register(ImageCategory::class.java, ImageCategoryViewProvider(sortTypePref, filterSizePref))
-//        registerComponents();
     }
-
-//    private fun registerComponents() {
-//        imageRepo.registerTreeBuilder()
-//
-//                .subscribe({
-//                    Timber.i("image tree updated")
-//                    updateImageTree(it)
-//                }, { error ->
-//                    Timber.e(error)
-//                }, {
-//                    Timber.d("images update completed")
-//                })
-//    }
 
     protected fun updateImageTree(tree: ImageTree) {
         Timber.i("updateImageTree: ${tree.toString()}")
@@ -104,6 +83,7 @@ abstract class GalleryChildFragment : BaseFragment() {
         subscription.unsubscribeIfNotNull()
         subscription = Observable.just(tree)
                 .mergeWith(
+                        // 监听过滤和排序的变化
                         filterSizePref.listen()
                                 .mergeWith(sortTypePref.listen())
                                 .map {
@@ -141,16 +121,10 @@ abstract class GalleryChildFragment : BaseFragment() {
                     if (filterCount == 0) {
                         imageCategory.apply {
                             label = getString(R.string.label_category_tree_images, images.size)
-//                            action = null
-//                            actionClickListener = null
                         }
                     } else {
                         imageCategory.apply {
-                            label = getString(R.string.label_category_tree_images_with_filter, filterCount, images.size + filterCount)
-//                            action = getString(R.string.label_category_action_filter, filterCount)
-//                            actionClickListener = View.OnClickListener {
-//                                activity.findViewById(R.id.action_filter)?.performClick()
-//                            }
+                            label = getString(R.string.label_category_tree_images_with_filter, images.size, images.size + filterCount)
                         }
                     }
                     imageCategory.items = images
