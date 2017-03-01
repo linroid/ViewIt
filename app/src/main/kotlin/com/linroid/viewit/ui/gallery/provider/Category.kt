@@ -17,7 +17,9 @@ open class Category<T : Any>(
         private var listItems: ArrayList<Any>,
         var label: CharSequence,
         var action: CharSequence? = null,
-        var actionClickListener: View.OnClickListener? = null) {
+        var actionClickListener: View.OnClickListener? = null,
+        val alwaysShow: Boolean = false  // 不管 items.size 是否大于0都显示
+) {
 
     private var itemCount = 0
 
@@ -43,17 +45,21 @@ open class Category<T : Any>(
         Timber.d("update category[$label] items(size=${newVal?.size ?: 0})")
         val oldCount = itemCount
         val newCount = newVal?.size ?: 0
-        if (oldCount > 0) {
-            val oldEnd = position + (oldCount + 1)
-            Timber.w("remove items: ${position + 1}..${oldEnd + 1}, total:${listItems.size}")
-            listItems.subList(position + 1, oldEnd + 1).clear()
-            adapter.notifyItemRangeRemoved(position + 1, oldCount + 1)
+        val begin = position + 1
+        if (oldCount > 0 || alwaysShow) {
+            val oldEnd = Math.min(begin + oldCount + 1, listItems.size);
+            if (oldEnd >= begin) {
+                Timber.w("remove items: $begin..$oldEnd, total:${listItems.size}")
+                listItems.subList(begin, oldEnd).clear()
+                Timber.w("after removed, total:${listItems.size}")
+                adapter.notifyItemRangeRemoved(begin, oldCount + 1)
+            }
         }
-        if (newCount > 0) {
-            Timber.w("add category[$label] at:${position + 1} with $newCount items")
-            listItems.add(position + 1, this)
-            listItems.addAll(position + 2, newVal!!)
-            adapter.notifyItemRangeInserted(position + 1, newCount + 1)
+        if (newCount > 0 || alwaysShow) {
+            Timber.w("add category[$label] at:$begin with $newCount items")
+            listItems.add(begin, this)
+            listItems.addAll(begin + 1, newVal!!)
+            adapter.notifyItemRangeInserted(begin, newCount + 1)
         }
         itemCount = newCount
         updateNext()

@@ -11,5 +11,5 @@ import java.util.*
 class ImageCategory(prev: Category<*>?,
                     adapter: MultiTypeAdapter,
                     listItems: ArrayList<Any>,
-                    label: CharSequence) : Category<Image>(prev, adapter, listItems, label) {
+                    label: CharSequence) : Category<Image>(prev, adapter, listItems, label, null, null, true) {
 }
