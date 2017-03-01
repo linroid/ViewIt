@@ -1,6 +1,6 @@
 package com.linroid.viewit.ui.viewer
 
-import android.app.Activity
+import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.net.Uri
 import android.os.Bundle
@@ -37,29 +37,22 @@ class ImageViewerFragment : BaseFragment() {
     companion object {
         fun newInstance(): ImageViewerFragment {
             val fragment = ImageViewerFragment()
-            val args = Bundle()
-//            args.putInt(ARG_POSITION, position)
-            fragment.arguments = args
+            fragment.arguments = Bundle()
             return fragment
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val args = savedInstanceState ?: arguments
+        val args = arguments
         image = args.getParcelable(ARG_IMAGE)
         Timber.d("onCreate")
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putParcelable(ARG_IMAGE, image)
-    }
-
-    override fun onAttach(activity: Activity?) {
-        super.onAttach(activity)
-        if (activity is ImageViewerActivity) {
-            activity.graph.inject(this)
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is ImageViewerActivity) {
+            context.graph.inject(this)
         }
         Timber.d("onAttach")
     }
@@ -76,14 +69,12 @@ class ImageViewerFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         bigImageViewer.setOnClickListener(imageClickListener)
         gifImageViewer.setOnClickListener(imageClickListener)
-        if (activity is ImageViewerActivity) {
-            loadImage(activity as ImageViewerActivity)
-        }
+        loadImage()
     }
 
-    private fun loadImage(act: ImageViewerActivity) {
-        Timber.i("loadImage: ${image.path}")
-        var isGif = false;
+    private fun loadImage() {
+        Timber.i("loadImage: ${image.path} at @$tag")
+        var isGif = false
         Observable.just(image)
                 .flatMap { image ->
                     isGif = image.type == ImageType.GIF
@@ -97,7 +88,7 @@ class ImageViewerFragment : BaseFragment() {
                 .bindToLifecycle(this)
                 .subscribe({ file ->
                     if (isGif) {
-                        Glide.with(act).load(file).asGif().into(gifImageViewer)
+                        Glide.with(activity).load(file).asGif().into(gifImageViewer)
                         gifImageViewer.visibility = View.VISIBLE
                         bigImageViewer.visibility = View.GONE
                     } else {
@@ -113,7 +104,10 @@ class ImageViewerFragment : BaseFragment() {
     fun updateImage(arg: Image) {
         image = arg
         arguments.putParcelable(ARG_IMAGE, image)
-        Timber.d("updateImage")
+        if (view != null) {
+            loadImage()
+        }
+        Timber.d("updateImage: ${arg.path}")
     }
 
 }

@@ -57,7 +57,7 @@ class ImageViewerActivity() : ImmersiveActivity(), View.OnClickListener {
 
     companion object {
         fun navTo(source: BaseActivity, imageRepo: ImageRepo, images: List<Image>, position: Int) {
-            imageRepo.viewerHolderImages = images
+            imageRepo.viewerHolderImages = images.toMutableList()
             val intent = Intent(source, ImageViewerActivity::class.java);
             intent.putExtra(ARG_APP_INFO, imageRepo.appInfo)
             intent.putExtra(ARG_POSITION, position)
@@ -134,6 +134,7 @@ class ImageViewerActivity() : ImmersiveActivity(), View.OnClickListener {
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe({
                                 toastShort(getString(R.string.msg_delete_image_success))
+                                adapter.notifyDataSetChanged()
                             }, { error ->
                                 toastShort(getString(R.string.msg_delete_image_failed))
                             })

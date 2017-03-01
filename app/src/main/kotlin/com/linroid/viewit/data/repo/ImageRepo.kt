@@ -71,7 +71,7 @@ class ImageRepo(val context: Context, val appInfo: ApplicationInfo) {
     private val cacheDir: File = File(context.cacheDir, "mounts")
     val images = ArrayList<Image>()
 
-    var viewerHolderImages: List<Image>? = null
+    var viewerHolderImages: MutableList<Image>? = null
 
     init {
         App.graph.inject(this)
@@ -175,14 +175,14 @@ class ImageRepo(val context: Context, val appInfo: ApplicationInfo) {
                     if (RootUtils.isRootFile(path)) {
                         return@flatMap rootShell.deleteFile(path)
                     } else {
-                        File(image.path).delete()
-                        return@flatMap Observable.just(true)
+                        return@flatMap Observable.just(File(image.path).delete())
                     }
                 }
                 .subscribeOn(Schedulers.io())
                 .doOnNext {
                     val position = images.indexOf(image)
                     images.remove(image)
+                    viewerHolderImages?.remove(image)
                     eventBus.onNext(ImageEvent(REMOVE_EVENT, position, 1, arrayListOf(image)))
                 }
     }
