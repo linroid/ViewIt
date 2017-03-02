@@ -75,7 +75,6 @@ class PathManagerActivity : BaseListActivity() {
         App.graph.inject(this)
         appInfo = intent.getParcelableExtra(ARG_APP_INFO)
         super.onCreate(savedInstanceState)
-        loadPaths()
     }
 
     override fun setupRecyclerView(recyclerView: RecyclerView) {
@@ -149,7 +148,8 @@ class PathManagerActivity : BaseListActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun loadPaths() {
+
+    override fun onRefresh() {
         buildInCategory.items = ArrayList<BuildInPath>().apply {
             add(BuildInPath(getString(R.string.path_format_internal_data)))
             add(BuildInPath(getString(R.string.path_format_external_data)))

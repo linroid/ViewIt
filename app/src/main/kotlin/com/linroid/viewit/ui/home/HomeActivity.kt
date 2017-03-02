@@ -15,6 +15,7 @@ import com.linroid.viewit.ui.BaseListActivity
 import com.linroid.viewit.ui.about.AboutActivity
 import com.linroid.viewit.ui.gallery.provider.Category
 import com.linroid.viewit.ui.gallery.provider.CategoryViewProvider
+import com.linroid.viewit.utils.onMain
 import com.linroid.viewit.widget.divider.CategoryItemDecoration
 import com.trello.rxlifecycle.kotlin.bindToLifecycle
 import me.drakeet.multitype.Items
@@ -42,41 +43,15 @@ class HomeActivity : BaseListActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         App.graph.inject(this)
         super.onCreate(savedInstanceState)
-        loadApps();
-    }
-
-    private fun loadApps() {
-//        appRepo.list(8)
-//                .bindToLifecycle(this)
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe({ apps ->
-//                    items.clear()
-//                    items.addAll(apps)
-//                    adapter.notifyItemInserted(apps.size - 1);
-//                }, { error ->
-//                    Timber.e(error, "onError")
-//                }, {
-//                    Timber.d("onCompleted")
-//                })
-        appRepo.list(SPAN_COUNT * 2).bindToLifecycle(this).subscribe {
-            if (it.key) { // top
-                it.bindToLifecycle(this).toList().subscribe { topApps ->
-                    topUsageCategory.items = topApps
-                }
-            } else {
-                it.bindToLifecycle(this).toList().subscribe { otherApps ->
-                    otherAppCategory.items = otherApps
-                }
-            }
-        }
     }
 
     override fun setupRecyclerView(recyclerView: RecyclerView) {
+        refresher.isEnabled = true
         adapter.register(ApplicationInfo::class.java, AppViewProvider(this, usageRepo))
         adapter.register(Category::class.java, CategoryViewProvider())
 
         topUsageCategory = Category<ApplicationInfo>(null, adapter, items, getString(R.string.category_top_usage_app))
-        otherAppCategory = Category<ApplicationInfo>(null, adapter, items, getString(R.string.category_other_app))
+        otherAppCategory = Category<ApplicationInfo>(topUsageCategory, adapter, items, getString(R.string.category_other_app))
 
         val gridLayoutManager = GridLayoutManager(this, SPAN_COUNT);
         gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
@@ -90,6 +65,24 @@ class HomeActivity : BaseListActivity() {
         recyclerView.itemAnimator = DefaultItemAnimator()
         recyclerView.setHasFixedSize(true)
         recyclerView.addItemDecoration(CategoryItemDecoration(recyclerView))
+    }
+
+    override fun onRefresh() {
+        appRepo.list(SPAN_COUNT * 2)
+                .bindToLifecycle(this)
+                .onMain()
+                .subscribe {
+                    if (it.key) { // top
+                        it.bindToLifecycle(this).toList().subscribe { topApps ->
+                            topUsageCategory.items = topApps
+                        }
+                    } else {
+                        it.bindToLifecycle(this).toList().subscribe { otherApps ->
+                            otherAppCategory.items = otherApps
+                        }
+                    }
+                    refresher.isRefreshing = false
+                }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
