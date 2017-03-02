@@ -25,35 +25,43 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
-        <com.linroid.viewit.widget.AnimatedSetView
-            android:id="@+id/loading_anim"
+        <FrameLayout
+            android:id="@+id/loading_container"
             android:layout_width="match_parent"
-            android:layout_height="64dp"
-            android:layout_gravity="center"
-            tools:ignore="ContentDescription">
+            android:layout_height="match_parent"
+            android:background="@color/gallery_window_background">
 
-            <com.linroid.viewit.widget.AnimatedScrollView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="top|center_horizontal"
-                android:scaleType="centerInside"
-                android:src="@drawable/cloud"/>
-
-            <com.linroid.viewit.widget.AnimatedScrollView
+            <com.linroid.viewit.widget.AnimatedSetView
+                android:id="@+id/loading_anim"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:scaleType="centerCrop"
-                android:src="@drawable/line"/>
+                android:layout_height="64dp"
+                android:layout_gravity="center"
+                tools:ignore="ContentDescription">
 
-            <com.linroid.viewit.widget.AnimatedImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:layout_marginBottom="3dp"
-                android:layout_marginLeft="60dp"
-                android:src="@drawable/anim_dinosaur"
-                tools:ignore="RtlHardcoded"/>
-        </com.linroid.viewit.widget.AnimatedSetView>
+                <com.linroid.viewit.widget.AnimatedScrollView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|center_horizontal"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/cloud"/>
+
+                <com.linroid.viewit.widget.AnimatedScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/line"/>
+
+                <com.linroid.viewit.widget.AnimatedImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_marginBottom="3dp"
+                    android:layout_marginLeft="60dp"
+                    android:src="@drawable/anim_dinosaur"
+                    tools:ignore="RtlHardcoded"/>
+            </com.linroid.viewit.widget.AnimatedSetView>
+        </FrameLayout>
+
     </FrameLayout>
 </android.support.design.widget.CoordinatorLayout>

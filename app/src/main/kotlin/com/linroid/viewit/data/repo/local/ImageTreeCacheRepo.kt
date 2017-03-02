@@ -6,6 +6,7 @@ import com.google.gson.Gson
 import com.linroid.viewit.data.model.ImageTree
 import okio.Okio
 import rx.Observable
+import rx.schedulers.Schedulers
 import timber.log.Timber
 import java.io.File
 
@@ -53,6 +54,6 @@ class ImageTreeCacheRepo(private val gson: Gson, private val context: Context) {
             val fileName = "${appInfo.packageName}.json"
             subscriber.onNext(File(dir, fileName))
             subscriber.onCompleted()
-        }
+        }.subscribeOn(Schedulers.io())
     }
 }

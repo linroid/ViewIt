@@ -24,6 +24,7 @@ import com.trello.rxlifecycle.android.FragmentEvent
 import com.trello.rxlifecycle.kotlin.bindToLifecycle
 import com.trello.rxlifecycle.kotlin.bindUntilEvent
 import rx.android.schedulers.AndroidSchedulers
+import rx.schedulers.Schedulers
 import timber.log.Timber
 import java.io.File
 import java.util.*
@@ -99,11 +100,17 @@ class SummaryFragment : GalleryChildFragment(), SwipeRefreshLayout.OnRefreshList
         recyclerView.addItemDecoration(CategoryItemDecoration(recyclerView))
 
         imageRepo.registerTreeBuilder()
+                .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .bindToLifecycle(view)
                 .subscribe {
                     refresh(it)
-                    refresher.isRefreshing = false
+                    if (imageRepo.hasScanned) {
+                        refresher.isRefreshing = false
+                    } else if (it != null) {
+                        activity.hideLoading()
+                        refresher.isRefreshing = true
+                    }
                 }
     }
 

@@ -95,6 +95,9 @@ open class TreeViewerFragment : GalleryViewerFragment() {
 
     private fun refresh(tree: ImageTree?) {
         if (tree != null) {
+            dirView.text = FormatUtils.formatPath(tree.dir, appInfo)
+        }
+        if (tree != null) {
             val treeItems = ArrayList<ImageTree>()
             for ((subPath, child) in tree.children) {
                 treeItems.add(child.nonEmptyChild())

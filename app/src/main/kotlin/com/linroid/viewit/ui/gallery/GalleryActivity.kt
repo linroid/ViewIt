@@ -13,6 +13,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import android.widget.FrameLayout
 import android.widget.Toast
 import butterknife.bindView
 import com.bumptech.glide.manager.SupportRequestManagerFragment
@@ -53,6 +54,7 @@ class GalleryActivity : BaseActivity() {
     lateinit var appName: CharSequence
 
     val animView: AnimatedSetView by  bindView(R.id.loading_anim)
+    val loadingContainer: FrameLayout by bindView(R.id.loading_container)
     private lateinit var graph: GalleryGraph
 
     private var scanSubscription: Subscription? = null
@@ -136,10 +138,12 @@ class GalleryActivity : BaseActivity() {
                     Timber.e(error, "onError")
                     Toast.makeText(this, getString(R.string.msg_scan_failed, error.message), Toast.LENGTH_SHORT).show()
                     hideLoading()
+                    supportActionBar?.subtitle = null
                 }, {
                     //                    val msg = if (count > 0) getString(R.string.msg_scan_completed_with_images, count, imageRepo.images.size - count) else getString(R.string.msg_scan_completed_without_image)
 //                    Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
                     hideLoading()
+                    supportActionBar?.subtitle = null
                 })
     }
 
@@ -184,20 +188,18 @@ class GalleryActivity : BaseActivity() {
     }
 
     private fun showLoading() {
+        loadingContainer.visibility = VISIBLE
         animView.start()
-        animView.visibility = VISIBLE
         animView.animate().alpha(1F).setDuration(300).start()
     }
 
-    private fun hideLoading() {
-        animView.visibility = VISIBLE
+    internal fun hideLoading() {
         animView.animate().alpha(0F).setDuration(300).setListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator?) {
-                animView.visibility = GONE
+                loadingContainer.visibility = GONE
                 animView.stop()
             }
         }).start()
-        supportActionBar?.subtitle = null
     }
 
     @OnShowRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)

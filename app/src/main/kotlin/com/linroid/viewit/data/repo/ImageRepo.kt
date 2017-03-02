@@ -73,6 +73,9 @@ class ImageRepo(val context: Context, val appInfo: ApplicationInfo) {
     private val eventBus = PublishSubject<ImageEvent>()
     private val treeBuilder = BehaviorSubject<ImageTree>()
     private val cacheDir: File = File(context.cacheDir, "mounts")
+
+    var hasScanned = false;
+
     val images = ArrayList<Image>()
 
     var viewerHolderImages: MutableList<Image>? = null
@@ -117,6 +120,7 @@ class ImageRepo(val context: Context, val appInfo: ApplicationInfo) {
                 .distinct()
                 .doOnCompleted {
                     Timber.d("doOnCompleted")
+                    hasScanned = true
                     images.clear()
                     images.addAll(scanned)
                     eventBus.onNext(ImageEvent(UPDATE_EVENT, 0, images.size, images))
@@ -147,7 +151,7 @@ class ImageRepo(val context: Context, val appInfo: ApplicationInfo) {
         }
         return rootShell.copyFile(image.path, cacheFile.absolutePath)
 //                .flatMap { RxShell.instance().chown(cacheFile.absolutePath, uid, uid) }
-                .map { image }.doOnError { cacheFile }
+                .map { image }.doOnError { cacheFile.delete() }
     }
 
     fun saveImage(image: Image, appInfo: ApplicationInfo): Observable<File> {
