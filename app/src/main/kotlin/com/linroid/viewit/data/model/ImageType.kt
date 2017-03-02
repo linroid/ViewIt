@@ -7,7 +7,7 @@ import com.bumptech.glide.load.resource.bitmap.ImageHeaderParser
  * *
  * @since 23/01/2017
  */
-enum class ImageType private constructor(private val `val`: Int, val mime: String, val postfix: String) {
+enum class ImageType constructor(val value: Int, val mime: String, val postfix: String) {
     /**
      * GIF type.
      */

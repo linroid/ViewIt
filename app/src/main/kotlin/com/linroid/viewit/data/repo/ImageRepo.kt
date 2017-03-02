@@ -12,6 +12,7 @@ import com.linroid.viewit.R
 import com.linroid.viewit.data.model.Image
 import com.linroid.viewit.data.model.ImageTree
 import com.linroid.viewit.data.repo.cloud.CloudPathRepo
+import com.linroid.viewit.data.repo.local.ImageTreeCacheRepo
 import com.linroid.viewit.data.repo.local.PathRepo
 import com.linroid.viewit.data.scanner.ImageScanner
 import com.linroid.viewit.ioc.quailifer.Root
@@ -20,6 +21,7 @@ import com.linroid.viewit.utils.pref.LongPreference
 import rx.Observable
 import rx.lang.kotlin.BehaviorSubject
 import rx.lang.kotlin.PublishSubject
+import rx.lang.kotlin.filterNotNull
 import rx.schedulers.Schedulers
 import rx.subjects.PublishSubject
 import timber.log.Timber
@@ -59,6 +61,8 @@ class ImageRepo(val context: Context, val appInfo: ApplicationInfo) {
     lateinit var localPathRepo: PathRepo
     @Inject
     lateinit var cloudPathRepo: CloudPathRepo
+    @Inject
+    lateinit var imageTreeCacheRepo: ImageTreeCacheRepo
 
     @field:[Inject Named(PREF_SORT_TYPE)]
     lateinit var sortTypePref: LongPreference
@@ -194,47 +198,56 @@ class ImageRepo(val context: Context, val appInfo: ApplicationInfo) {
     fun getImageTree(): ImageTree? = treeBuilder.value
 
     private fun createTreeBuilder() {
-        eventBus.observeOn(Schedulers.computation()).subscribe {
-            Timber.d("should update treeBuilder")
-            when (it.type) {
-                UPDATE_EVENT -> {
-                    val map = HashMap<String, ImageTree>()
-                    val rootTree = ImageTree(File.separator)
-                    images.forEach {
-                        val dir = it.source.parent
-                        var tree = map[dir]
-                        if (tree == null) {
-                            tree = ImageTree(it.source.parent)
-                            map[dir] = tree
+        eventBus.observeOn(Schedulers.computation())
+                .map {
+                    Timber.d("should update treeBuilder")
+                    when (it.type) {
+                        UPDATE_EVENT -> {
+                            val map = HashMap<String, ImageTree>()
+                            val rootTree = ImageTree(File.separator)
+                            images.forEach {
+                                val dir = it.source.parent
+                                var tree = map[dir]
+                                if (tree == null) {
+                                    tree = ImageTree(it.source.parent)
+                                    map[dir] = tree
+                                }
+                                tree.images.add(it)
+                            }
+                            for ((key, imageTree) in map) {
+                                rootTree.add(imageTree)
+                            }
+                            return@map rootTree
                         }
-                        tree.images.add(it)
-                    }
-                    for ((key, imageTree) in map) {
-                        rootTree.add(imageTree)
-                    }
-                    treeBuilder.onNext(rootTree)
-                }
-                INSERT_EVENT -> {
-                    if (treeBuilder.hasValue()) {
-                        val value = treeBuilder.value
-                        it.effectedImages.forEach { image ->
-                            value.insertImage(image)
+                        INSERT_EVENT -> {
+                            if (treeBuilder.hasValue()) {
+                                val value = treeBuilder.value
+                                it.effectedImages.forEach { image ->
+                                    value.insertImage(image)
+                                }
+                                return@map value
+                            }
                         }
-                        treeBuilder.onNext(value)
-                    }
-                }
-                REMOVE_EVENT -> {
-                    if (treeBuilder.hasValue()) {
-                        val value = treeBuilder.value
-                        it.effectedImages.forEach { image ->
-                            value.removeImage(image)
+                        REMOVE_EVENT -> {
+                            if (treeBuilder.hasValue()) {
+                                val value = treeBuilder.value
+                                it.effectedImages.forEach { image ->
+                                    value.removeImage(image)
+                                }
+                                return@map value
+                            }
                         }
-                        treeBuilder.onNext(value)
                     }
+                    return@map null
                 }
-            }
-        }
+                .subscribe { newTree ->
+                    Timber.d("treeBuilder onNext")
+                    imageTreeCacheRepo.updateOrCrate(appInfo, newTree).subscribe { }
+                    treeBuilder.onNext(newTree)
+                }
+        imageTreeCacheRepo.findAsImageTree(appInfo).filterNotNull().subscribe { treeBuilder.onNext(it) }
     }
+
 
     data class ImageEvent(@ImageEventType val type: Long, val position: Int, val effectCount: Int, val effectedImages: List<Image>)
 

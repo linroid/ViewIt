@@ -1,5 +1,6 @@
 package com.linroid.viewit.data.model
 
+import com.google.gson.annotations.Expose
 import com.linroid.viewit.utils.PathUtils
 import com.linroid.viewit.utils.THUMBNAIL_MAX_COUNT
 import com.linroid.viewit.utils.WildcardMatcher
@@ -12,8 +13,10 @@ import java.util.concurrent.atomic.AtomicInteger
  * @author linroid <linroid@gmail.com>
  * @since 30/01/2017
  */
-data class ImageTree(val dir: String, var parent: ImageTree? = null) {
+data class ImageTree(@Expose val dir: String, var parent: ImageTree? = null) {
+    @Expose
     val images = ArrayList<Image>()
+    @Expose
     val children = HashMap<String, ImageTree>()
 
     fun add(child: ImageTree) {

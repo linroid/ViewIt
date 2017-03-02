@@ -1,12 +1,22 @@
 package com.linroid.viewit.ioc.module
 
 import android.content.Context
+import com.github.salomonbrys.kotson.get
+import com.github.salomonbrys.kotson.registerTypeAdapter
+import com.github.salomonbrys.kotson.set
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.google.gson.JsonObject
+import com.google.gson.reflect.TypeToken
 import com.linroid.rxshell.RxShell
+import com.linroid.viewit.data.model.Image
+import com.linroid.viewit.data.model.ImageTree
+import com.linroid.viewit.data.model.ImageType
 import com.linroid.viewit.ioc.quailifer.Root
 import dagger.Module
 import dagger.Provides
+import timber.log.Timber
+import java.io.File
 import javax.inject.Singleton
 
 /**
@@ -28,9 +38,57 @@ class DataModule {
     @Provides
     @Singleton
     fun provideGson(): Gson {
+        Timber.d("provideGson")
         return GsonBuilder()
                 .setDateFormat("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'SSS'Z'")
-                .create();
+                .registerTypeAdapter<ImageTree> {
+                    val imagesType = object : TypeToken<List<Image>>() {}.type
+                    val childrenType = object : TypeToken<Map<String, ImageTree>>() {}.type
+
+                    serialize { serializer ->
+                        JsonObject().apply {
+                            serializer.src.let {
+                                set("dir", it.dir)
+                                set("images", serializer.context.serialize(it.images, imagesType))
+                                set("children", serializer.context.serialize(it.children, childrenType))
+                            }
+                        }
+                    }
+                    deserialize {
+                        val tree = ImageTree(it.json["dir"].asString, null)
+                        it.json["images"].asJsonArray.forEach { item ->
+                            tree.images.add(it.context.deserialize(item))
+                        }
+                        val obj = it.json["children"].asJsonObject
+                        for ((key, value) in obj.entrySet()) {
+                            val child: ImageTree = it.context.deserialize(value)
+                            child.parent = tree
+                            tree.children.put(key, child)
+                        }
+                        return@deserialize tree
+                    }
+                }
+                .registerTypeAdapter<Image> {
+                    serialize {
+                        JsonObject().apply {
+                            it.src.let {
+                                set("source", it.source.absolutePath)
+                                set("size", it.size)
+                                set("lastModified", it.lastModified)
+                                set("type", it.type.value)
+                            }
+                        }
+                    }
+                    deserialize {
+                        Image(
+                                source = File(it.json["source"].asString),
+                                size = it.json["size"].asLong,
+                                lastModified = it.json["lastModified"].asLong,
+                                type = ImageType.from(it.json["type"].asInt)
+                        )
+                    }
+                }
+                .create()
     }
 
 //    @Provides
