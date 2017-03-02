@@ -75,6 +75,7 @@ class SummaryFragment : GalleryChildFragment(), SwipeRefreshLayout.OnRefreshList
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         refresher.setOnRefreshListener(this)
+        refresher.isEnabled = false
 
         adapter.register(ImageTree::class.java, ImageTreeViewProvider(activity, File.separator, appInfo, imageRepo))
         adapter.register(Category::class.java, CategoryViewProvider())
@@ -106,6 +107,7 @@ class SummaryFragment : GalleryChildFragment(), SwipeRefreshLayout.OnRefreshList
                 .subscribe {
                     refresh(it)
                     if (imageRepo.hasScanned) {
+                        refresher.isEnabled = true
                         refresher.isRefreshing = false
                     } else if (it != null) {
                         activity.hideLoading()
