@@ -11,6 +11,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import com.linroid.viewit.BuildConfig
 import com.linroid.viewit.R
 import com.linroid.viewit.utils.ALIPAY_QRCODE
@@ -44,7 +45,7 @@ class AboutActivity : AbsAboutActivity() {
 
     override fun onItemsCreated(items: Items) {
         adapter.register(Developer::class.java, DeveloperViewProvider())
-        
+
         items.add(Category(getString(R.string.about_header_introduce)))
         items.add(Card(getString(R.string.about_introduce_content), getString(R.string.about_action_donate)))
 
@@ -84,13 +85,17 @@ class AboutActivity : AbsAboutActivity() {
 
 
     private fun openAlipay() {
-        startActivity(Intent().apply {
-            action = Intent.ACTION_VIEW
-            val qrCode = URLEncoder.encode(ALIPAY_QRCODE, "UTF-8")
-            val url = "alipays://platformapi/startapp?saId=10000007&clientVersion=3.7.0.0718&qrcode=${qrCode}%3F_s%3Dweb-other&_t=${System.currentTimeMillis()}"
-            data = Uri.parse(url)
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        })
+        try {
+            startActivity(Intent().apply {
+                action = Intent.ACTION_VIEW
+                val qrCode = URLEncoder.encode(ALIPAY_QRCODE, "UTF-8")
+                val url = "alipays://platformapi/startapp?saId=10000007&clientVersion=3.7.0.0718&qrcode=${qrCode}%3F_s%3Dweb-other&_t=${System.currentTimeMillis()}"
+                data = Uri.parse(url)
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            })
+        } catch (error: Exception) {
+            Toast.makeText(this, R.string.error_open_alipay, Toast.LENGTH_LONG).show()
+        }
     }
 
 
