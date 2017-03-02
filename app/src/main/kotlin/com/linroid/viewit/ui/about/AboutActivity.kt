@@ -13,8 +13,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.linroid.viewit.BuildConfig
 import com.linroid.viewit.R
+import com.linroid.viewit.utils.ALIPAY_QRCODE
 import me.drakeet.multitype.Items
 import me.drakeet.support.about.*
+import java.net.URLEncoder
 
 /**
  * @author linroid <linroid@gmail.com>
@@ -84,13 +86,13 @@ class AboutActivity : AbsAboutActivity() {
     private fun openAlipay() {
         startActivity(Intent().apply {
             action = Intent.ACTION_VIEW
-            val qrCode = "https://qr.alipay.com/fkx07663woc6mmnpvvxvee"
-            val url = "alipayqr://platformapi/startapp?saId=10000007&clientVersion=3.7.0.0718&qrcode=" + qrCode + "%3F_s%3Dweb-other&_t=" + System.currentTimeMillis()
+            val qrCode = URLEncoder.encode(ALIPAY_QRCODE, "UTF-8")
+            val url = "alipays://platformapi/startapp?saId=10000007&clientVersion=3.7.0.0718&qrcode=${qrCode}%3F_s%3Dweb-other&_t=${System.currentTimeMillis()}"
             data = Uri.parse(url)
             flags = Intent.FLAG_ACTIVITY_NEW_TASK
         })
-
     }
+
 
     private fun shareApp() {
         startActivity(Intent.createChooser(Intent().apply {

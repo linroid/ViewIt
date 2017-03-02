@@ -24,3 +24,5 @@ const val THUMBNAIL_MAX_COUNT = 4;
 const val EXTERNAL_DATA_DIR = "\$EXTERNAL"
 const val INTERNAL_DATA_DIR = "\$INTERNAL"
 const val SDCARD_DIR = "\$SDCARD"
+
+const val ALIPAY_QRCODE = "https://qr.alipay.com/FKX07663WOC6MMNPVVXVEE"
