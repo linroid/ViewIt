@@ -62,6 +62,10 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name="com.avos.avoscloud.feedback.ThreadActivity" >
+        </activity>
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="${APPLICATION_ID}.provider"
@@ -71,6 +75,8 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths"/>
         </provider>
+
+        <meta-data android:name="leancloud" android:value="${CHANNEL}"/>
 
         <!-- Sugar Database Configuration -->
         <meta-data

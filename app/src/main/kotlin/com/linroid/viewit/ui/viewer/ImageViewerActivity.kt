@@ -187,7 +187,7 @@ class ImageViewerActivity() : ImmersiveActivity(), View.OnClickListener {
         outState?.putParcelable(ARG_APP_INFO, appInfo)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.image_viewer, menu)
         return super.onCreateOptionsMenu(menu)
     }

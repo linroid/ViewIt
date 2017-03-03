@@ -7,6 +7,7 @@ import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.Menu
 import android.view.MenuItem
+import com.avos.avoscloud.feedback.FeedbackAgent
 import com.linroid.viewit.App
 import com.linroid.viewit.R
 import com.linroid.viewit.data.repo.AppRepo
@@ -43,6 +44,8 @@ class HomeActivity : BaseListActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         App.graph.inject(this)
         super.onCreate(savedInstanceState)
+        // 启动应用时检查是否有反馈通知
+        FeedbackAgent(this).sync()
     }
 
     override fun setupRecyclerView(recyclerView: RecyclerView) {
@@ -88,7 +91,7 @@ class HomeActivity : BaseListActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.home, menu)
-        return true
+        return super.onCreateOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

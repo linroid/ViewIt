@@ -154,6 +154,8 @@ dependencies {
     compile('com.github.twiceyuan:RxLeanCloud:1.1.4', {
         exclude group: 'cn.leancloud.android', module: 'avoscloud-push'
     })
+    compile ('cn.leancloud.android:avoscloud-statistics:v3.+')
+    compile ('cn.leancloud.android:avoscloud-feedback:v3.+@aar')
 
     // paperparcel
     compile 'nz.bradcampbell:paperparcel:2.0.0-beta2'

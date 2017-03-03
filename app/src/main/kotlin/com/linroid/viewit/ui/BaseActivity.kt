@@ -6,8 +6,11 @@ import android.support.annotation.LayoutRes
 import android.support.annotation.StringRes
 import android.support.v4.app.NavUtils
 import android.support.v7.widget.Toolbar
+import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
+import com.avos.avoscloud.AVAnalytics
+import com.avos.avoscloud.feedback.FeedbackAgent
 import com.linroid.viewit.R
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity
 
@@ -32,15 +35,30 @@ abstract class BaseActivity : RxAppCompatActivity() {
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+        AVAnalytics.onPause(this);
+    }
+
     @LayoutRes
     abstract fun provideContentLayoutId(): Int
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == android.R.id.home) {
-            onBackPressed()
-            return true
-        }
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.feedback, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> {
+                onBackPressed()
+                return true
+            }
+            R.id.action_feedback -> {
+                val agent = FeedbackAgent(this);
+                agent.startDefaultThreadActivity();
+            }
+        }
         return super.onOptionsItemSelected(item)
     }
 
