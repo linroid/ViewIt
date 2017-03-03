@@ -2,6 +2,8 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'im.fir.plugin.gradle'
+apply plugin: 'io.fabric'
 
 android {
     compileSdkVersion 25
@@ -164,6 +166,9 @@ dependencies {
 
     // file picker
     compile 'com.nononsenseapps:filepicker:4.0.0'
+    compile('com.crashlytics.sdk.android:crashlytics:2.6.6@aar') {
+        transitive = true;
+    }
 }
 
 File signPropFile = file('signing.properties');
@@ -182,4 +187,14 @@ if (signPropFile.exists()) {
     }
 } else {
     android.buildTypes.release.signingConfig = null
+}
+
+
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+def firToken = properties.getProperty('fir_token')
+
+fir {
+    //必填 上传 fir.im apk 字段，否则无法上传 APP 到 fir.im
+    apiToken firToken
 }

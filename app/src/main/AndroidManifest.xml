@@ -85,6 +85,13 @@
         <meta-data
             android:name="DOMAIN_PACKAGE_NAME"
             android:value="com.linroid.viewit.data.model"/>
+
+
+        <!-- fabric -->
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="302543c1c53eb979da95900d940a64da930d52a6"
+            />
     </application>
 
 </manifest>

@@ -36,7 +36,7 @@
     <string name="about_header_introduce">介绍与帮助</string>
     <string name="about_action_donate">打赏</string>
     <string name="about_title">看应用 —— 图片还可以这么找！</string>
-    <string name="share_content">分享一款应用：「看应用」，它可以帮你找到应用下载的所有图片，它还可以帮你归类这些图片方便查找，比如微信表情、好友头像、拍照等等，推荐：http://fir.im/viewit</string>
+    <string name="share_content">Hi，分享一款应用：「看应用」\n\n它可以帮你找到应用下载的所有图片，它还可以帮你归类这些图片方便查找，比如微信表情、好友头像、拍照等等\n\n推荐：http://fir.im/viewIt</string>
     <string name="action_share_app">分享「看应用」给你的朋友</string>
 
     <string name="path_format_root">根目录</string>

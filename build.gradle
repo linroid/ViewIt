@@ -13,11 +13,15 @@ buildscript {
         maven { url "http://dl.bintray.com/piasy/maven" }
         maven { url "https://jitpack.io" }
         maven { url "http://mvn.leancloud.cn/nexus/content/repositories/releases" }
+        maven { url "http://maven.bughd.com/public" }
+        maven { url 'https://maven.fabric.io/public' }
     }
 
     dependencies {
         classpath 'com.android.tools.build:gradle:2.2.3'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'im.fir:gradle-fir-publisher:1.0.7'
+        classpath 'io.fabric.tools:gradle:1.22.1'
     }
 }
 
@@ -28,6 +32,8 @@ allprojects {
         maven { url "http://dl.bintray.com/piasy/maven" }
         maven { url "https://jitpack.io" }
         maven { url "http://mvn.leancloud.cn/nexus/content/repositories/releases" }
+        maven { url "http://maven.bughd.com/public" }
+        maven { url 'https://maven.fabric.io/public' }
     }
 }
 

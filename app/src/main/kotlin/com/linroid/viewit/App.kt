@@ -2,6 +2,7 @@ package com.linroid.viewit
 
 import android.app.Application
 import com.avos.avoscloud.AVOSCloud
+import com.crashlytics.android.Crashlytics
 import com.facebook.stetho.Stetho
 import com.github.piasy.biv.BigImageViewer
 import com.github.piasy.biv.loader.glide.GlideImageLoader
@@ -15,8 +16,10 @@ import com.linroid.viewit.utils.BINARY_DIRECTORY
 import com.linroid.viewit.utils.BINARY_SEARCH_IMAGE
 import com.linroid.viewit.utils.OSUtils
 import com.orm.SugarContext
+import io.fabric.sdk.android.Fabric
 import timber.log.Timber
 import java.io.File
+
 
 /**
  * @author linroid <linroid@gmail.com>
@@ -46,6 +49,7 @@ class App : Application() {
         setupDebug()
         installBinary()
         SugarContext.init(this)
+        Fabric.with(this, Crashlytics())
     }
 
     override fun onTerminate() {

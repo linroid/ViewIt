@@ -1,6 +1,5 @@
 package com.linroid.viewit.data.model
 
-import com.google.gson.annotations.Expose
 import com.linroid.viewit.utils.PathUtils
 import com.linroid.viewit.utils.THUMBNAIL_MAX_COUNT
 import com.linroid.viewit.utils.WildcardMatcher
@@ -13,10 +12,8 @@ import java.util.concurrent.atomic.AtomicInteger
  * @author linroid <linroid@gmail.com>
  * @since 30/01/2017
  */
-data class ImageTree(@Expose val dir: String, var parent: ImageTree? = null) {
-    @Expose
+data class ImageTree(val dir: String, var parent: ImageTree? = null) {
     val images = ArrayList<Image>()
-    @Expose
     val children = HashMap<String, ImageTree>()
 
     fun add(child: ImageTree) {
@@ -42,7 +39,7 @@ data class ImageTree(@Expose val dir: String, var parent: ImageTree? = null) {
 
     private fun merge(other: ImageTree) {
         images.addAll(other.images)
-        other.children.forEach { subDir, imageTree ->
+        for ((subDir, imageTree) in other.children) {
             if (children.containsKey(subDir)) {
                 children[subDir]!!.merge(imageTree)
             } else {
