@@ -12,6 +12,7 @@ import android.widget.Toast
 import com.avos.avoscloud.AVAnalytics
 import com.avos.avoscloud.feedback.FeedbackAgent
 import com.linroid.viewit.R
+import com.linroid.viewit.utils.EVENT_CLICK_FEEDBACK
 import com.trello.rxlifecycle.components.support.RxAppCompatActivity
 
 /**
@@ -37,7 +38,12 @@ abstract class BaseActivity : RxAppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        AVAnalytics.onPause(this);
+        AVAnalytics.onPause(this)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        AVAnalytics.onResume(this)
     }
 
     @LayoutRes
@@ -55,6 +61,7 @@ abstract class BaseActivity : RxAppCompatActivity() {
                 return true
             }
             R.id.action_feedback -> {
+                AVAnalytics.onEvent(this, EVENT_CLICK_FEEDBACK)
                 val agent = FeedbackAgent(this);
                 agent.startDefaultThreadActivity();
             }

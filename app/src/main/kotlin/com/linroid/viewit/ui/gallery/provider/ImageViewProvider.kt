@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
 import butterknife.bindView
+import com.avos.avoscloud.AVAnalytics
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.GlideDrawable
 import com.bumptech.glide.request.RequestListener
@@ -15,6 +16,8 @@ import com.linroid.viewit.R
 import com.linroid.viewit.data.model.Image
 import com.linroid.viewit.data.repo.ImageRepo
 import com.linroid.viewit.ui.gallery.GalleryActivity
+import com.linroid.viewit.utils.EVENT_CLICK_CLOUD_FAVORITE
+import com.linroid.viewit.utils.EVENT_VIEW_IMAGE
 import com.linroid.viewit.utils.RootUtils
 import com.trello.rxlifecycle.kotlin.bindToLifecycle
 import me.drakeet.multitype.ItemViewProvider
@@ -62,7 +65,10 @@ class ImageViewProvider(val activity: GalleryActivity,
                         Timber.e(error)
                     })
         }
-        holder.itemView.setOnClickListener { listener.onViewImage(image) }
+        holder.itemView.setOnClickListener {
+            listener.onViewImage(image)
+            AVAnalytics.onEvent(activity, EVENT_VIEW_IMAGE)
+        }
         holder.itemView.setOnLongClickListener {
             Toast.makeText(holder.itemView.context, image.path, Toast.LENGTH_SHORT).show()
             true

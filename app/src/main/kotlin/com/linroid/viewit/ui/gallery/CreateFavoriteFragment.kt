@@ -11,6 +11,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.Toast
+import com.avos.avoscloud.AVAnalytics
 import com.linroid.viewit.R
 import com.linroid.viewit.data.repo.cloud.CloudFavoriteRepo
 import com.linroid.viewit.data.repo.local.FavoriteRepo
@@ -18,6 +19,7 @@ import com.linroid.viewit.ui.BaseDialogFragment
 import com.linroid.viewit.ui.gallery.GalleryActivity
 import com.linroid.viewit.utils.ARG_APP_INFO
 import com.linroid.viewit.utils.ARG_IMAGE_TREE_PATH
+import com.linroid.viewit.utils.EVENT_SAVE_FAVORITE
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import timber.log.Timber
@@ -107,6 +109,7 @@ class CreateFavoriteFragment : BaseDialogFragment() {
     }
 
     private fun performSave() {
+        AVAnalytics.onEvent(context, EVENT_SAVE_FAVORITE, appInfo.packageName)
         val name = nameField.text.toString()
         favoriteRepo.create(appInfo, path, name)
                 .observeOn(AndroidSchedulers.mainThread())

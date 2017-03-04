@@ -7,9 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import butterknife.bindView
+import com.avos.avoscloud.AVAnalytics
 
 import com.linroid.viewit.R
 import com.linroid.viewit.data.model.ScanPath
+import com.linroid.viewit.utils.EVENT_CLICK_PATH_DELETE
+import com.linroid.viewit.utils.EVENT_CLICK_PATH_EDIT
 import com.linroid.viewit.utils.PathUtils
 
 import me.drakeet.multitype.ItemViewProvider
@@ -31,6 +34,7 @@ class ScanPathViewProvider(val appInfo: ApplicationInfo, val listener: OnDeleteS
         holder.nameTV.text = PathUtils.formatToDevice(scanPath.path, appInfo)
         holder.deleteBtn.visibility = if (deleteMode) View.VISIBLE else View.GONE
         holder.deleteBtn.setOnClickListener {
+            AVAnalytics.onEvent(it.context, EVENT_CLICK_PATH_DELETE)
             listener.onDeleteScanPath(scanPath)
         }
     }

@@ -7,10 +7,13 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import com.avos.avoscloud.AVAnalytics
 import com.linroid.viewit.R
 import com.linroid.viewit.data.model.Favorite
 import com.linroid.viewit.ui.favorite.CreateFavoriteFragment
 import com.linroid.viewit.utils.ARG_IMAGE_TREE_PATH
+import com.linroid.viewit.utils.EVENT_ADD_FAVORITE
+import com.linroid.viewit.utils.EVENT_DELETE_FAVORITE
 import com.trello.rxlifecycle.kotlin.bindToLifecycle
 import rx.android.schedulers.AndroidSchedulers
 import timber.log.Timber
@@ -53,10 +56,12 @@ abstract class GalleryViewerFragment : GalleryChildFragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_create_favorite -> {
+                AVAnalytics.onEvent(context, EVENT_ADD_FAVORITE, appInfo.packageName)
                 showCreateFavoriteDialog()
                 return true
             }
             R.id.action_delete_favorite -> {
+                AVAnalytics.onEvent(context, EVENT_DELETE_FAVORITE, appInfo.packageName)
                 alertDeleteFavorite()
                 return true
             }

@@ -1,5 +1,6 @@
 package com.linroid.viewit.ui.gallery.provider
 
+import android.content.Context
 import android.support.annotation.MenuRes
 import android.support.v7.widget.PopupMenu
 import android.support.v7.widget.RecyclerView
@@ -7,8 +8,13 @@ import android.view.*
 import android.widget.ImageButton
 import android.widget.TextView
 import butterknife.bindView
+import com.avos.avoscloud.AVAnalytics
 import com.linroid.viewit.R
 import com.linroid.viewit.data.repo.ImageRepo
+import com.linroid.viewit.utils.EVENT_CLICK_IMAGE_FILTER
+import com.linroid.viewit.utils.EVENT_CLICK_IMAGE_SORT
+import com.linroid.viewit.utils.EVENT_FILTER_IMAGE
+import com.linroid.viewit.utils.EVENT_SORT_IMAGE
 import com.linroid.viewit.utils.pref.LongPreference
 import me.drakeet.multitype.ItemViewProvider
 
@@ -21,8 +27,14 @@ class ImageCategoryViewProvider(val sortTypePref: LongPreference, val filterSize
 
     override fun onBindViewHolder(holder: ViewHolder, category: ImageCategory) {
         holder.labelTV.text = category.label
-        holder.actionSortBtn.setOnClickListener { showActionPopupMenu(it, R.menu.image_sort) }
-        holder.actionFilterBtn.setOnClickListener { showActionPopupMenu(it, R.menu.image_filter) }
+        holder.actionSortBtn.setOnClickListener {
+            AVAnalytics.onEvent(it.context, EVENT_CLICK_IMAGE_SORT)
+            showActionPopupMenu(it, R.menu.image_sort)
+        }
+        holder.actionFilterBtn.setOnClickListener {
+            AVAnalytics.onEvent(it.context, EVENT_CLICK_IMAGE_FILTER)
+            showActionPopupMenu(it, R.menu.image_filter)
+        }
         if (category.totalCount > 0) {
             holder.actionSortBtn.visibility     = View.VISIBLE
             holder.actionFilterBtn.visibility   = View.VISIBLE
@@ -38,10 +50,10 @@ class ImageCategoryViewProvider(val sortTypePref: LongPreference, val filterSize
         popupMenu.setOnMenuItemClickListener { item ->
             when (item.groupId) {
                 R.id.action_sort -> {
-                    handleSortAction(item)
+                    handleSortAction(view.context, item)
                 }
                 R.id.action_filter -> {
-                    handleFilterAction(item)
+                    handleFilterAction(view.context, item)
                 }
             }
             return@setOnMenuItemClickListener true
@@ -51,7 +63,7 @@ class ImageCategoryViewProvider(val sortTypePref: LongPreference, val filterSize
         val menu = popupMenu.menu;
         when (sortTypePref.get()) {
             ImageRepo.SORT_BY_PATH -> {
-                menu.findItem(R.id.action_sort_by_default)?.isChecked = true
+                menu.findItem(R.id.action_sort_by_path)?.isChecked = true
             }
             ImageRepo.SORT_BY_SIZE -> {
                 menu.findItem(R.id.action_sort_by_size)?.isChecked = true
@@ -77,7 +89,7 @@ class ImageCategoryViewProvider(val sortTypePref: LongPreference, val filterSize
 
     }
 
-    private fun handleFilterAction(item: MenuItem) {
+    private fun handleFilterAction(context: Context, item: MenuItem) {
         var size: Long = 0
         when (item.itemId) {
             R.id.action_filter_none -> size = 0
@@ -85,23 +97,27 @@ class ImageCategoryViewProvider(val sortTypePref: LongPreference, val filterSize
             R.id.action_filter_100K -> size = 100
             R.id.action_filter_300K -> size = 300
         }
+        AVAnalytics.onEvent(context, EVENT_FILTER_IMAGE, size.toString())
         if (size == filterSizePref.get()) {
             return
         }
         filterSizePref.set(size)
     }
 
-    private fun handleSortAction(item: MenuItem) {
+    private fun handleSortAction(context: Context, item: MenuItem) {
         var type = ImageRepo.SORT_BY_PATH
         when (item.itemId) {
-            R.id.action_sort_by_default -> {
+            R.id.action_sort_by_path -> {
                 type = ImageRepo.SORT_BY_PATH
+                AVAnalytics.onEvent(context, EVENT_SORT_IMAGE, "SORT_BY_PATH")
             }
             R.id.action_sort_by_size -> {
                 type = ImageRepo.SORT_BY_SIZE
+                AVAnalytics.onEvent(context, EVENT_SORT_IMAGE, "SORT_BY_SIZE")
             }
             R.id.action_sort_by_time -> {
                 type = ImageRepo.SORT_BY_TIME
+                AVAnalytics.onEvent(context, EVENT_SORT_IMAGE, "SORT_BY_TIME")
             }
         }
         if (type == sortTypePref.get()) {

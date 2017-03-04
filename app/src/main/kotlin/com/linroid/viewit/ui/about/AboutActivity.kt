@@ -12,9 +12,12 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import com.avos.avoscloud.AVAnalytics
 import com.linroid.viewit.BuildConfig
 import com.linroid.viewit.R
 import com.linroid.viewit.utils.ALIPAY_QRCODE
+import com.linroid.viewit.utils.EVENT_CLICK_ABOUT_DONATE
+import com.linroid.viewit.utils.EVENT_CLICK_ABOUT_SHARE
 import me.drakeet.multitype.Items
 import me.drakeet.support.about.*
 import java.net.URLEncoder
@@ -33,6 +36,16 @@ class AboutActivity : AbsAboutActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        AVAnalytics.onPause(this)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        AVAnalytics.onResume(this)
     }
 
     @SuppressLint("SetTextI18n")
@@ -62,6 +75,7 @@ class AboutActivity : AbsAboutActivity() {
 
     override fun onActionClick(action: View?) {
         openAlipay()
+        AVAnalytics.onEvent(this, EVENT_CLICK_ABOUT_DONATE)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -76,6 +90,7 @@ class AboutActivity : AbsAboutActivity() {
                 return true
             }
             R.id.action_share_app -> {
+                AVAnalytics.onEvent(this, EVENT_CLICK_ABOUT_SHARE)
                 shareApp()
                 return true
             }

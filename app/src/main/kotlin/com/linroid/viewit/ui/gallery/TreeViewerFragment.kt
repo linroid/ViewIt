@@ -11,6 +11,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
 import butterknife.bindView
+import com.avos.avoscloud.AVAnalytics
 import com.linroid.viewit.R
 import com.linroid.viewit.data.model.ImageTree
 import com.linroid.viewit.ui.gallery.provider.Category
@@ -18,6 +19,8 @@ import com.linroid.viewit.ui.gallery.provider.CategoryViewProvider
 import com.linroid.viewit.ui.gallery.provider.ImageCategory
 import com.linroid.viewit.ui.gallery.provider.ImageTreeViewProvider
 import com.linroid.viewit.utils.ARG_IMAGE_TREE_PATH
+import com.linroid.viewit.utils.EVENT_CLICK_CLOUD_FAVORITE
+import com.linroid.viewit.utils.EVENT_CLICK_JUMP_TO_IMAGES
 import com.linroid.viewit.utils.FormatUtils
 import com.linroid.viewit.widget.divider.CategoryItemDecoration
 import com.trello.rxlifecycle.android.FragmentEvent
@@ -105,7 +108,10 @@ open class TreeViewerFragment : GalleryViewerFragment() {
             treeCategory.apply {
                 items = treeItems
                 if (treeItems.size > 4 * SPAN_COUNT) {
-                    actionClickListener = View.OnClickListener { recyclerView.smoothScrollToPosition(imageCategory.position + 2) }
+                    actionClickListener = View.OnClickListener {
+                        AVAnalytics.onEvent(context, EVENT_CLICK_JUMP_TO_IMAGES, mapOf("count" to treeItems.size.toString(), "packageName" to appInfo.packageName))
+                        recyclerView.smoothScrollToPosition(imageCategory.position + 2)
+                    }
                     action = getString(R.string.label_category_action_scroll_to_images)
                 } else {
                     action = null

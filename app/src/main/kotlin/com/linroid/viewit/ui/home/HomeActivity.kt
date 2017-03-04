@@ -2,11 +2,13 @@ package com.linroid.viewit.ui.home
 
 import android.content.pm.ApplicationInfo
 import android.os.Bundle
+import android.os.SystemClock
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.Menu
 import android.view.MenuItem
+import com.avos.avoscloud.AVAnalytics
 import com.avos.avoscloud.feedback.FeedbackAgent
 import com.linroid.viewit.App
 import com.linroid.viewit.R
@@ -16,6 +18,8 @@ import com.linroid.viewit.ui.BaseListActivity
 import com.linroid.viewit.ui.about.AboutActivity
 import com.linroid.viewit.ui.gallery.provider.Category
 import com.linroid.viewit.ui.gallery.provider.CategoryViewProvider
+import com.linroid.viewit.utils.EVENT_CLICK_ABOUT
+import com.linroid.viewit.utils.EVENT_LIST_APP
 import com.linroid.viewit.utils.onMain
 import com.linroid.viewit.widget.divider.CategoryItemDecoration
 import com.trello.rxlifecycle.kotlin.bindToLifecycle
@@ -71,10 +75,11 @@ class HomeActivity : BaseListActivity() {
     }
 
     override fun onRefresh() {
+        val listStartMills = SystemClock.uptimeMillis()
         appRepo.list(SPAN_COUNT * 2)
                 .bindToLifecycle(this)
                 .onMain()
-                .subscribe {
+                .subscribe ({
                     if (it.key) { // top
                         it.bindToLifecycle(this).toList().subscribe { topApps ->
                             topUsageCategory.items = topApps
@@ -85,7 +90,9 @@ class HomeActivity : BaseListActivity() {
                         }
                     }
                     refresher.isRefreshing = false
-                }
+                }, {
+                    AVAnalytics.onEventDuration(this, EVENT_LIST_APP, SystemClock.uptimeMillis() - listStartMills)
+                })
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -97,6 +104,7 @@ class HomeActivity : BaseListActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_about -> {
+                AVAnalytics.onEvent(this, EVENT_CLICK_ABOUT)
                 AboutActivity.navTo(this)
                 return true
             }

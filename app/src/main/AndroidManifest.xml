@@ -4,7 +4,10 @@
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
     <application
         android:name=".App"
         android:allowBackup="true"
@@ -63,7 +66,7 @@
         </activity>
 
         <activity
-            android:name="com.avos.avoscloud.feedback.ThreadActivity" >
+            android:name="com.avos.avoscloud.feedback.ThreadActivity">
         </activity>
 
         <provider
@@ -76,7 +79,9 @@
                 android:resource="@xml/provider_paths"/>
         </provider>
 
-        <meta-data android:name="leancloud" android:value="${CHANNEL}"/>
+        <meta-data
+            android:name="leancloud"
+            android:value="${CHANNEL}"/>
 
         <!-- Sugar Database Configuration -->
         <meta-data

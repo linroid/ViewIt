@@ -13,6 +13,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import com.avos.avoscloud.AVAnalytics
 import com.linroid.viewit.App
 import com.linroid.viewit.R
 import com.linroid.viewit.data.model.CloudScanPath
@@ -27,9 +28,7 @@ import com.linroid.viewit.ui.path.provider.BuildInPath
 import com.linroid.viewit.ui.path.provider.BuildInPathViewProvider
 import com.linroid.viewit.ui.path.provider.CloudScanPathViewProvider
 import com.linroid.viewit.ui.path.provider.ScanPathViewProvider
-import com.linroid.viewit.utils.ARG_APP_INFO
-import com.linroid.viewit.utils.PathUtils
-import com.linroid.viewit.utils.onMain
+import com.linroid.viewit.utils.*
 import com.linroid.viewit.widget.divider.CategoryItemDecoration
 import com.linroid.viewit.widget.divider.DividerDecoration
 import com.nononsenseapps.filepicker.FilePickerActivity
@@ -121,6 +120,7 @@ class PathManagerActivity : BaseListActivity() {
         cloudCategory = Category<CloudScanPath>(buildInCategory, adapter, items, getString(R.string.category_cloud_path))
         localCategory = Category<ScanPath>(cloudCategory, adapter, items, getString(R.string.category_local_path),
                 getString(R.string.action_edit_path), View.OnClickListener {
+            AVAnalytics.onEvent(this, EVENT_CLICK_PATH_EDIT)
             val provider: ScanPathViewProvider = adapter.getProviderByClass<ScanPathViewProvider>(ScanPath::class.java)
             if (provider.deleteMode) {
                 provider.deleteMode = false
@@ -141,6 +141,7 @@ class PathManagerActivity : BaseListActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_add_path -> {
+                AVAnalytics.onEvent(this, EVENT_CLICK_PATH_ADD, appInfo.packageName)
                 performPickDirectory()
                 return true
             }

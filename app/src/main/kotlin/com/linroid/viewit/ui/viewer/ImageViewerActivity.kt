@@ -19,6 +19,7 @@ import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.Toast
 import butterknife.bindView
+import com.avos.avoscloud.AVAnalytics
 import com.linroid.viewit.App
 import com.linroid.viewit.R
 import com.linroid.viewit.data.model.Image
@@ -28,10 +29,7 @@ import com.linroid.viewit.ioc.ViewerGraph
 import com.linroid.viewit.ioc.module.ViewerModule
 import com.linroid.viewit.ui.BaseActivity
 import com.linroid.viewit.ui.ImmersiveActivity
-import com.linroid.viewit.utils.ARG_APP_INFO
-import com.linroid.viewit.utils.ARG_POSITION
-import com.linroid.viewit.utils.FILE_PROVIDER
-import com.linroid.viewit.utils.FormatUtils
+import com.linroid.viewit.utils.*
 import rx.android.schedulers.AndroidSchedulers
 import javax.inject.Inject
 
@@ -106,12 +104,15 @@ class ImageViewerActivity() : ImmersiveActivity(), View.OnClickListener {
         val image = currentImage()
         when (v.id) {
             R.id.action_share -> {
+                AVAnalytics.onEvent(this, EVENT_SHARE_IMAGE)
                 shareImage(image)
             }
             R.id.action_save -> {
+                AVAnalytics.onEvent(this, EVENT_SAVE_IMAGE)
                 saveImage(image)
             }
             R.id.action_delete -> {
+                AVAnalytics.onEvent(this, EVENT_DELETE_IMAGE)
                 deleteImage(image)
             }
         }
@@ -194,6 +195,7 @@ class ImageViewerActivity() : ImmersiveActivity(), View.OnClickListener {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.action_detail) {
+            AVAnalytics.onEvent(this, EVENT_CLICK_IMAGE_DETAIL)
             detailImage(currentImage())
         }
         return super.onOptionsItemSelected(item)

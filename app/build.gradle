@@ -16,7 +16,7 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
-        manifestPlaceholders = [APPLICATION_ID: applicationId]
+        manifestPlaceholders = [APPLICATION_ID: applicationId, CHANNEL: "DEFAULT"]
 //        ndk {
 //            abiFilters 'x86', 'x86_64', 'armeabi', 'armeabi-v7a', 'arm64-v8a'
 //        }

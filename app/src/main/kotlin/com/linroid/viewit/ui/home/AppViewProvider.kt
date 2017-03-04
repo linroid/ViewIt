@@ -10,10 +10,12 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import butterknife.bindView
+import com.avos.avoscloud.AVAnalytics
 import com.linroid.viewit.R
 import com.linroid.viewit.data.repo.local.AppUsageRepo
 import com.linroid.viewit.ui.BaseActivity
 import com.linroid.viewit.ui.gallery.GalleryActivity
+import com.linroid.viewit.utils.EVENT_CLICK_APP
 import com.trello.rxlifecycle.kotlin.bindToLifecycle
 import me.drakeet.multitype.ItemViewProvider
 import rx.Observable
@@ -38,6 +40,7 @@ internal class AppViewProvider(val activity: BaseActivity, val usageRepo: AppUsa
         val label = packageManager.getApplicationLabel(info)
         holder.name.text = label
         holder.root.setOnClickListener { view ->
+            AVAnalytics.onEvent(view.context, EVENT_CLICK_APP, info.packageName)
             usageRepo.visitApp(info).subscribe {
                 Timber.i("visitApp: $it")
             }

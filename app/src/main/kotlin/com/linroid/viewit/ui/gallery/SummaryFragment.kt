@@ -11,6 +11,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import butterknife.bindView
+import com.avos.avoscloud.AVAnalytics
 import com.linroid.viewit.R
 import com.linroid.viewit.data.model.CloudFavorite
 import com.linroid.viewit.data.model.Favorite
@@ -18,6 +19,7 @@ import com.linroid.viewit.data.model.ImageTree
 import com.linroid.viewit.data.repo.cloud.CloudFavoriteRepo
 import com.linroid.viewit.ui.gallery.provider.*
 import com.linroid.viewit.ui.path.PathManagerActivity
+import com.linroid.viewit.utils.EVENT_CLICK_PATH_SETTINGS
 import com.linroid.viewit.utils.PathUtils
 import com.linroid.viewit.widget.divider.CategoryItemDecoration
 import com.trello.rxlifecycle.android.FragmentEvent
@@ -181,6 +183,7 @@ class SummaryFragment : GalleryChildFragment(), SwipeRefreshLayout.OnRefreshList
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_gallery_setting -> {
+                AVAnalytics.onEvent(context, EVENT_CLICK_PATH_SETTINGS, appInfo.packageName)
                 openPathManager()
                 return true
             }

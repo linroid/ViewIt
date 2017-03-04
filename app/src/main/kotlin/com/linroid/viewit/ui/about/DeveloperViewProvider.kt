@@ -8,6 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import com.avos.avoscloud.AVAnalytics
+import com.linroid.viewit.utils.EVENT_CLICK_ABOUT_DEVELOPER
 import me.drakeet.multitype.ItemViewProvider
 import me.drakeet.support.about.R
 
@@ -30,6 +32,7 @@ class DeveloperViewProvider : ItemViewProvider<Developer, DeveloperViewProvider.
         holder.name.text = developer.name
         holder.desc.text = developer.desc
         holder.itemView.setOnClickListener {
+            AVAnalytics.onEvent(it.context, EVENT_CLICK_ABOUT_DEVELOPER)
             val intent = Intent(Intent.ACTION_VIEW)
             intent.data = Uri.parse(developer.page)
             it.context.startActivity(intent)
@@ -43,7 +46,5 @@ class DeveloperViewProvider : ItemViewProvider<Developer, DeveloperViewProvider.
         var name: TextView = itemView.findViewById(R.id.name) as TextView
         var desc: TextView = itemView.findViewById(R.id.desc) as TextView
         lateinit var url: String
-
-
     }
 }

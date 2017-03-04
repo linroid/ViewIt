@@ -8,11 +8,14 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import butterknife.bindView
+import com.avos.avoscloud.AVAnalytics
 import com.linroid.viewit.R
 import com.linroid.viewit.data.model.Favorite
 import com.linroid.viewit.data.model.ImageTree
 import com.linroid.viewit.data.repo.ImageRepo
 import com.linroid.viewit.ui.gallery.GalleryActivity
+import com.linroid.viewit.utils.EVENT_CLICK_FAVORITE
+import com.linroid.viewit.utils.EVENT_CLICK_LAUNCH_APP
 import com.linroid.viewit.utils.unsubscribeIfNotNull
 import com.linroid.viewit.widget.ThumbnailView
 import com.trello.rxlifecycle.kotlin.bindToLifecycle
@@ -40,6 +43,7 @@ class FavoriteViewProvider(val activity: GalleryActivity, val appInfo: Applicati
         })
         holder.loadImages(imageRepo, favorite.tree)
         holder.itemView.setOnClickListener {
+            AVAnalytics.onEvent(activity, EVENT_CLICK_FAVORITE)
             activity.viewFavorite(favorite)
         }
         holder.itemView.setOnLongClickListener {

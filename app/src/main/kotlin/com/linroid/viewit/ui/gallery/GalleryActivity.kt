@@ -7,6 +7,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.os.Bundle
+import android.os.SystemClock
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentTransaction
 import android.view.Menu
@@ -16,6 +17,7 @@ import android.view.View.VISIBLE
 import android.widget.FrameLayout
 import android.widget.Toast
 import butterknife.bindView
+import com.avos.avoscloud.AVAnalytics
 import com.bumptech.glide.manager.SupportRequestManagerFragment
 import com.linroid.viewit.App
 import com.linroid.viewit.R
@@ -28,9 +30,7 @@ import com.linroid.viewit.ioc.DaggerGalleryGraph
 import com.linroid.viewit.ioc.GalleryGraph
 import com.linroid.viewit.ioc.module.GalleryModule
 import com.linroid.viewit.ui.BaseActivity
-import com.linroid.viewit.utils.ARG_APP_INFO
-import com.linroid.viewit.utils.AndroidNavUtil
-import com.linroid.viewit.utils.unsubscribeIfNotNull
+import com.linroid.viewit.utils.*
 import com.linroid.viewit.widget.AnimatedSetView
 import com.trello.rxlifecycle.android.ActivityEvent
 import com.trello.rxlifecycle.kotlin.bindUntilEvent
@@ -105,10 +105,12 @@ class GalleryActivity : BaseActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_view_app_info -> {
+                AVAnalytics.onEvent(this, EVENT_CLICK_APP_DETAIL, appInfo.packageName)
                 AndroidNavUtil.openAppDetail(this, appInfo)
                 return true
             }
             R.id.action_launch_app -> {
+                AVAnalytics.onEvent(this, EVENT_CLICK_LAUNCH_APP, appInfo.packageName)
                 AndroidNavUtil.launchApp(this, appInfo)
                 return true
             }
@@ -126,6 +128,7 @@ class GalleryActivity : BaseActivity() {
     fun scanImages() {
         var count = 0
         scanSubscription.unsubscribeIfNotNull()
+        val listStartMills = SystemClock.uptimeMillis()
         scanSubscription = imageRepo.scan()
                 .bindUntilEvent(this, ActivityEvent.DESTROY)
                 .buffer(100, TimeUnit.MILLISECONDS)
@@ -136,14 +139,17 @@ class GalleryActivity : BaseActivity() {
                     supportActionBar?.subtitle = getString(R.string.subtitle_scanned_images, count)
                 }, { error ->
                     Timber.e(error, "onError")
+                    AVAnalytics.onError(this, error.message)
                     Toast.makeText(this, getString(R.string.msg_scan_failed, error.message), Toast.LENGTH_SHORT).show()
                     hideLoading()
                     supportActionBar?.subtitle = null
                 }, {
-                    //                    val msg = if (count > 0) getString(R.string.msg_scan_completed_with_images, count, imageRepo.images.size - count) else getString(R.string.msg_scan_completed_without_image)
-//                    Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
                     hideLoading()
                     supportActionBar?.subtitle = null
+                    AVAnalytics.onEventDuration(this,
+                            EVENT_SCAN_IMAGE,
+                            mapOf("count" to count.toString(), "packageName" to appInfo.packageName),
+                            SystemClock.uptimeMillis() - listStartMills)
                 })
     }
 

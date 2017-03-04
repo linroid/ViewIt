@@ -4,7 +4,7 @@
         android:id="@+id/action_sort"
         android:checkableBehavior="single">
         <item
-            android:id="@+id/action_sort_by_default"
+            android:id="@+id/action_sort_by_path"
             android:title="@string/action_sort_by_default">
         </item>
         <item
