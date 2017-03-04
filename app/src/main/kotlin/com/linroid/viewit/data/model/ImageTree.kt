@@ -1,10 +1,8 @@
 package com.linroid.viewit.data.model
 
 import com.linroid.viewit.utils.PathUtils
-)import com.linroid.viewit.utils.THUMBNAIL_MAX_COUNT
+import com.linroid.viewit.utils.THUMBNAIL_MAX_COUNT
 import com.linroid.viewit.utils.WildcardMatcher
-import okio.BufferedSink
-import okio.BufferedSource
 import java.io.File
 import java.util.*
 import java.util.concurrent.atomic.AtomicInteger

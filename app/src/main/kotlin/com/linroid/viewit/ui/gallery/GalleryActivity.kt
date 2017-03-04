@@ -230,8 +230,8 @@ class GalleryActivity : BaseActivity() {
         GalleryActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults)
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
+    override fun finish() {
+        super.finish()
         repoManager.removeRepo(appInfo)
     }
 }

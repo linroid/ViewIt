@@ -34,7 +34,7 @@ import javax.inject.Named
  * @author linroid <linroid@gmail.com>
  * @since 08/01/2017
  */
-class ImageRepo(val context: Context, val appInfo: ApplicationInfo) {
+class ImageRepo(val context: Context, val mountDir:File, val appInfo: ApplicationInfo) {
     companion object {
         const val UPDATE_EVENT = 0x1L
         const val REMOVE_EVENT = 0x2L
@@ -72,7 +72,6 @@ class ImageRepo(val context: Context, val appInfo: ApplicationInfo) {
 
     private val eventBus = PublishSubject<ImageEvent>()
     private val treeBuilder = BehaviorSubject<ImageTree>()
-    private val cacheDir: File = File(context.cacheDir, "mounts")
 
     var hasScanned = false;
 
@@ -132,12 +131,11 @@ class ImageRepo(val context: Context, val appInfo: ApplicationInfo) {
     }
 
     fun mountImage(image: Image): Observable<Image> {
-        val packageCacheDir: File = File(cacheDir, appInfo.packageName)
         val packInfo: PackageInfo = packageManager.getPackageInfo(appInfo.packageName, 0)
         val dataDir: String = packInfo.applicationInfo.dataDir
         val relativePath: String = image.source.absolutePath.substringAfter(dataDir)
 
-        val cacheFile = File(packageCacheDir, relativePath)
+        val cacheFile = File(mountDir, relativePath)
         image.mountFile = cacheFile
         if (cacheFile.exists()) {
             return Observable.just(image)
@@ -254,5 +252,14 @@ class ImageRepo(val context: Context, val appInfo: ApplicationInfo) {
 
 
     data class ImageEvent(@ImageEventType val type: Long, val position: Int, val effectCount: Int, val effectedImages: List<Image>)
+
+    fun cleanAsync() {
+        daemon {
+            Timber.w("cleanup all mounted files under ${appInfo.packageName}")
+            if (mountDir.exists()) {
+                mountDir.deleteRecursively()
+            }
+        }
+    }
 
 }

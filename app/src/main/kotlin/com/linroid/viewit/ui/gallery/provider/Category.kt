@@ -49,14 +49,14 @@ open class Category<T : Any>(
         if (oldCount > 0 || alwaysShow) {
             val oldEnd = Math.min(begin + oldCount + 1, listItems.size);
             if (oldEnd >= begin) {
-                Timber.w("remove items: $begin..$oldEnd, total:${listItems.size}")
+                Timber.d("remove items: $begin..$oldEnd, total:${listItems.size}")
                 listItems.subList(begin, oldEnd).clear()
-                Timber.w("after removed, total:${listItems.size}")
+                Timber.d("after removed, total:${listItems.size}")
                 adapter.notifyItemRangeRemoved(begin, oldCount + 1)
             }
         }
         if (newCount > 0 || alwaysShow) {
-            Timber.w("add category[$label] at:$begin with $newCount items")
+            Timber.d("add category[$label] at:$begin with $newCount items")
             listItems.add(begin, this)
             listItems.addAll(begin + 1, newVal!!)
             adapter.notifyItemRangeInserted(begin, newCount + 1)
