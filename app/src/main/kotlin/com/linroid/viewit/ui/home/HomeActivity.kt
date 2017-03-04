@@ -90,6 +90,7 @@ class HomeActivity : BaseListActivity() {
                         }
                     }
                     refresher.isRefreshing = false
+                }, { error ->
                 }, {
                     AVAnalytics.onEventDuration(this, EVENT_LIST_APP, SystemClock.uptimeMillis() - listStartMills)
                 })

@@ -81,11 +81,6 @@ data class ImageTree(val dir: String, var parent: ImageTree? = null) {
                 ]
     }
 
-    //    val allImages: List<Image> by lazy {
-//        val listWithChangObserver = ArrayList<Image>()
-//        allImages(listWithChangObserver)
-//        return@lazy listWithChangObserver
-//    }
     fun allImages(): List<Image> {
         val list = ArrayList<Image>()
         allImages(list)
@@ -142,7 +137,6 @@ data class ImageTree(val dir: String, var parent: ImageTree? = null) {
 
     private fun match(pattern: String): ImageTree? {
         if (WildcardMatcher.match(dir, pattern)) {
-            Timber.e("matched: $this")
             return this
         }
         for ((s, tree) in children) {

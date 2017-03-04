@@ -108,12 +108,17 @@ class SummaryFragment : GalleryChildFragment(), SwipeRefreshLayout.OnRefreshList
                 .bindToLifecycle(view)
                 .subscribe {
                     refresh(it)
-                    if (imageRepo.hasScanned) {
-                        refresher.isEnabled = true
-                        refresher.isRefreshing = false
-                    } else if (it != null) {
+                    if (savedInstanceState == null) {
+                        if (imageRepo.hasScanned) {
+                            refresher.isEnabled = true
+                            refresher.isRefreshing = false
+                        } else if (it != null) {
+                            activity.hideLoading()
+                            refresher.isRefreshing = true
+                        }
+                    } else {
                         activity.hideLoading()
-                        refresher.isRefreshing = true
+                        refresher.isRefreshing = false
                     }
                 }
     }

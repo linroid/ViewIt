@@ -66,7 +66,6 @@ class ImageViewerActivity() : ImmersiveActivity(), View.OnClickListener {
     override fun provideContentLayoutId(): Int = R.layout.activity_image_viewer
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         val arguments: Bundle = savedInstanceState ?: intent.extras
         appInfo = arguments.getParcelable(ARG_APP_INFO)
         position = arguments.getInt(ARG_POSITION)
@@ -75,6 +74,7 @@ class ImageViewerActivity() : ImmersiveActivity(), View.OnClickListener {
                 .viewerModule(ViewerModule(this, appInfo))
                 .build()
         graph.inject(this)
+        super.onCreate(savedInstanceState)
         initViews();
         loadData();
     }
@@ -182,8 +182,8 @@ class ImageViewerActivity() : ImmersiveActivity(), View.OnClickListener {
         viewPager.currentItem = position
     }
 
-    override fun onSaveInstanceState(outState: Bundle?, outPersistentState: PersistableBundle?) {
-        super.onSaveInstanceState(outState, outPersistentState)
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
         outState?.putInt(ARG_POSITION, position)
         outState?.putParcelable(ARG_APP_INFO, appInfo)
     }
@@ -209,8 +209,8 @@ class ImageViewerActivity() : ImmersiveActivity(), View.OnClickListener {
         actionsContainer.visibility = View.VISIBLE
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onBackPressed() {
+        super.onBackPressed()
         imageRepo.viewerHolderImages = null
     }
 }

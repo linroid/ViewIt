@@ -29,7 +29,8 @@
             android:id="@+id/loading_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/gallery_window_background">
+            android:background="@color/gallery_window_background"
+            android:visibility="gone">
 
             <com.linroid.viewit.widget.AnimatedSetView
                 android:id="@+id/loading_anim"

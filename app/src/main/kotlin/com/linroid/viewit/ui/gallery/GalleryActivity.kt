@@ -81,10 +81,11 @@ class GalleryActivity : BaseActivity() {
         graph.inject(this)
         super.onCreate(savedInstanceState)
         supportActionBar?.title = appName
-        initView()
-        showSummary()
+        if (savedInstanceState == null) {
+            showSummary()
+            refresh();
+        }
         showLoading()
-        refresh();
     }
 
     internal fun refresh() {
@@ -92,10 +93,6 @@ class GalleryActivity : BaseActivity() {
     }
 
     fun graph(): GalleryGraph = graph
-
-    private fun initView() {
-        supportActionBar?.subtitle = getString(R.string.subtitle_scanning)
-    }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.gallery, menu)
@@ -118,10 +115,14 @@ class GalleryActivity : BaseActivity() {
         return super.onOptionsItemSelected(item)
     }
 
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
+    }
+
     override fun onDestroy() {
         super.onDestroy()
-        repoManager.removeRepo(appInfo)
     }
+
 
     @SuppressLint("StringFormatMatches")
     @NeedsPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -145,7 +146,6 @@ class GalleryActivity : BaseActivity() {
                     supportActionBar?.subtitle = null
                 }, {
                     hideLoading()
-                    supportActionBar?.subtitle = null
                     AVAnalytics.onEventDuration(this,
                             EVENT_SCAN_IMAGE,
                             mapOf("count" to count.toString(), "packageName" to appInfo.packageName),
@@ -194,12 +194,14 @@ class GalleryActivity : BaseActivity() {
     }
 
     private fun showLoading() {
+        supportActionBar?.subtitle = getString(R.string.subtitle_scanning)
         loadingContainer.visibility = VISIBLE
         animView.start()
         animView.animate().alpha(1F).setDuration(300).start()
     }
 
     internal fun hideLoading() {
+        supportActionBar?.subtitle = null
         animView.animate().alpha(0F).setDuration(300).setListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator?) {
                 loadingContainer.visibility = GONE
@@ -230,5 +232,6 @@ class GalleryActivity : BaseActivity() {
 
     override fun onBackPressed() {
         super.onBackPressed()
+        repoManager.removeRepo(appInfo)
     }
 }
