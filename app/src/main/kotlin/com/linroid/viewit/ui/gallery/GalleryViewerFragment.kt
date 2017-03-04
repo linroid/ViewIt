@@ -14,6 +14,7 @@ import com.linroid.viewit.ui.favorite.CreateFavoriteFragment
 import com.linroid.viewit.utils.ARG_IMAGE_TREE_PATH
 import com.linroid.viewit.utils.EVENT_ADD_FAVORITE
 import com.linroid.viewit.utils.EVENT_DELETE_FAVORITE
+import com.linroid.viewit.utils.PathUtils
 import com.trello.rxlifecycle.kotlin.bindToLifecycle
 import rx.android.schedulers.AndroidSchedulers
 import timber.log.Timber
@@ -35,7 +36,7 @@ abstract class GalleryViewerFragment : GalleryChildFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        favoriteRepo.find(path, appInfo)
+        favoriteRepo.find(PathUtils.formatToVariable(path, appInfo), appInfo)
                 .bindToLifecycle(this)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({

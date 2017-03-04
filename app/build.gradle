@@ -16,7 +16,7 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
-        manifestPlaceholders = [APPLICATION_ID: applicationId, CHANNEL: "DEFAULT"]
+        manifestPlaceholders = [APPLICATION_ID: applicationId, CHANNEL: "linroid"]
 //        ndk {
 //            abiFilters 'x86', 'x86_64', 'armeabi', 'armeabi-v7a', 'arm64-v8a'
 //        }
@@ -58,6 +58,20 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             manifestPlaceholders = [DEBUG: "false"]
         }
+    }
+
+    productFlavors {
+        linroid {}
+        fir_im {}
+        play {}
+        coolapk {}
+        xiaomi {}
+        meizu {}
+        wandoujia {}
+    }
+
+    productFlavors.all {
+        flavor -> flavor.manifestPlaceholders = [CHANNEL: name]
     }
 
     sourceSets {
@@ -116,7 +130,7 @@ dependencies {
 //    compile "com.squareup.retrofit2:adapter-rxjava:$retrofit_version"
 //    compile 'com.squareup.okhttp3:okhttp:3.5.0'
 //    compile 'com.squareup.okhttp3:logging-interceptor:3.5.0'
-    compile 'com.google.code.gson:gson:2.8.0'
+//    compile 'com.google.code.gson:gson:2.8.0'
     compile 'com.github.salomonbrys.kotson:kotson:2.5.0'
     // rxjava
     compile 'io.reactivex:rxandroid:1.2.1'
@@ -164,7 +178,7 @@ dependencies {
 
     compile 'com.github.satyan:sugar:1.5'
 
-    compile 'com.facebook.stetho:stetho:1.4.2'
+//    compile 'com.facebook.stetho:stetho:1.4.2'
 
     // file picker
     compile 'com.nononsenseapps:filepicker:4.0.0'

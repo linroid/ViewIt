@@ -3,7 +3,6 @@ package com.linroid.viewit
 import android.app.Application
 import com.avos.avoscloud.AVOSCloud
 import com.crashlytics.android.Crashlytics
-import com.facebook.stetho.Stetho
 import com.github.piasy.biv.BigImageViewer
 import com.github.piasy.biv.loader.glide.GlideImageLoader
 import com.linroid.viewit.ioc.DaggerGlobalGraph
@@ -84,6 +83,5 @@ class App : Application() {
             }
         })
         AVOSCloud.setDebugLogEnabled(true)
-        Stetho.initializeWithDefaults(this)
     }
 }
