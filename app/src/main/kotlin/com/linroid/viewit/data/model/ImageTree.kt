@@ -1,9 +1,10 @@
 package com.linroid.viewit.data.model
 
 import com.linroid.viewit.utils.PathUtils
-import com.linroid.viewit.utils.THUMBNAIL_MAX_COUNT
+)import com.linroid.viewit.utils.THUMBNAIL_MAX_COUNT
 import com.linroid.viewit.utils.WildcardMatcher
-import timber.log.Timber
+import okio.BufferedSink
+import okio.BufferedSource
 import java.io.File
 import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
@@ -13,6 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger
  * @since 30/01/2017
  */
 data class ImageTree(val dir: String, var parent: ImageTree? = null) {
+
     val images = ArrayList<Image>()
     val children = HashMap<String, ImageTree>()
 

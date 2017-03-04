@@ -51,7 +51,7 @@ class ImageViewProvider(val activity: GalleryActivity,
                                 .load(image.mountFile)
                                 .centerCrop()
                                 .listener(object : RequestListener<File, GlideDrawable> {
-                                    override fun onException(e: Exception, model: File, target: Target<GlideDrawable>, isFirstResource: Boolean): Boolean {
+                                    override fun onException(e: Exception?, model: File, target: Target<GlideDrawable>, isFirstResource: Boolean): Boolean {
                                         Timber.e(e, "load image failed: ${model.absolutePath}")
                                         return false
                                     }
