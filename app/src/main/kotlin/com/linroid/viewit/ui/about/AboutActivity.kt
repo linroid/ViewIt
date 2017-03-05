@@ -69,6 +69,15 @@ class AboutActivity : AbsAboutActivity() {
         items.add(Line())
 
         items.add(Category("Open Source Licenses"))
+        items.add(License("Kotlin", "JetBrains s.r.o.", License.APACHE_2, "https://github.com/JetBrains/kotlin"))
+        items.add(License("RxAndroid", "ReactiveX", License.APACHE_2, "https://github.com/ReactiveX/RxAndroid"))
+        items.add(License("RxJava", "ReactiveX", License.APACHE_2, "https://github.com/ReactiveX/RxJava"))
+        items.add(License("RxLifecycle", "trello", License.APACHE_2, "https://github.com/trello/RxLifecycle"))
+        items.add(License("Dagger 2.0", "Google.Inc.", License.APACHE_2, "https://github.com/google/dagger"))
+        items.add(License("Timber", "Jake Wharton", License.APACHE_2, "https://github.com/JakeWharton/timber"))
+        items.add(License("Glide", "bumptech", "BSD, part MIT and Apache 2.0", "https://github.com/bumptech/glide"))
+        items.add(License("PaperParcel", "Bradley Campbell", License.APACHE_2, "https://github.com/grandstaish/paperparcel"))
+        items.add(License("sugar", "Satya Narayan", License.MIT, "https://github.com/satyan/sugar"))
         items.add(License("MultiType", "drakeet", License.APACHE_2, "https://github.com/drakeet/MultiType"))
         items.add(License("about-page", "drakeet", License.APACHE_2, "https://github.com/drakeet/about-page"))
     }
