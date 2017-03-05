@@ -1,6 +1,7 @@
 package com.linroid.viewit
 
 import android.app.Application
+import com.avos.avoscloud.AVAnalytics
 import com.avos.avoscloud.AVOSCloud
 import com.crashlytics.android.Crashlytics
 import com.github.piasy.biv.BigImageViewer
@@ -83,5 +84,6 @@ class App : Application() {
             }
         })
         AVOSCloud.setDebugLogEnabled(true)
+        AVAnalytics.setAnalyticsEnabled(false)
     }
 }

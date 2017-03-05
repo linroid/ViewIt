@@ -1,7 +1,9 @@
 package com.linroid.viewit.ui.home
 
+import android.content.DialogInterface
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
+import android.support.v7.app.AlertDialog
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -16,6 +18,8 @@ import com.linroid.viewit.data.repo.local.AppUsageRepo
 import com.linroid.viewit.ui.BaseActivity
 import com.linroid.viewit.ui.gallery.GalleryActivity
 import com.linroid.viewit.utils.EVENT_CLICK_APP
+import com.linroid.viewit.utils.RootUtils
+import com.linroid.viewit.utils.RxOnce
 import com.trello.rxlifecycle.kotlin.bindToLifecycle
 import me.drakeet.multitype.ItemViewProvider
 import rx.Observable
@@ -44,7 +48,13 @@ internal class AppViewProvider(val activity: BaseActivity, val usageRepo: AppUsa
             usageRepo.visitApp(info).subscribe {
                 Timber.i("visitApp: $it")
             }
-            GalleryActivity.navTo(activity, info)
+            RxOnce.app("require_root_prompt").subscribe({
+                if (it) {
+                    showRequireRootPromptDialog(info)
+                } else {
+                    GalleryActivity.navTo(activity, info)
+                }
+            })
         }
         holder.root.setOnLongClickListener {
             Toast.makeText(holder.root.context, label, Toast.LENGTH_SHORT).show()
@@ -56,6 +66,16 @@ internal class AppViewProvider(val activity: BaseActivity, val usageRepo: AppUsa
                 .bindToLifecycle(holder.icon)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { holder.icon.setImageDrawable(it) }
+    }
+
+    private fun showRequireRootPromptDialog(info: ApplicationInfo) {
+        AlertDialog.Builder(activity)
+                .setTitle(R.string.title_dialog_require_root_prompt)
+                .setMessage(if (RootUtils.isRootAvailable()) R.string.msg_dialog_require_root else R.string.msg_dialog_no_root)
+                .setPositiveButton(android.R.string.ok, { dialogInterface: DialogInterface, i: Int ->
+                    GalleryActivity.navTo(activity, info)
+                })
+                .show()
     }
 
     internal class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

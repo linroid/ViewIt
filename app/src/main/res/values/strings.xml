@@ -82,4 +82,10 @@
     <string name="title_dialog_image_detail">图片详情</string>
     <string name="error_open_alipay">打开支付宝失败:(\\n你可以联系我:linroid@gmail.com</string>
     <string name="feedback">反馈</string>
+    <string name="btn_add_path">手动添加扫描路径</string>
+    <string name="tips_to_add_path_no_root">「看应用」在扫描应用内部数据的时候需要 root 权限，但您的设备并没有 root:(</string>
+    <string name="tips_to_add_path_no_image">「看应用」没有扫描到图片，可以试试手动添加扫描路径~</string>
+    <string name="title_dialog_require_root_prompt">需要 root 权限</string>
+    <string name="msg_dialog_no_root">「看应用」在扫描应用内部数据的时候需要 root 权限，但您的设备并没有 root，但它依然可以扫描到部分图片，你也可以手动添加扫描路径来扫描更多的图片</string>
+    <string name="msg_dialog_require_root">「看应用」需要请求 root 权限才能扫描到应用的内部数据，否则只能扫描到一部分图片哦~</string>
 </resources>

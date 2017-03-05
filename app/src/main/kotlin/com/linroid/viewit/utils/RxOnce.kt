@@ -22,12 +22,16 @@ object RxOnce {
     /**
      * 整个 APP 生命周期中
      */
-    fun app(key: String, maxTimes: Int = 1): Observable<Int> {
+    fun app(key: String, maxTimes: Int = 1): Observable<Boolean> {
         val pref = App.get().getSharedPreferences("once", Context.MODE_PRIVATE)
         return Observable.just(key)
                 .map { pref.getInt(key, 0) + 1 }
-                .filter { it <= maxTimes }
-                .doOnNext { pref.edit().putInt(key, it) }
+                .doOnNext {
+                    if (it <= maxTimes) {
+                        pref.edit().putInt(key, it).apply()
+                    }
+                }
+                .map { it <= maxTimes }
     }
 
     /**

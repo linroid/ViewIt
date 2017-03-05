@@ -6,10 +6,8 @@ import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
-import android.view.View
+import android.view.*
+import android.widget.TextView
 import butterknife.bindView
 import com.avos.avoscloud.AVAnalytics
 import com.linroid.viewit.R
@@ -20,7 +18,9 @@ import com.linroid.viewit.data.repo.cloud.CloudFavoriteRepo
 import com.linroid.viewit.ui.gallery.provider.*
 import com.linroid.viewit.ui.path.PathManagerActivity
 import com.linroid.viewit.utils.EVENT_CLICK_PATH_SETTINGS
+import com.linroid.viewit.utils.EVENT_CLICK_PATH_SETTINGS_NO_IMAGE
 import com.linroid.viewit.utils.PathUtils
+import com.linroid.viewit.utils.RootUtils
 import com.linroid.viewit.widget.divider.CategoryItemDecoration
 import com.trello.rxlifecycle.android.FragmentEvent
 import com.trello.rxlifecycle.kotlin.bindToLifecycle
@@ -47,6 +47,8 @@ class SummaryFragment : GalleryChildFragment(), SwipeRefreshLayout.OnRefreshList
 
     private val recyclerView: RecyclerView by bindView(R.id.recyclerView)
     private val refresher: SwipeRefreshLayout by bindView(R.id.refresher)
+    private val noImageLayout: ViewGroup by bindView(R.id.no_image_found_layout)
+    private val noImageMsgTV: TextView by bindView(R.id.no_image_msg)
 
     companion object {
         fun newInstance(): SummaryFragment {
@@ -121,10 +123,13 @@ class SummaryFragment : GalleryChildFragment(), SwipeRefreshLayout.OnRefreshList
                         refresher.isRefreshing = false
                     }
                 }
+        view.findViewById(R.id.btn_add_path).setOnClickListener {
+            AVAnalytics.onEvent(context, EVENT_CLICK_PATH_SETTINGS_NO_IMAGE, appInfo.packageName)
+            openPathManager()
+        }
     }
 
     private fun refresh(tree: ImageTree) {
-
         // cloudFavorites
         cloudFavoriteRepo.list(appInfo)
                 .doOnNext { cloudFavorites ->
@@ -178,6 +183,20 @@ class SummaryFragment : GalleryChildFragment(), SwipeRefreshLayout.OnRefreshList
 
         // images
         updateImageTree(tree)
+
+
+        if (imageRepo.hasScanned && tree.allImagesCount() == 0) {
+            noImageLayout.visibility = View.VISIBLE
+            recyclerView.visibility = View.GONE
+            if (!RootUtils.isRootAvailable()) {
+                noImageMsgTV.text = getString(R.string.tips_to_add_path_no_root)
+            } else {
+                noImageMsgTV.text = getString(R.string.tips_to_add_path_no_image)
+            }
+        } else {
+            noImageLayout.visibility = View.GONE
+            recyclerView.visibility = View.VISIBLE
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
