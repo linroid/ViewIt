@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.linroid.rxshell.exception.ShellExecuteErrorException;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.nio.charset.Charset;
@@ -51,7 +52,7 @@ class Shell {
 
     private boolean connect() {
         try {
-            ProcessBuilder builder = new ProcessBuilder(requireRoot ? COMMAND_SU : COMMAND_SH);
+            ProcessBuilder builder = new ProcessBuilder(requireRoot ? Utils.getSuPath() : COMMAND_SH);
             builder.redirectErrorStream(true);
             builder.command();
 
