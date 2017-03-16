@@ -166,7 +166,7 @@ class GalleryActivity : BaseActivity() {
 
     fun viewImages(tree: ImageTree) {
         Timber.d("viewImages:$tree")
-//        addToStack(ImagesViewerFragment.newInstance(tree), "images:${tree.dir}")
+//        addToStack(ImagesViewerFragment.newInstance(tree), "scannedImages:${tree.dir}")
     }
 
     fun viewFavorite(favorite: Favorite) {

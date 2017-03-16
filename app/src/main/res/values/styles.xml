@@ -9,6 +9,16 @@
         <item name="android:background">?selectableItemBackgroundBorderless</item>
     </style>
 
+    <style name="ImageMultiOptionsStyle">
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:gravity">center</item>
+        <item name="android:scaleType">centerInside</item>
+        <item name="android:background">?selectableItemBackgroundBorderless</item>
+        <item name="android:tint">#595959</item>
+    </style>
+
     <style name="AboutPage.Header.Slogan">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>

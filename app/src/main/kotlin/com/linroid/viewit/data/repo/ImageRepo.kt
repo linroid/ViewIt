@@ -34,7 +34,7 @@ import javax.inject.Named
  * @author linroid <linroid@gmail.com>
  * @since 08/01/2017
  */
-class ImageRepo(val context: Context, val mountDir:File, val appInfo: ApplicationInfo) {
+class ImageRepo(val context: Context, val mountDir: File, val appInfo: ApplicationInfo) {
     companion object {
         const val UPDATE_EVENT = 0x1L
         const val REMOVE_EVENT = 0x2L
@@ -75,7 +75,7 @@ class ImageRepo(val context: Context, val mountDir:File, val appInfo: Applicatio
 
     var hasScanned = false;
 
-    val images = ArrayList<Image>()
+    val scannedImages = ArrayList<Image>()
 
     var viewerHolderImages: MutableList<Image>? = null
 
@@ -86,7 +86,7 @@ class ImageRepo(val context: Context, val mountDir:File, val appInfo: Applicatio
 
     fun scan(): Observable<Image> {
         // 扫描外部数据
-        Timber.d("scan images for ${appInfo.packageName}")
+        Timber.d("scan scannedImages for ${appInfo.packageName}")
         val externalData: File = context.externalCacheDir.parentFile.parentFile
         var observable: Observable<Image> = imageScanner.scan(appInfo.packageName, File(externalData, appInfo.packageName))
 
@@ -120,9 +120,9 @@ class ImageRepo(val context: Context, val mountDir:File, val appInfo: Applicatio
                 .doOnCompleted {
                     Timber.d("doOnCompleted")
                     hasScanned = true
-                    images.clear()
-                    images.addAll(scanned)
-                    eventBus.onNext(ImageEvent(UPDATE_EVENT, 0, images.size, images))
+                    scannedImages.clear()
+                    scannedImages.addAll(scanned)
+                    eventBus.onNext(ImageEvent(UPDATE_EVENT, scannedImages.size, scannedImages))
                 }
     }
 
@@ -152,14 +152,16 @@ class ImageRepo(val context: Context, val mountDir:File, val appInfo: Applicatio
                 .map { image }.doOnError { cacheFile.delete() }
     }
 
-    fun saveImage(image: Image, appInfo: ApplicationInfo): Observable<File> {
-        return Observable.just(image)
-                .flatMap { if (it.file() == null) mountImage(image) else Observable.just(image) }
+    fun saveImage(image: Image, appInfo: ApplicationInfo): Observable<Pair<Image, File>> = saveImages(arrayListOf(image), appInfo)
+
+    fun saveImages(images: List<Image>, appInfo: ApplicationInfo): Observable<Pair<Image, File>> {
+        return Observable.from(images)
+                .flatMap { if (it.file() == null) mountImage(it) else Observable.just(it) }
                 .flatMap {
                     if (Environment.getExternalStorageState() != Environment.MEDIA_MOUNTED) {
                         throw IllegalStateException(context.getString(R.string.msg_save_image_failed_without_sdcard));
                     }
-                    val targetName = "${packageManager.getApplicationLabel(appInfo)}_${System.currentTimeMillis()}.${image.postfix()}"
+                    val targetName = "${packageManager.getApplicationLabel(appInfo)}_${System.currentTimeMillis()}.${it.postfix()}"
                     val pictureDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
                     val saveDirectory = File(pictureDirectory, context.getString(R.string.app_name));
                     val desFile: File;
@@ -170,26 +172,27 @@ class ImageRepo(val context: Context, val mountDir:File, val appInfo: Applicatio
                     if (!desFile.exists()) {
                         desFile.createNewFile();
                     }
-                    FileUtils.copyFile(image.file()!!, desFile);
-                    return@flatMap Observable.just(desFile)
+                    FileUtils.copyFile(it.file()!!, desFile);
+                    return@flatMap Observable.just(Pair(it, desFile))
                 }.subscribeOn(Schedulers.io())
     }
 
-    fun deleteImage(image: Image, appInfo: ApplicationInfo): Observable<Boolean> {
-        return Observable.just(image.path)
-                .flatMap { path ->
-                    if (RootUtils.isRootFile(path)) {
-                        return@flatMap rootShell.deleteFile(path)
+    fun deleteImage(image: Image, appInfo: ApplicationInfo): Observable<Boolean> = deleteImages(arrayListOf(image), appInfo)
+
+    fun deleteImages(images: List<Image>, appInfo: ApplicationInfo): Observable<Boolean> {
+        return Observable.from(images)
+                .flatMap {
+                    if (RootUtils.isRootFile(it.path)) {
+                        return@flatMap rootShell.deleteFile(it.path)
                     } else {
-                        return@flatMap Observable.just(File(image.path).delete())
+                        return@flatMap Observable.just(File(it.path).delete())
                     }
                 }
                 .subscribeOn(Schedulers.io())
-                .doOnNext {
-                    val position = images.indexOf(image)
-                    images.remove(image)
-                    viewerHolderImages?.remove(image)
-                    eventBus.onNext(ImageEvent(REMOVE_EVENT, position, 1, arrayListOf(image)))
+                .doOnCompleted {
+                    this.scannedImages.removeAll(images)
+                    viewerHolderImages?.removeAll(images)
+                    eventBus.onNext(ImageEvent(REMOVE_EVENT, images.size, images))
                 }
     }
 
@@ -207,7 +210,7 @@ class ImageRepo(val context: Context, val mountDir:File, val appInfo: Applicatio
                         UPDATE_EVENT -> {
                             val map = HashMap<String, ImageTree>()
                             val rootTree = ImageTree(File.separator)
-                            images.forEach {
+                            scannedImages.forEach {
                                 val dir = it.source.parent
                                 var tree = map[dir]
                                 if (tree == null) {
@@ -251,7 +254,7 @@ class ImageRepo(val context: Context, val mountDir:File, val appInfo: Applicatio
     }
 
 
-    data class ImageEvent(@ImageEventType val type: Long, val position: Int, val effectCount: Int, val effectedImages: List<Image>)
+    data class ImageEvent(@ImageEventType val type: Long, val effectCount: Int, val effectedImages: List<Image>)
 
     fun cleanAsync() {
         daemon {

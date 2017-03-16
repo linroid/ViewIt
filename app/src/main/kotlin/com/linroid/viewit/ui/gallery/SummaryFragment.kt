@@ -181,7 +181,7 @@ class SummaryFragment : GalleryChildFragment(), SwipeRefreshLayout.OnRefreshList
             }
         }
 
-        // images
+        // scannedImages
         updateImageTree(tree)
 
 

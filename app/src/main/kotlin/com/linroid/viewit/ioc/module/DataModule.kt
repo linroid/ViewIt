@@ -49,14 +49,14 @@ class DataModule {
                         JsonObject().apply {
                             serializer.src.let {
                                 set("dir", it.dir)
-                                set("images", serializer.context.serialize(it.images, imagesType))
+                                set("scannedImages", serializer.context.serialize(it.images, imagesType))
                                 set("children", serializer.context.serialize(it.children, childrenType))
                             }
                         }
                     }
                     deserialize {
                         val tree = ImageTree(it.json["dir"].asString, null)
-                        it.json["images"].asJsonArray.forEach { item ->
+                        it.json["scannedImages"].asJsonArray.forEach { item ->
                             tree.images.add(it.context.deserialize(item))
                         }
                         val obj = it.json["children"].asJsonObject

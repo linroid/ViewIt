@@ -69,19 +69,19 @@ abstract class BaseActivity : RxAppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    protected fun toastShort(msg: String) {
+    fun toastShort(msg: String) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
     }
 
-    protected fun toastShort(@StringRes msgResId: Int) {
+    fun toastShort(@StringRes msgResId: Int) {
         Toast.makeText(this, msgResId, Toast.LENGTH_SHORT).show()
     }
 
-    protected fun toastLong(msg: String) {
+    fun toastLong(msg: String) {
         Toast.makeText(this, msg, Toast.LENGTH_LONG).show()
     }
 
-    protected fun toastLong(@StringRes msgResId: Int) {
+    fun toastLong(@StringRes msgResId: Int) {
         Toast.makeText(this, msgResId, Toast.LENGTH_LONG).show()
     }
 }

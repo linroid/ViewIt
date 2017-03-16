@@ -3,6 +3,7 @@ package com.linroid.viewit.ui.gallery
 import android.content.pm.ApplicationInfo
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import com.linroid.viewit.R
 import com.linroid.viewit.data.model.Image
 import com.linroid.viewit.data.model.ImageTree
@@ -34,7 +35,7 @@ import javax.inject.Named
  * @author linroid <linroid@gmail.com>
  * @since 01/02/2017
  */
-abstract class GalleryChildFragment : BaseFragment() {
+abstract class GalleryChildFragment : BaseFragment(), ImageViewProvider.ImageListener {
 
     @Inject lateinit protected var imageRepo: ImageRepo
     @Inject lateinit protected var favoriteRepo: FavoriteRepo
@@ -45,6 +46,7 @@ abstract class GalleryChildFragment : BaseFragment() {
     @field:[Inject Named(PREF_FILTER_SIZE)]
     lateinit var filterSizePref: LongPreference
 
+    private lateinit var imageViewProvider: ImageViewProvider
     protected val items = ArrayList<Any>()
     protected var adapter = MultiTypeAdapter(items)
     private var subscription: Subscription? = null
@@ -66,15 +68,19 @@ abstract class GalleryChildFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        adapter.register(Image::class.java, ImageViewProvider(activity, imageRepo, object : ImageViewProvider.ImageListener {
-            override fun onViewImage(image: Image) {
-                ImageViewerActivity.navTo(activity, imageRepo,
-                        imageCategory.items!!,
-                        imageCategory.items!!.indexOf(image))
-            }
-
-        }))
+        imageViewProvider = ImageViewProvider(activity, imageRepo, this)
+        adapter.register(Image::class.java, imageViewProvider)
         adapter.register(ImageCategory::class.java, ImageCategoryViewProvider(sortTypePref, filterSizePref))
+    }
+
+    override fun onViewImage(image: Image) {
+        ImageViewerActivity.navTo(activity, imageRepo,
+                imageCategory.items!!,
+                imageCategory.items!!.indexOf(image))
+    }
+
+    override fun onStartSelectMode() {
+        ImageMultiOptionsController(activity, imageViewProvider, appInfo, imageRepo, imageCategory).attach()
     }
 
     protected fun updateImageTree(tree: ImageTree?) {

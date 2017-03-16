@@ -23,6 +23,7 @@ open class Category<T : Any>(
 
     private var itemCount = 0
 
+
     var position: Int by Delegates.observable(-1) { prop: KProperty<*>, old: Int, new: Int ->
         if (next != null) {
             updateNext()
@@ -63,6 +64,9 @@ open class Category<T : Any>(
         }
         itemCount = newCount
         updateNext()
+        listeners.forEach {
+            it.onChanged(oldVal, newVal)
+        }
     }
 
     var next: Category<*>? = null
@@ -75,5 +79,19 @@ open class Category<T : Any>(
         if (prev == null) {
             position = -1
         }
+    }
+
+    private var listeners = HashSet<OnItemsChangedListener<T>>()
+
+    fun registerChangedListener(listener: OnItemsChangedListener<T>) {
+        listeners.add(listener)
+    }
+
+    fun unregisterChangedListener(listener: OnItemsChangedListener<T>) {
+        listItems.remove(listener)
+    }
+
+    interface OnItemsChangedListener<T> {
+        fun onChanged(oldVal: List<T>?, newVal: List<T>?)
     }
 }

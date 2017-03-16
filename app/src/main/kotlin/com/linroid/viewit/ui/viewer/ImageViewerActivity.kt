@@ -145,13 +145,13 @@ class ImageViewerActivity() : ImmersiveActivity(), View.OnClickListener {
     }
 
     private fun saveImage(image: Image) {
-        imageRepo.saveImage(image, appInfo).subscribe({ savedFile ->
+        imageRepo.saveImage(image, appInfo).subscribe({ pair ->
             val values: ContentValues = ContentValues();
             values.put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis());
             values.put(MediaStore.Images.Media.MIME_TYPE, image.mimeType());
-            values.put(MediaStore.MediaColumns.DATA, savedFile.absolutePath);
+            values.put(MediaStore.MediaColumns.DATA, pair.second.absolutePath);
             val uri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-            val relativePath = FormatUtils.formatPath(savedFile.absolutePath, appInfo)
+            val relativePath = FormatUtils.formatPath(pair.second.absolutePath, appInfo)
             Snackbar.make(viewPager, getString(R.string.toast_save_image_success, relativePath), Snackbar.LENGTH_SHORT)
                     .setAction(R.string.snack_action_open_saved_image, {
                         val intent: Intent = Intent();
