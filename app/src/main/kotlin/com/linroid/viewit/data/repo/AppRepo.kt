@@ -45,6 +45,8 @@ class AppRepo @Inject constructor(val usageRepo: AppUsageRepo, val context: Cont
 //    }
 
     //    Observable<List<ApplicationInfo>>
+    var scannedApps: List<ApplicationInfo>? = null;
+
     fun list(count: Int): Observable<GroupedObservable<Boolean, ApplicationInfo>> {
         return usageRepo.listTop(count).map { topApps ->
             val map = HashMap<String, AppUsage>()
@@ -76,16 +78,17 @@ class AppRepo @Inject constructor(val usageRepo: AppUsageRepo, val context: Cont
         return Observable
                 .create<List<ApplicationInfo>> { subscriber ->
                     val pm = context.packageManager;
-                    val packages = pm.getInstalledApplications(android.content.pm.PackageManager.GET_META_DATA)
+                    val packages = pm.getInstalledApplications(android.content.pm.PackageManager.GET_META_DATA).filter { info ->
+                        val isSelfApp = info.packageName == BuildConfig.APPLICATION_ID
+                        val isSystemApp = (info.flags and ApplicationInfo::FLAG_SYSTEM.get()) != 0
+                        !isSelfApp && !isSystemApp
+                    }
+                    scannedApps = packages
                     subscriber.onNext(packages)
                     subscriber.onCompleted()
-
                 }
-                .flatMap { Observable.from(it) }
-                .filter { info ->
-                    val isSelfApp = info.packageName == BuildConfig.APPLICATION_ID
-                    val isSystemApp = (info.flags and ApplicationInfo::FLAG_SYSTEM.get()) != 0
-                    !isSelfApp && !isSystemApp
+                .flatMap {
+                    Observable.from(it)
                 }
                 .subscribeOn(Schedulers.io())
     }

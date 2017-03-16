@@ -3,13 +3,16 @@ package com.linroid.viewit.ui.home
 import android.content.pm.ApplicationInfo
 import android.os.Bundle
 import android.os.SystemClock
+import android.support.v4.view.MenuItemCompat
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.SearchView
 import android.view.Menu
 import android.view.MenuItem
 import com.avos.avoscloud.AVAnalytics
 import com.avos.avoscloud.feedback.FeedbackAgent
+import com.jakewharton.rxbinding.support.v7.widget.RxSearchView
 import com.linroid.viewit.App
 import com.linroid.viewit.R
 import com.linroid.viewit.data.repo.AppRepo
@@ -25,6 +28,9 @@ import com.linroid.viewit.widget.divider.CategoryItemDecoration
 import com.trello.rxlifecycle.kotlin.bindToLifecycle
 import me.drakeet.multitype.Items
 import me.drakeet.multitype.MultiTypeAdapter
+import rx.Observable
+import rx.lang.kotlin.onErrorReturnNull
+import rx.schedulers.Schedulers
 import javax.inject.Inject
 
 /**
@@ -39,6 +45,7 @@ class HomeActivity : BaseListActivity() {
 
     lateinit var topUsageCategory: Category<ApplicationInfo>
     lateinit var otherAppCategory: Category<ApplicationInfo>
+    lateinit var searchCategory: Category<ApplicationInfo>
 
     @Inject
     lateinit var appRepo: AppRepo
@@ -57,7 +64,8 @@ class HomeActivity : BaseListActivity() {
         adapter.register(ApplicationInfo::class.java, AppViewProvider(this, usageRepo))
         adapter.register(Category::class.java, CategoryViewProvider())
 
-        topUsageCategory = Category<ApplicationInfo>(null, adapter, items, getString(R.string.category_top_usage_app))
+        searchCategory = Category<ApplicationInfo>(null, adapter, items, getString(R.string.category_search_app))
+        topUsageCategory = Category<ApplicationInfo>(searchCategory, adapter, items, getString(R.string.category_top_usage_app))
         otherAppCategory = Category<ApplicationInfo>(topUsageCategory, adapter, items, getString(R.string.category_other_app))
 
         val gridLayoutManager = GridLayoutManager(this, SPAN_COUNT);
@@ -79,7 +87,7 @@ class HomeActivity : BaseListActivity() {
         appRepo.list(SPAN_COUNT * 2)
                 .bindToLifecycle(this)
                 .onMain()
-                .subscribe ({
+                .subscribe({
                     if (it.key) { // top
                         it.bindToLifecycle(this).toList().subscribe { topApps ->
                             topUsageCategory.items = topApps
@@ -99,6 +107,28 @@ class HomeActivity : BaseListActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.home, menu)
+        val searchItem = menu.findItem(R.id.action_search)
+        val searchView = MenuItemCompat.getActionView(searchItem) as SearchView
+        RxSearchView.queryTextChangeEvents(searchView)
+                .bindToLifecycle(searchView)
+                .map { it.queryText() }
+                .observeOn(Schedulers.computation())
+                .flatMap { text ->
+                    Observable.from(appRepo.scannedApps)
+                            .filter {
+                                if (text.isEmpty()) {
+                                    return@filter false
+                                }
+                                return@filter packageManager.getApplicationLabel(it).contains(text, true)
+                            }
+                            .toList()
+                            .onErrorReturnNull()
+                }
+                .onMain()
+                .subscribe {
+                    searchCategory.items = it
+                    recyclerView.scrollToPosition(0)
+                }
         return super.onCreateOptionsMenu(menu)
     }
 

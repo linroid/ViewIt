@@ -148,9 +148,9 @@ dependencies {
 //    compile 'com.trello:rxlifecycle-navi:1.0'
     compile 'com.trello:rxlifecycle-kotlin:1.0'
     //rxbinding
-//    compile 'com.jakewharton.rxbinding:rxbinding-kotlin:1.0.0'
+    compile 'com.jakewharton.rxbinding:rxbinding-kotlin:1.0.0'
 //    compile 'com.jakewharton.rxbinding:rxbinding-support-v4-kotlin:1.0.0'
-//    compile 'com.jakewharton.rxbinding:rxbinding-appcompat-v7-kotlin:1.0.0'
+    compile 'com.jakewharton.rxbinding:rxbinding-appcompat-v7-kotlin:1.0.0'
 //    compile 'com.jakewharton.rxbinding:rxbinding-recyclerview-v7-kotlin:1.0.0'
 //    compile 'com.jakewharton.rxbinding:rxbinding-design-kotlin:1.0.0'
     // kotlin

@@ -94,4 +94,6 @@
     <string name="msg_batch_delete_image_success">成功删除了 %1$d 张图片:)</string>
     <string name="msg_warning_batch_delete_image">删除这些图片(共%1$d张)可能导致「%2$s」运行异常，请谨慎操作!</string>
     <string name="msg_require_select_image">请选择至少一张图片</string>
+    <string name="action_search">搜索应用</string>
+    <string name="category_search_app">搜索</string>
 </resources>
