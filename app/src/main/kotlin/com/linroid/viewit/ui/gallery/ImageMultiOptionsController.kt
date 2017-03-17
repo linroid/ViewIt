@@ -1,5 +1,6 @@
 package com.linroid.viewit.ui.gallery
 
+import android.app.ProgressDialog
 import android.content.ContentValues
 import android.content.DialogInterface
 import android.content.pm.ApplicationInfo
@@ -99,6 +100,10 @@ class ImageMultiOptionsController(val activity: BaseActivity,
             activity.toastShort(R.string.msg_require_select_image)
             return
         }
+        val progress: ProgressDialog = ProgressDialog(activity)
+        progress.isIndeterminate = true
+        progress.setMessage(activity.getString(R.string.msg_batch_deleting_image))
+        progress.show()
         AlertDialog.Builder(activity)
                 .setTitle(R.string.title_warning_delete_image)
                 .setMessage(activity.getString(R.string.msg_warning_batch_delete_image, selectedItems.size, activity.packageManager.getApplicationLabel(appInfo)))
@@ -113,16 +118,28 @@ class ImageMultiOptionsController(val activity: BaseActivity,
                             .subscribe({
                             }, { error ->
                                 activity.toastShort(R.string.msg_delete_image_failed)
+                                progress.dismiss()
                             }, {
                                 activity.toastShort(activity.getString(R.string.msg_batch_delete_image_success, selectedItems.size))
                                 mode.finish()
-                                imageCategory.invalidate()
+                                imageCategory.invalidate(
+
+                                )
+                                progress.dismiss()
                             })
                 })
                 .show()
     }
 
     private fun batchSaveImage(selectedItems: Set<Image>) {
+        if (selectedItems.isEmpty()) {
+            activity.toastShort(R.string.msg_require_select_image)
+            return
+        }
+        val progress: ProgressDialog = ProgressDialog(activity)
+        progress.isIndeterminate = true
+        progress.setMessage(activity.getString(R.string.msg_batch_saving_image))
+        progress.show()
         if (selectedItems.isEmpty()) {
             activity.toastShort(R.string.msg_require_select_image)
             return
@@ -137,9 +154,11 @@ class ImageMultiOptionsController(val activity: BaseActivity,
                     activity.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
                 }, { error ->
                     activity.toastShort(error.message!!)
+                    progress.dismiss()
                 }, {
                     activity.toastLong(activity.getString(R.string.msg_batch_save_image_success, selectedItems.size))
                     mode.finish()
+                    progress.dismiss()
                 })
     }
 

@@ -96,4 +96,6 @@
     <string name="msg_require_select_image">请选择至少一张图片</string>
     <string name="action_search">搜索应用</string>
     <string name="category_search_app">搜索</string>
+    <string name="msg_batch_saving_image">保存中...</string>
+    <string name="msg_batch_deleting_image">删除中...</string>
 </resources>
