@@ -87,7 +87,11 @@ class ImageRepo(val context: Context, val mountDir: File, val appInfo: Applicati
     fun scan(): Observable<Image> {
         // 扫描外部数据
         Timber.d("scan scannedImages for ${appInfo.packageName}")
-        val externalData: File = context.externalCacheDir.parentFile.parentFile
+        val externalData: File = try {
+            context.externalCacheDir.parentFile.parentFile
+        } catch (error: Exception) {
+            File(Environment.getExternalStorageDirectory(), "/Android/data/${appInfo.packageName}")
+        }
         var observable: Observable<Image> = imageScanner.scan(appInfo.packageName, File(externalData, appInfo.packageName))
 
         // 扫描内部数据

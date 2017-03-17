@@ -114,6 +114,9 @@ class HomeActivity : BaseListActivity() {
                 .map { it.queryText() }
                 .observeOn(Schedulers.computation())
                 .flatMap { text ->
+                    if (appRepo.scannedApps == null) {
+                        return@flatMap Observable.just(null)
+                    }
                     Observable.from(appRepo.scannedApps)
                             .filter {
                                 if (text.isEmpty()) {
@@ -125,6 +128,7 @@ class HomeActivity : BaseListActivity() {
                             .onErrorReturnNull()
                 }
                 .onMain()
+                .onErrorReturnNull()
                 .subscribe {
                     searchCategory.items = it
                     recyclerView.scrollToPosition(0)
