@@ -17,6 +17,7 @@ import com.linroid.viewit.ui.gallery.provider.Category
 import com.linroid.viewit.ui.gallery.provider.ImageCategory
 import com.linroid.viewit.utils.*
 import rx.android.schedulers.AndroidSchedulers
+import rx.lang.kotlin.onErrorReturnNull
 
 /**
  * @author linroid <linroid@gmail.com>
@@ -115,6 +116,7 @@ class ImageMultiOptionsController(val activity: BaseActivity,
                     imageRepo.deleteImages(selectedItems.toList(), appInfo)
                             .observeOn(AndroidSchedulers.mainThread())
                             .onMain()
+                            .onErrorReturnNull()
                             .subscribe({
                             }, { error ->
                                 activity.toastShort(R.string.msg_delete_image_failed)
@@ -146,7 +148,11 @@ class ImageMultiOptionsController(val activity: BaseActivity,
         }
         imageRepo.saveImages(selectedItems.toList(), appInfo)
                 .onMain()
+                .onErrorReturnNull()
                 .subscribe({ pair ->
+                    if (pair == null) {
+                        return@subscribe
+                    }
                     val values: ContentValues = ContentValues();
                     values.put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis());
                     values.put(MediaStore.Images.Media.MIME_TYPE, pair.first.mimeType());
