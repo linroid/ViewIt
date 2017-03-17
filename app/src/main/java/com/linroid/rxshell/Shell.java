@@ -78,7 +78,7 @@ class Shell {
                 Command current = null;
                 try {
                     current = queue.take();
-                    while ((line = reader.readUtf8Line()) != null) {
+                    while (reader != null && (line = reader.readUtf8Line()) != null) {
                         if (line.startsWith(RESULT_COMMAND_FINISHED)) {
                             String[] res = line.split(" ");
                             exitCmdId = Integer.valueOf(res[1]);

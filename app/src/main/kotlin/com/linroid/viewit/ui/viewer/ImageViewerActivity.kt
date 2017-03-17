@@ -5,7 +5,6 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.provider.MediaStore
 import android.support.design.widget.Snackbar
 import android.support.v4.content.ContextCompat
@@ -98,10 +97,15 @@ class ImageViewerActivity() : ImmersiveActivity(), View.OnClickListener {
         supportActionBar?.setDisplayShowTitleEnabled(false)
     }
 
-    private fun currentImage() = imageRepo.viewerHolderImages!![viewPager.currentItem]
+    private fun currentImage(): Image? {
+        if (imageRepo.viewerHolderImages == null) {
+            return null
+        }
+        return imageRepo.viewerHolderImages!![viewPager.currentItem]
+    }
 
     override fun onClick(v: View) {
-        val image = currentImage()
+        val image = currentImage() ?: return
         when (v.id) {
             R.id.action_share -> {
                 AVAnalytics.onEvent(this, EVENT_SHARE_IMAGE)
@@ -118,7 +122,8 @@ class ImageViewerActivity() : ImmersiveActivity(), View.OnClickListener {
         }
     }
 
-    private fun detailImage(image: Image) {
+    private fun detailImage(image: Image?) {
+        if (image == null) return
         ImageDetailDialog.show(image, supportFragmentManager)
     }
 
