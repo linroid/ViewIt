@@ -10,6 +10,8 @@ def versionMajor = 1
 def versionMinor = 1
 def versionPatch = 1
 
+def buildTime = new Date().format("yyyy-MM-dd HH:mm", TimeZone.getTimeZone("GMT+8:00"))
+
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
@@ -23,6 +25,7 @@ android {
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
+        buildConfigField "String", "BUILD_TIME", "\"${buildTime}\""
         manifestPlaceholders = [APPLICATION_ID: applicationId, CHANNEL: "linroid"]
 //        ndk {
 //            abiFilters 'x86', 'x86_64', 'armeabi', 'armeabi-v7a', 'arm64-v8a'
@@ -55,15 +58,18 @@ android {
             signingConfig signingConfigs.debug
 
             manifestPlaceholders = [APPLICATION_ID: defaultConfig.applicationId + applicationIdSuffix, DEBUG: "true"]
-        }
-        release {
-            minifyEnabled true
-            zipAlignEnabled true
-            shrinkResources true
-            signingConfig signingConfigs.release
 
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            manifestPlaceholders = [DEBUG: "false"]
+            // rename apk
+            applicationVariants.all { variant ->
+                variant.outputs.each { output ->
+                    def outputFile = output.outputFile
+                    if (outputFile != null && outputFile.name.endsWith('.apk')) {
+                        File outputDirectory = new File(outputFile.parent);
+                        def fileName = "ViewIt_v${defaultConfig.versionName}_${buildTime}_${variant.productFlavors[0].name}.apk"
+                        output.outputFile = new File(outputDirectory, fileName)
+                    }
+                }
+            }
         }
     }
 
@@ -72,9 +78,9 @@ android {
         fir_im {}
         play {}
         coolapk {}
-        xiaomi {}
-        meizu {}
-        wandoujia {}
+//        xiaomi {}
+//        meizu {}
+//        wandoujia {}
     }
 
     productFlavors.all {
