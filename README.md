@@ -4,5 +4,5 @@
  - [酷安](http://www.coolapk.com/apk/com.linroid.viewit)
 
 # 文档
- Kotlin 一夜之间成为了 Android 正式开发语言了，这是一件很令人激动的事。
+ Kotlin 一夜之间成为 Android 正式开发语言了，这是一件很令人激动的事。  
  这是我之前用 Kotlin 写的一个 APP「看应用」，文档晚点补充:)
